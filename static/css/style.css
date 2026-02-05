@@ -1,57 +1,122 @@
-* {
+/* ===========================================
+   Micro.blog Theme
+   Cloned from Sophie Davis Portfolio
+   Font: General Sans
+   =========================================== */
+
+:root {
+  /* Colors - warm, not corporate */
+  --bg: #F6F6F7;
+  --bg-nav: rgba(255, 255, 255, 0.95);
+  --text: #403E43;
+  --text-muted: #8E9196;
+  --accent: #4a9f7e;
+  --accent-light: #e8f5ef;
+  --border: #e5e5e5;
+
+  /* Typography */
+  --font-sans: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+
+  /* Sizing */
+  --max-width: 680px;
+}
+
+/* Reset */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 18px;
-  line-height: 1.6;
-  color: #333;
-  background: #fff;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
 }
+
+a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* ===========================================
+   Layout
+   =========================================== */
 
 .container {
-  max-width: 640px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--space-md);
 }
 
-/* Header */
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+}
+
+/* ===========================================
+   Site Header
+   =========================================== */
+
 .site-header {
-  padding: 40px 0 20px;
-  text-align: center;
+  padding: var(--space-lg) 0 var(--space-md);
+}
+
+.site-header .container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .site-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text);
   text-decoration: none;
 }
 
 .site-title:hover {
-  color: #0066cc;
+  color: var(--text-muted);
 }
 
 .site-description {
-  margin-top: 8px;
-  color: #666;
-  font-size: 1rem;
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--text);
 }
 
-/* Main content */
-main {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 20px;
+/* ===========================================
+   Posts
+   =========================================== */
+
+.posts {
+  display: flex;
+  flex-direction: column;
 }
 
-/* Posts */
 .post {
-  padding: 30px 0;
-  border-bottom: 1px solid #eee;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.post:first-child {
+  padding-top: 0;
 }
 
 .post:last-child {
@@ -59,73 +124,225 @@ main {
 }
 
 .post-title {
-  margin-bottom: 16px;
-  font-size: 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
 }
 
 .post-content {
-  margin-bottom: 16px;
+  line-height: 27px;
 }
 
 .post-content p {
   margin-bottom: 1em;
 }
 
+.post-content p:last-child {
+  margin-bottom: 0;
+}
+
 .post-content a {
-  color: #0066cc;
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: none;
+  position: relative;
+}
+
+.post-content a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s ease;
+}
+
+.post-content a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .post-content img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
+  margin: var(--space-sm) 0;
 }
 
+.post-content ul,
+.post-content ol {
+  margin: var(--space-sm) 0;
+  padding-left: 1.5rem;
+}
+
+.post-content li {
+  margin-bottom: 0.5rem;
+}
+
+.post-content blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: var(--space-sm);
+  margin: var(--space-sm) 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.post-content code {
+  background: var(--bg-nav);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.post-content pre {
+  background: #1e1e1e;
+  color: #fff;
+  padding: var(--space-sm);
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: var(--space-sm) 0;
+}
+
+.post-content pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Post Meta */
 .post-meta {
-  font-size: 0.875rem;
-  color: #888;
+  margin-top: var(--space-sm);
 }
 
 .post-date {
-  color: #888;
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.95rem;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .post-date:hover {
-  color: #0066cc;
+  color: var(--text);
 }
 
-/* Pagination */
+/* ===========================================
+   Single Post
+   =========================================== */
+
+.post.single {
+  padding: 0;
+  border-bottom: none;
+}
+
+.post.single .post-title {
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-md);
+}
+
+.post.single .post-meta {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+
+/* ===========================================
+   Pagination
+   =========================================== */
+
 .pagination {
   display: flex;
   justify-content: space-between;
-  padding: 30px 0;
+  padding: var(--space-md) 0;
+  margin-top: var(--space-sm);
 }
 
 .pagination a {
-  color: #0066cc;
+  color: var(--text-muted);
+  font-size: 0.95rem;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .pagination a:hover {
-  text-decoration: underline;
+  color: var(--text);
 }
 
-/* Footer */
+.pagination .prev::before {
+  content: '← ';
+}
+
+.pagination .next::after {
+  content: ' →';
+}
+
+/* ===========================================
+   Site Footer
+   =========================================== */
+
 .site-footer {
-  padding: 40px 0;
-  text-align: center;
-  color: #888;
-  font-size: 0.875rem;
+  padding: var(--space-lg) 0;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-  body {
-    font-size: 16px;
+.site-footer .container {
+  text-align: center;
+}
+
+.site-footer p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ===========================================
+   Responsive
+   =========================================== */
+
+@media (max-width: 768px) {
+  main {
+    padding: var(--space-md) 20px;
   }
 
   .site-header {
-    padding: 30px 0 15px;
+    padding: var(--space-md) 0 var(--space-sm);
+  }
+
+  .site-title {
+    font-size: 28px;
+  }
+
+  .site-description {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .post-content {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .post.single .post-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: var(--space-sm) 20px;
+  }
+
+  .site-title {
+    font-size: 24px;
+  }
+
+  .post.single .post-title {
+    font-size: 24px;
   }
 }
