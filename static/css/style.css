@@ -52,6 +52,10 @@ body {
    Typography
    =========================================== */
 
+strong, b {
+  font-weight: 500;
+}
+
 h1, h2, h3 {
   font-family: var(--font-sans);
   font-weight: 500;
@@ -709,16 +713,18 @@ main {
   margin-bottom: 1em;
 }
 
-.about-content strong {
-  font-weight: 600;
+.about-content strong,
+.about-content b {
+  font-weight: 500;
 }
 
 .about-content a {
   font-weight: 400;
 }
 
-.about-content a strong {
-  font-weight: 600;
+.about-content a strong,
+.about-content a b {
+  font-weight: 500;
 }
 
 .about-content p:last-of-type {
