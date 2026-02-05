@@ -22,6 +22,7 @@
   --space-sm: 1rem;
   --space-md: 2rem;
   --space-lg: 4rem;
+  --space-xl: 6rem;
 
   /* Sizing */
   --max-width: 680px;
@@ -41,15 +42,72 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: 1.125rem;
   line-height: 1.7;
   color: var(--text);
   background: var(--bg);
 }
 
+/* ===========================================
+   Typography
+   =========================================== */
+
+h1, h2, h3 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 36px;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-sm);
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-xs);
+}
+
+/* Italic emphasis */
+em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ===========================================
+   Links - Animated Underline
+   =========================================== */
+
 a {
   color: var(--text);
+  font-weight: 500;
   text-decoration: none;
+  position: relative;
+  display: inline;
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s ease;
+}
+
+a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 /* ===========================================
@@ -77,9 +135,9 @@ main {
 }
 
 .site-header .container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
 }
 
 .site-title {
@@ -89,6 +147,11 @@ main {
   letter-spacing: -0.02em;
   color: var(--text);
   text-decoration: none;
+  display: inline-block;
+}
+
+.site-title::after {
+  display: none;
 }
 
 .site-title:hover {
@@ -99,6 +162,8 @@ main {
   font-size: 17px;
   line-height: 27px;
   color: var(--text);
+  margin-top: var(--space-xs);
+  font-weight: 400;
 }
 
 /* ===========================================
@@ -129,11 +194,17 @@ main {
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--text);
-  margin-bottom: var(--space-sm);
+  margin-bottom: 12px;
 }
 
+/* ===========================================
+   Post Content
+   =========================================== */
+
 .post-content {
+  font-size: 17px;
   line-height: 27px;
+  color: var(--text);
 }
 
 .post-content p {
@@ -144,11 +215,13 @@ main {
   margin-bottom: 0;
 }
 
+/* Links in content */
 .post-content a {
   color: var(--text);
   font-weight: 500;
   text-decoration: none;
   position: relative;
+  display: inline;
 }
 
 .post-content a::after {
@@ -169,23 +242,48 @@ main {
   transform-origin: left;
 }
 
-.post-content img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin: var(--space-sm) 0;
+/* Lists - custom dash bullets */
+.post-content ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 var(--space-md) 0;
 }
 
-.post-content ul,
 .post-content ol {
   margin: var(--space-sm) 0;
   padding-left: 1.5rem;
 }
 
 .post-content li {
-  margin-bottom: 0.5rem;
+  color: var(--text);
+  padding-left: 1.25rem;
+  position: relative;
+  margin-bottom: 8px;
+  line-height: 26px;
+  font-size: 17px;
 }
 
+.post-content ul li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
+.post-content li:last-child {
+  margin-bottom: 0;
+}
+
+/* Images */
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: var(--space-sm) 0;
+  display: block;
+}
+
+/* Blockquotes */
 .post-content blockquote {
   border-left: 2px solid var(--accent);
   padding-left: var(--space-sm);
@@ -194,6 +292,7 @@ main {
   font-style: italic;
 }
 
+/* Code */
 .post-content code {
   background: var(--bg-nav);
   padding: 0.2em 0.4em;
@@ -215,17 +314,25 @@ main {
   padding: 0;
 }
 
-/* Post Meta */
+/* ===========================================
+   Post Meta
+   =========================================== */
+
 .post-meta {
   margin-top: var(--space-sm);
 }
 
 .post-date {
   font-style: italic;
+  font-weight: 400;
   color: var(--text-muted);
   font-size: 0.95rem;
   text-decoration: none;
   transition: color 0.2s ease;
+}
+
+.post-date::after {
+  display: none;
 }
 
 .post-date:hover {
@@ -268,8 +375,13 @@ main {
 .pagination a {
   color: var(--text-muted);
   font-size: 0.95rem;
+  font-weight: 400;
   text-decoration: none;
   transition: color 0.2s ease;
+}
+
+.pagination a::after {
+  display: none;
 }
 
 .pagination a:hover {
@@ -293,12 +405,16 @@ main {
 }
 
 .site-footer .container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
   text-align: center;
 }
 
 .site-footer p {
   font-size: 14px;
   color: var(--text-muted);
+  font-weight: 400;
 }
 
 /* ===========================================
@@ -306,12 +422,20 @@ main {
    =========================================== */
 
 @media (max-width: 768px) {
+  body {
+    font-size: 1rem;
+  }
+
   main {
     padding: var(--space-md) 20px;
   }
 
   .site-header {
     padding: var(--space-md) 0 var(--space-sm);
+  }
+
+  .site-header .container {
+    padding: 0 20px;
   }
 
   .site-title {
@@ -328,8 +452,17 @@ main {
     line-height: 26px;
   }
 
+  .post-content li {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
   .post.single .post-title {
     font-size: 28px;
+  }
+
+  .site-footer .container {
+    padding: 0 20px;
   }
 }
 
@@ -344,5 +477,9 @@ main {
 
   .post.single .post-title {
     font-size: 24px;
+  }
+
+  .post-content li {
+    margin-bottom: 10px;
   }
 }
