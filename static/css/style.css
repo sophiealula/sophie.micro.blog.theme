@@ -967,10 +967,10 @@ main {
 }
 
 .now-intro {
-  font-size: 14px;
-  line-height: 22px;
+  font-size: 17px;
+  line-height: 27px;
   color: var(--text);
-  margin-bottom: 4px;
+  margin-bottom: var(--space-sm);
 }
 
 .now-intro a {
@@ -979,11 +979,11 @@ main {
 
 .now-date {
   font-family: var(--font-sans);
-  font-size: 26px;
+  font-size: 36px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text);
-  margin-bottom: 32px;
+  margin-bottom: var(--space-md);
 }
 
 .now-content {
@@ -997,11 +997,11 @@ main {
 .now-post h2,
 .now-section h2 {
   font-family: var(--font-sans);
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: var(--text);
-  margin-bottom: 8px;
-  margin-top: 28px;
+  margin-bottom: var(--space-sm);
+  margin-top: var(--space-md);
 }
 
 .now-post h2:first-child,
@@ -1026,9 +1026,9 @@ main {
 .now-page li {
   position: relative;
   padding-left: 1rem;
-  margin-bottom: 6px;
-  font-size: 14px;
-  line-height: 21px;
+  margin-bottom: 0.5rem;
+  font-size: 17px;
+  line-height: 1.7;
   color: var(--text);
 }
 
@@ -1050,17 +1050,24 @@ main {
 /* Now Page Responsive */
 @media (max-width: 768px) {
   .now-date {
-    font-size: 26px;
+    font-size: 28px;
   }
 
-  .now-section li {
+  .now-intro {
     font-size: 16px;
     line-height: 26px;
+  }
+
+  .now-section li,
+  .now-post li,
+  .now-page li {
+    font-size: 16px;
+    line-height: 1.7;
   }
 }
 
 @media (max-width: 480px) {
   .now-date {
-    font-size: 22px;
+    font-size: 24px;
   }
 }
