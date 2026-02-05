@@ -686,22 +686,23 @@ main {
 
 .about-layout {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 48px;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
   align-items: start;
+  max-width: 750px;
 }
 
 .about-image {
-  padding-top: 6px;
+  padding-top: 4px;
 }
 
 .about-photo,
 .about-page img {
-  width: 220px !important;
-  height: 220px !important;
+  width: 200px !important;
+  height: 250px !important;
   border-radius: 8px;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center 60%;
   display: block;
 }
 
@@ -759,8 +760,8 @@ main {
 
   .about-photo,
   .about-page img {
-    width: 200px !important;
-    height: 200px !important;
+    width: 180px !important;
+    height: 225px !important;
   }
 
   .about-content h1 {
@@ -771,8 +772,8 @@ main {
 @media (max-width: 480px) {
   .about-photo,
   .about-page img {
-    width: 180px !important;
-    height: 180px !important;
+    width: 160px !important;
+    height: 200px !important;
   }
 
   .about-content h1 {
