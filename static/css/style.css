@@ -967,10 +967,10 @@ main {
 }
 
 .now-intro {
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 22px;
   color: var(--text);
-  margin-bottom: var(--space-sm);
+  margin-bottom: 4px;
 }
 
 .now-intro a {
@@ -979,29 +979,29 @@ main {
 
 .now-date {
   font-family: var(--font-sans);
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text);
-  margin-bottom: var(--space-lg);
+  margin-bottom: 32px;
 }
 
 .now-content {
-  margin-top: var(--space-lg);
+  margin-top: 0;
 }
 
 .now-post {
-  margin-bottom: var(--space-md);
+  margin-bottom: 0;
 }
 
 .now-post h2,
 .now-section h2 {
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 12px;
-  margin-top: var(--space-lg);
+  margin-bottom: 8px;
+  margin-top: 28px;
 }
 
 .now-post h2:first-child,
@@ -1010,7 +1010,7 @@ main {
 }
 
 .now-section {
-  margin-bottom: var(--space-lg);
+  margin-bottom: 28px;
 }
 
 .now-section ul,
@@ -1025,10 +1025,10 @@ main {
 .now-post li,
 .now-page li {
   position: relative;
-  padding-left: 1.25rem;
-  margin-bottom: 8px;
-  font-size: 15px;
-  line-height: 24px;
+  padding-left: 1rem;
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 21px;
   color: var(--text);
 }
 
