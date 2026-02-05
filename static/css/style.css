@@ -660,3 +660,88 @@ main {
     height: 100px;
   }
 }
+
+/* ===========================================
+   About Page
+   =========================================== */
+
+.about-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.about-photo {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.about-content h1 {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: var(--space-md);
+}
+
+.about-content p {
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--text);
+  margin-bottom: 1em;
+}
+
+.about-content p:last-of-type {
+  margin-bottom: var(--space-md);
+}
+
+.about-links {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.about-links a {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* About Page Responsive */
+@media (max-width: 768px) {
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .about-photo {
+    max-width: 240px;
+  }
+
+  .about-content h1 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-photo {
+    max-width: 200px;
+  }
+
+  .about-content h1 {
+    font-size: 24px;
+  }
+
+  .about-content p {
+    font-size: 16px;
+    line-height: 26px;
+  }
+}

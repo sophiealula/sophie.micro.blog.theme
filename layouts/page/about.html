@@ -1,0 +1,16 @@
+{{ define "main" }}
+<div class="about-page">
+  <div class="about-layout">
+    <div class="about-image">
+      {{ with .Params.photo }}
+      <img src="{{ . }}" alt="{{ $.Site.Title }}" class="about-photo">
+      {{ else }}
+      <img src="{{ "images/profile.jpg" | relURL }}" alt="{{ .Site.Title }}" class="about-photo">
+      {{ end }}
+    </div>
+    <div class="about-content">
+      {{ .Content }}
+    </div>
+  </div>
+</div>
+{{ end }}
