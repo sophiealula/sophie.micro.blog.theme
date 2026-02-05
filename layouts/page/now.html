@@ -1,0 +1,9 @@
+{{ define "main" }}
+<div class="now-page">
+  <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/" target="_blank">Harper</a>, who was inspired by <a href="https://nownownow.com" target="_blank">nownownow.com</a>, and so on.</p>
+
+  <h1 class="now-date">Now @ {{ now.Format "January 2, 2006" }}</h1>
+
+  {{ .Content }}
+</div>
+{{ end }}

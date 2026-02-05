@@ -1,0 +1,38 @@
+{{ define "main" }}
+<div class="contact-page">
+  <h1 class="contact-heading">Let's <em>chat</em></h1>
+  <p class="contact-intro">Always open to interesting conversations.</p>
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <span class="terminal-dot red"></span>
+      <span class="terminal-dot yellow"></span>
+      <span class="terminal-dot green"></span>
+      <span class="terminal-title">contact.sh</span>
+    </div>
+    <div class="terminal-body">
+      <form action="https://formspree.io/f/{{ .Site.Params.formspree_id }}" method="POST" class="terminal-form">
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label for="name">name:</label>
+          <input type="text" id="name" name="name" placeholder="your name" required>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label for="email">email:</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label for="message">message:</label>
+          <input type="text" id="message" name="message" placeholder="what's on your mind?" required>
+        </div>
+        <div class="terminal-line terminal-submit">
+          <span class="terminal-prompt">$</span>
+          <button type="submit">send_message --to sophie</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{ end }}
