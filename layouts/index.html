@@ -2,10 +2,9 @@
 <div class="now-page">
   <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/"><strong>Harper</strong></a>, who was inspired by <a href="https://nownownow.com"><strong>nownownow.com</strong></a>, and so on.</p>
 
+  <h1 class="now-date">Now @ {{ now.Format "January 2, 2006" }}</h1>
+
   {{ $now := where .Site.RegularPages "Params.categories" "intersect" (slice "Now") }}
-  {{ with index $now 0 }}
-  <h1 class="now-date">Now @ {{ .Date.Format "January 2, 2006" }}</h1>
-  {{ end }}
 
   <div class="now-content">
     {{ range $now }}
