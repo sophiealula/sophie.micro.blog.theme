@@ -691,12 +691,17 @@ main {
   align-items: start;
 }
 
+.about-image {
+  padding-top: 6px;
+}
+
 .about-photo {
   width: 220px;
   height: 220px;
   border-radius: 8px;
   object-fit: cover;
   object-position: center 20%;
+  display: block;
 }
 
 .about-content h1 {
