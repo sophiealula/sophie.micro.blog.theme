@@ -967,10 +967,10 @@ main {
 }
 
 .now-intro {
-  font-size: 17px;
-  line-height: 27px;
+  font-size: 15px;
+  line-height: 24px;
   color: var(--text);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .now-intro a {
@@ -979,48 +979,70 @@ main {
 
 .now-date {
   font-family: var(--font-sans);
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text);
   margin-bottom: var(--space-lg);
 }
 
+.now-content {
+  margin-top: var(--space-md);
+}
+
+.now-post {
+  margin-bottom: var(--space-md);
+}
+
+.now-post h2,
+.now-section h2 {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.now-post h2:first-child {
+  margin-top: 0;
+}
+
 .now-section {
   margin-bottom: var(--space-lg);
 }
 
-.now-section h2 {
-  font-family: var(--font-sans);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--text);
-  margin-bottom: var(--space-sm);
-}
-
-.now-section ul {
+.now-section ul,
+.now-post ul,
+.now-page ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.now-section li {
+.now-section li,
+.now-post li,
+.now-page li {
   position: relative;
   padding-left: 1.25rem;
-  margin-bottom: 12px;
-  font-size: 17px;
-  line-height: 27px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  line-height: 24px;
   color: var(--text);
 }
 
-.now-section li::before {
+.now-section li::before,
+.now-post li::before,
+.now-page li::before {
   content: "–";
   position: absolute;
   left: 0;
   color: var(--text-muted);
 }
 
-.now-section li:last-child {
+.now-section li:last-child,
+.now-post li:last-child,
+.now-page li:last-child {
   margin-bottom: 0;
 }
 
