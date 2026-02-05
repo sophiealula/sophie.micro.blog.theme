@@ -127,7 +127,7 @@ a:hover::after {
 main {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-md);
+  padding: var(--space-md) var(--space-md);
 }
 
 /* ===========================================
@@ -135,7 +135,7 @@ main {
    =========================================== */
 
 .site-header {
-  padding: var(--space-lg) 0 var(--space-md);
+  padding: var(--space-md) 0 var(--space-xs);
   display: flex;
   justify-content: center;
 }
@@ -1015,21 +1015,17 @@ main {
   margin-top: 0;
 }
 
-.now-post ul + p {
-  font-family: var(--font-sans);
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--text);
-  margin-top: var(--space-lg);
+.now-page .now-post ul + p,
+.now-page .now-post > p:first-child {
+  font-family: var(--font-sans) !important;
+  font-size: 1.25rem !important;
+  font-weight: 500 !important;
+  color: var(--text) !important;
   margin-bottom: var(--space-sm);
 }
 
-.now-post > p:first-child {
-  font-family: var(--font-sans);
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--text);
-  margin-bottom: var(--space-sm);
+.now-page .now-post ul + p {
+  margin-top: var(--space-lg);
 }
 
 .now-section {
