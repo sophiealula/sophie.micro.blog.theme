@@ -1010,6 +1010,28 @@ main {
   margin-top: 0;
 }
 
+/* Style p tags before ul as section headers (when not using h2) */
+.now-post p + ul {
+  margin-top: 0;
+}
+
+.now-post ul + p {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.now-post > p:first-child {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
+}
+
 .now-section {
   margin-bottom: var(--space-lg);
 }
