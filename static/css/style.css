@@ -695,9 +695,10 @@ main {
   padding-top: 6px;
 }
 
-.about-photo {
-  width: 220px;
-  height: 220px;
+.about-photo,
+.about-page img {
+  width: 220px !important;
+  height: 220px !important;
   border-radius: 8px;
   object-fit: cover;
   object-position: center 20%;
@@ -756,9 +757,10 @@ main {
     gap: var(--space-md);
   }
 
-  .about-photo {
-    width: 200px;
-    height: 200px;
+  .about-photo,
+  .about-page img {
+    width: 200px !important;
+    height: 200px !important;
   }
 
   .about-content h1 {
@@ -767,9 +769,10 @@ main {
 }
 
 @media (max-width: 480px) {
-  .about-photo {
-    width: 180px;
-    height: 180px;
+  .about-photo,
+  .about-page img {
+    width: 180px !important;
+    height: 180px !important;
   }
 
   .about-content h1 {
