@@ -1,8 +1,10 @@
 <header class="site-header">
-  <div class="container">
-    <a href="{{ .Site.BaseURL }}" class="site-title">{{ .Site.Title }}</a>
-    {{ with .Site.Params.description }}
-    <p class="site-description">{{ . }}</p>
-    {{ end }}
-  </div>
+  <nav class="site-nav">
+    <a href="{{ .Site.BaseURL }}about/" class="nav-link{{ if eq .RelPermalink "/about/" }} active{{ end }}">About</a>
+    <a href="{{ .Site.BaseURL }}" class="nav-link{{ if .IsHome }} active{{ end }}">
+      <span class="nav-dot"></span>Now
+    </a>
+    <a href="{{ .Site.BaseURL }}photos/" class="nav-link{{ if eq .RelPermalink "/photos/" }} active{{ end }}">Photos</a>
+    <a href="https://sophiedavis.org/#contact" class="nav-link" target="_blank">Contact</a>
+  </nav>
 </header>
