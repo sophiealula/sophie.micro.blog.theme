@@ -4,6 +4,7 @@
     <a href="{{ .Site.BaseURL }}" class="nav-link{{ if .IsHome }} active{{ end }}">
       <span class="nav-dot"></span>Now
     </a>
+    <a href="{{ .Site.BaseURL }}categories/blog/" class="nav-link{{ if eq .RelPermalink "/categories/blog/" }} active{{ end }}">Blog</a>
     <a href="{{ .Site.BaseURL }}photos/" class="nav-link{{ if eq .RelPermalink "/photos/" }} active{{ end }}">Photos</a>
     <a href="https://sophiedavis.org/#contact" class="nav-link" target="_blank">Contact</a>
   </nav>
