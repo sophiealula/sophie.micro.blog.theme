@@ -665,6 +665,16 @@ main {
    About Page
    =========================================== */
 
+/* Hide default title and date when special pages are present */
+.post.single:has(.about-page) > .post-title,
+.post.single:has(.about-page) > .post-meta,
+.post.single:has(.contact-page) > .post-title,
+.post.single:has(.contact-page) > .post-meta,
+.post.single:has(.now-page) > .post-title,
+.post.single:has(.media-page) > .post-title {
+  display: none;
+}
+
 .about-page {
   max-width: 900px;
   margin: 0 auto;
