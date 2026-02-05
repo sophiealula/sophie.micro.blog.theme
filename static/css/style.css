@@ -682,15 +682,14 @@ main {
 
 .about-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: var(--space-lg);
+  grid-template-columns: 220px 1fr;
+  gap: 48px;
   align-items: start;
 }
 
 .about-photo {
   width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
+  height: auto;
   border-radius: 8px;
 }
 
@@ -708,6 +707,18 @@ main {
   line-height: 27px;
   color: var(--text);
   margin-bottom: 1em;
+}
+
+.about-content strong {
+  font-weight: 600;
+}
+
+.about-content a {
+  font-weight: 400;
+}
+
+.about-content a strong {
+  font-weight: 600;
 }
 
 .about-content p:last-of-type {
