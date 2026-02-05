@@ -693,10 +693,10 @@ main {
 
 .about-photo {
   width: 220px;
-  height: 240px;
+  height: 220px;
   border-radius: 8px;
   object-fit: cover;
-  object-position: center 15%;
+  object-position: center 20%;
 }
 
 .about-content h1 {
@@ -753,7 +753,7 @@ main {
 
   .about-photo {
     width: 200px;
-    height: 220px;
+    height: 200px;
   }
 
   .about-content h1 {
@@ -764,7 +764,7 @@ main {
 @media (max-width: 480px) {
   .about-photo {
     width: 180px;
-    height: 195px;
+    height: 180px;
   }
 
   .about-content h1 {
