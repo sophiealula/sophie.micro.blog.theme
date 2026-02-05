@@ -1,0 +1,15 @@
+{{ define "main" }}
+<article class="post single">
+  {{ if .Title }}
+  <h1 class="post-title">{{ .Title }}</h1>
+  {{ end }}
+  <div class="post-content">
+    {{ .Content }}
+  </div>
+  <div class="post-meta">
+    <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+      {{ .Date.Format "Jan 2, 2006 at 3:04 PM" }}
+    </time>
+  </div>
+</article>
+{{ end }}

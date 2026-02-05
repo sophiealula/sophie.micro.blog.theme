@@ -1,0 +1,8 @@
+[theme]
+name = "Simple"
+description = "A minimal, clean micro.blog theme"
+license = "MIT"
+min_version = "0.80.0"
+
+[author]
+name = "Sophie Davis"
