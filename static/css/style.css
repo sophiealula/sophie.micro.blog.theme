@@ -987,7 +987,7 @@ main {
 }
 
 .now-content {
-  margin-top: 0;
+  margin-top: var(--space-sm);
 }
 
 .now-post {
@@ -1001,16 +1001,17 @@ main {
   font-weight: 500;
   color: var(--text);
   margin-bottom: var(--space-sm);
-  margin-top: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .now-post h2:first-child,
-.now-content h2:first-child {
+.now-content h2:first-child,
+.now-post:first-child h2:first-child {
   margin-top: 0;
 }
 
 .now-section {
-  margin-bottom: 28px;
+  margin-bottom: var(--space-lg);
 }
 
 .now-section ul,
