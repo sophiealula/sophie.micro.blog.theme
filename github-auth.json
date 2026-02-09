@@ -1,0 +1,209 @@
+{
+  "cookies": [
+    {
+      "name": "_octo",
+      "value": "GH1.1.1926025701.1770331382",
+      "domain": ".github.com",
+      "path": "/",
+      "expires": 1801867382.214802,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cpu_bucket",
+      "value": "lg",
+      "domain": ".github.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "preferred_color_mode",
+      "value": "light",
+      "domain": ".github.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_device_id",
+      "value": "e88d219756ad84e7ef860005fd24c4fc",
+      "domain": "github.com",
+      "path": "/",
+      "expires": 1801867382.626841,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "tz",
+      "value": "America%2FChicago",
+      "domain": ".github.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Host-GAPS",
+      "value": "1:KdaDx6bPevCV8jDF__eyW6Qj6pNRAg:ssFwG-MEyp4n_HO1",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1804891534.088884,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "OTZ",
+      "value": "8467126_80_80_104160_76_446820",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1772923534,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NID",
+      "value": "528=RQGIGt_7VSpf_itLAoF_pJDWhuV-0DG4Uzc3sQ1kVl55NpZ8rTj8LA8jv4zfWFDWQ9RabAfmrp5RG6vfs0MyBSO7d2-IW75k52WYphcVNbsckCpEx6nLlAcpq5SJfvnQL60XmBMFRBfKHUTizoKTuED2y9n6ENwMYvsXLRICsrd1VY7W9bYKsuPhGmwRRQm_qgqAWmSShprwlNxQzUnY9A",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1786142734.516088,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "saved_user_sessions",
+      "value": "53537939%3A1cx_Jx9J2xIbU2DDZ67cNCbFBjZOGEL8dHFMsKVVZKIeMNOc",
+      "domain": "github.com",
+      "path": "/",
+      "expires": 1778104129.75017,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "user_session",
+      "value": "1cx_Jx9J2xIbU2DDZ67cNCbFBjZOGEL8dHFMsKVVZKIeMNOc",
+      "domain": "github.com",
+      "path": "/",
+      "expires": 1771541329.75101,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Host-user_session_same_site",
+      "value": "1cx_Jx9J2xIbU2DDZ67cNCbFBjZOGEL8dHFMsKVVZKIeMNOc",
+      "domain": "github.com",
+      "path": "/",
+      "expires": 1771541329.751027,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "tz",
+      "value": "America%2FChicago",
+      "domain": "github.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "color_mode",
+      "value": "%7B%22color_mode%22%3A%22auto%22%2C%22light_theme%22%3A%7B%22name%22%3A%22light%22%2C%22color_mode%22%3A%22light%22%7D%2C%22dark_theme%22%3A%7B%22name%22%3A%22dark%22%2C%22color_mode%22%3A%22dark%22%7D%7D",
+      "domain": ".github.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "logged_in",
+      "value": "yes",
+      "domain": ".github.com",
+      "path": "/",
+      "expires": 1801867729.751266,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "dotcom_user",
+      "value": "sophiealula",
+      "domain": ".github.com",
+      "path": "/",
+      "expires": 1801867729.751285,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "last_write_ms",
+      "value": "1770331730868",
+      "domain": "github.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gh_sess",
+      "value": "%2B%2BjnDGwaebw8B9YPWy3yZI8%2FKvO23UmTZOI94ZnOW2i6NVpg%2F%2FXVCxZ5mwOOVgGnbR4MxHjlR9%2Bj9bj3bjRw4DLakVzjxF9S20vczAsQtUKaSc9c0m2Ux4jOuK9pyVviGklmrQ7FatMfsHrvoMfcmAbMekjDffngNXEZ7AIpvr%2FecOZ22aYJiZUEG2jvtVx4DQ3csDX4O5bSml%2BPbFe5ju5TPSAcQtlJod%2Bwu9B92d47ys9Nh%2Bw%2FUqHWHBApMPa6unGS66NTDQtfXH00s30wwL%2BOP%2F5Xah2fG1eNrwQ8CZ1Oapeb8Y%2BHmF2f48p6C3um2BQ3xJuE3u%2BuJhjAK%2FPD2OyQZQlnmDis%2FPezV%2FCtyy0alzH0gyzkcrSBvvYtjGe31RcpYkX7CbCK4rQNIWElDhpSyEyYvSHGfHhp52zyxbRlv%2FtKsX%2BBv5s6qOddxFhWoRKKtc1%2FNBm2cKhLJHvK%2BH3MyOlN8FvLnbG4J4p%2BDB093GxzYcfoDmsy0bOivrRIOaNwYjnsc8XMXnsZ%2FRfuhF5GDdJzruT0hi5phC2c8ZmH%2FewhLSoQymBxDtR33%2FkvDzw73HJfNFfymAp9FmuCpJra9NeXF4lFMgdguBT3B8xDD0id72cUhaKfeQGIiRcPiADRAgyq3MnQz%2BIBz4wQZtQw3ycXjeE3dS5DLz6csVQ1unsvBaAgdW0L8YFRVqANzU5E1Vhqvu%2B9bl%2BjYlSAumXsUlerA3zLvJcrTTFEpP0mLTtYjaqmO%2FZqKreCCS%2FMhkH8exOqLm5UZq7F5bxQrmM%2BzsOa4PjcuId3Kd4Tyrj6K8Bagd7l4GQfVE6XSVKob%2BN%2Bf4L%2FY66PkS9NSyYqkgBbF3ez9X9pD%2BdO1o%2FDzt%2FHVSe9UjOpfplDAGFF3%2FuPfhpt4XSEDI%2Fpy3g19hpN0pPWPCm55plwSxA%2Bn7qswxGnkTMThELzYDOBhZPxB00Pfd7es9D4gmYvBWN%2FXAKCmJJ7EXWyK9ayn3mx6ojesZst%2BY5ZWF1%2B%2F9Z5s49cv1sFxw7yv6pKGjP7pIo3zgsyPBdh59SYMYL71UobsD2gOct28RFHmw57yPzLo5suDv%2FHWjl8RRdLRDNpNxCoV8v%2Fyl1ThpDMoi4heGnrWD%2BDCzvCt2BTsua90pzlRJt8TkGbU9DvC6l09EjMGUwKDrxTFsN6WskLEcafM6%2F8y7bGzlnNqEuh5H2gGJ3O3JkCx5D5lXe%2BNPEvd88%3D--qkSh06UbHqnvZbPA--GzQHZXsVEEW9iwT%2BUCNo5Q%3D%3D",
+      "domain": "github.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://github.com",
+      "localStorage": [
+        {
+          "name": "COPILOT_SAVED_USER_MESSAGE_null:expiry",
+          "value": "1770418130785"
+        },
+        {
+          "name": "COPILOT_AUTH_TOKEN",
+          "value": "{\"value\":\"YCnorysX9FCCbANjnQahtb7BevEWe8u_cW75KWBIK0SXRRjEZIH6bG2zzqbejFWVkV6i1pKXCxflsl6UaKSt1_tEEGv-84WSfHlzCpYX0sI=\",\"expiration\":\"2026-02-05T23:18:50.000Z\",\"ssoOrgIDs\":[]}"
+        },
+        {
+          "name": "COPILOT_SELECTED_MODEL_VERSION",
+          "value": "8"
+        },
+        {
+          "name": "COPILOT_SELECTED_MODEL_null:expiry",
+          "value": "1772750931061"
+        },
+        {
+          "name": "COPILOT_AUTH_TOKEN:expiry",
+          "value": "1770418130890"
+        },
+        {
+          "name": "COPILOT_SELECTED_MODEL_null",
+          "value": "{\"billing\":{\"is_premium\":true,\"multiplier\":1},\"capabilities\":{\"family\":\"gpt-5-mini\",\"limits\":{\"max_context_window_tokens\":264000,\"max_output_tokens\":64000,\"max_prompt_tokens\":128000,\"vision\":{\"max_prompt_image_size\":3145728,\"max_prompt_images\":1,\"supported_media_types\":[\"image/jpeg\",\"image/png\",\"image/webp\",\"image/gif\"]}},\"object\":\"model_capabilities\",\"supports\":{\"parallel_tool_calls\":true,\"streaming\":true,\"structured_outputs\":true,\"tool_calls\":true,\"vision\":true},\"tokenizer\":\"o200k_base\",\"type\":\"chat\"},\"id\":\"gpt-5-mini\",\"is_chat_default\":true,\"is_chat_fallback\":false,\"model_picker_category\":\"lightweight\",\"model_picker_enabled\":true,\"name\":\"GPT-5 mini\",\"object\":\"model\",\"policy\":{\"state\":\"enabled\",\"terms\":\"Enable access to the latest GPT-5 mini model from OpenAI. [Learn more about how GitHub Copilot serves GPT-5 mini](https://gh.io/copilot-openai).\"},\"preview\":false,\"supported_endpoints\":[\"/chat/completions\",\"/responses\"],\"vendor\":\"Azure OpenAI\",\"version\":\"gpt-5-mini\",\"displayName\":\"GPT-5 mini\",\"hasLimitedCapabilities\":false,\"isThirdParty\":false,\"logoURL\":\"/images/modules/marketplace/models/families/openai-logo.svg\"}"
+        },
+        {
+          "name": "COPILOT_SAVED_USER_MESSAGE_null",
+          "value": ""
+        }
+      ]
+    }
+  ]
+}

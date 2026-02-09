@@ -9,10 +9,11 @@
     <h2>Currently Reading</h2>
     <div class="media-grid">
       {{ range . }}
+      {{ $book := . }}
       <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
         <div class="media-cover">
           {{ with .cover_url }}
-          <img src="{{ . }}" alt="{{ $.title }} cover" loading="lazy">
+          <img src="{{ . }}" alt="{{ $book.title }} cover" loading="lazy">
           {{ end }}
         </div>
         <div class="media-info">
@@ -30,10 +31,11 @@
     <h2>Recently Finished</h2>
     <div class="media-grid">
       {{ range first 6 . }}
+      {{ $book := . }}
       <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
         <div class="media-cover">
           {{ with .cover_url }}
-          <img src="{{ . }}" alt="{{ $.title }} cover" loading="lazy">
+          <img src="{{ . }}" alt="{{ $book.title }} cover" loading="lazy">
           {{ end }}
         </div>
         <div class="media-info">
