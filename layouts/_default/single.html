@@ -4,7 +4,7 @@
   <h1 class="page-title">Media</h1>
   <p class="media-intro">Here's what I'm reading and bookmarking, updated {{ now.Format "January 2, 2006" }}.</p>
 
-  {{ with .Site.Data.bookshelves.currentlyreading }}
+  {{ with .Site.Data.bookshelves.reading }}
   <section class="media-section">
     <h2>Currently Reading</h2>
     <div class="media-grid">
@@ -26,7 +26,7 @@
   </section>
   {{ end }}
 
-  {{ with .Site.Data.bookshelves.finishedreading }}
+  {{ with .Site.Data.bookshelves.finished }}
   <section class="media-section">
     <h2>Recently Finished</h2>
     <div class="media-grid">

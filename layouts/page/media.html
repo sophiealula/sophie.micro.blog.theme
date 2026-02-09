@@ -3,7 +3,7 @@
   <p class="media-intro">Here's what I'm reading and bookmarking, updated {{ now.Format "January 2, 2006" }}.</p>
 
   <!-- Reading Section - Currently Reading -->
-  {{ with .Site.Data.bookshelves.currentlyreading }}
+  {{ with .Site.Data.bookshelves.reading }}
   <section class="media-section">
     <h2>Currently Reading</h2>
     <div class="media-grid">
@@ -26,7 +26,7 @@
   {{ end }}
 
   <!-- Reading Section - Finished Reading -->
-  {{ with .Site.Data.bookshelves.finishedreading }}
+  {{ with .Site.Data.bookshelves.finished }}
   <section class="media-section">
     <h2>Recently Finished</h2>
     <div class="media-grid">
