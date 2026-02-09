@@ -1,4 +1,63 @@
 {{ define "main" }}
+{{/* Media page gets special treatment */}}
+{{ if eq .RelPermalink "/media/" }}
+<div class="media-page">
+  <p class="media-intro">Here's what I'm reading and bookmarking, updated {{ now.Format "January 2, 2006" }}.</p>
+
+  <!-- Reading Section - Currently Reading -->
+  {{ with .Site.Data.bookshelves.currentlyreading }}
+  <section class="media-section">
+    <h2>Currently Reading</h2>
+    <div class="media-grid">
+      {{ range . }}
+      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
+        <div class="media-cover">
+          {{ with .cover_url }}
+          <img src="{{ . }}" alt="{{ $.title }} cover" loading="lazy">
+          {{ end }}
+        </div>
+        <div class="media-info">
+          <span class="media-title">{{ .title }}</span>
+          <span class="media-artist">{{ .author }}</span>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  <!-- Reading Section - Finished Reading -->
+  {{ with .Site.Data.bookshelves.finishedreading }}
+  <section class="media-section">
+    <h2>Recently Finished</h2>
+    <div class="media-grid">
+      {{ range first 6 . }}
+      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
+        <div class="media-cover">
+          {{ with .cover_url }}
+          <img src="{{ . }}" alt="{{ $.title }} cover" loading="lazy">
+          {{ end }}
+        </div>
+        <div class="media-info">
+          <span class="media-title">{{ .title }}</span>
+          <span class="media-artist">{{ .author }}</span>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  <!-- Bookmarks Section -->
+  {{ with .Content }}
+  <section class="media-section">
+    <h2>Bookmarks</h2>
+    {{ . }}
+  </section>
+  {{ end }}
+</div>
+{{ else }}
+{{/* Default single page layout */}}
 <article class="post single">
   {{ if .Title }}
   <h1 class="post-title">{{ .Title }}</h1>
@@ -12,4 +71,5 @@
     </time>
   </div>
 </article>
+{{ end }}
 {{ end }}
