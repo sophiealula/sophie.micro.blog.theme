@@ -1,7 +1,69 @@
 {{ define "main" }}
 <div class="media-page">
-  <p class="media-intro">Here's what I'm reading and listening to, updated {{ now.Format "January 2, 2006" }}.</p>
+  <p class="media-intro">Here's what I'm reading and bookmarking, updated {{ now.Format "January 2, 2006" }}.</p>
 
-  {{ .Content }}
+  <!-- Reading Section - Currently Reading -->
+  {{ with .Site.Data.bookshelves.currentlyreading }}
+  <section class="media-section">
+    <h2>Currently Reading</h2>
+    <div class="media-grid">
+      {{ range . }}
+      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
+        <div class="media-cover">
+          {{ with .cover_url }}
+          <img src="{{ . }}" alt="{{ $.title }} cover" loading="lazy">
+          {{ end }}
+        </div>
+        <div class="media-info">
+          <span class="media-title">{{ .title }}</span>
+          <span class="media-artist">{{ .author }}</span>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  <!-- Reading Section - Finished Reading -->
+  {{ with .Site.Data.bookshelves.finishedreading }}
+  <section class="media-section">
+    <h2>Recently Finished</h2>
+    <div class="media-grid">
+      {{ range first 6 . }}
+      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
+        <div class="media-cover">
+          {{ with .cover_url }}
+          <img src="{{ . }}" alt="{{ $.title }} cover" loading="lazy">
+          {{ end }}
+        </div>
+        <div class="media-info">
+          <span class="media-title">{{ .title }}</span>
+          <span class="media-artist">{{ .author }}</span>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  <!--
+    Bookmarks Section
+    To display bookmarks, add this to your Media page content in micro.blog:
+
+    {{</* bookmarks */>}}
+    {{ range .items }}
+    <div class="bookmark-item">
+      <span class="bookmark-emoji">🔗</span>
+      <a href="{{ .url }}" target="_blank" rel="noopener">{{ with urls.Parse .url }}{{ .Host }}{{ end }} — {{ .content_html | plainify | truncate 60 }}</a>
+    </div>
+    {{ end }}
+    {{</* /bookmarks */>}}
+  -->
+  {{ with .Content }}
+  <section class="media-section">
+    <h2>Bookmarks</h2>
+    {{ . }}
+  </section>
+  {{ end }}
 </div>
 {{ end }}
