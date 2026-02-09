@@ -14,5 +14,27 @@
     </div>
     {{ end }}
   </div>
+
+  <!-- Reading Section -->
+  {{ with .Site.Data.bookshelves.currentlyreading }}
+  <section class="media-section">
+    <h2>Currently Reading</h2>
+    <div class="media-grid">
+      {{ range . }}
+      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
+        <div class="media-cover">
+          {{ with .cover_url }}
+          <img src="{{ . }}" alt="{{ $.title }} cover" loading="lazy">
+          {{ end }}
+        </div>
+        <div class="media-info">
+          <span class="media-title">{{ .title }}</span>
+          <span class="media-artist">{{ .author }}</span>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
 </div>
 {{ end }}
