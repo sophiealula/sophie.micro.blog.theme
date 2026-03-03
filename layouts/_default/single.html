@@ -49,7 +49,7 @@
     }
     list.innerHTML = items.map(item => {
       const date = new Date(item.date_published);
-      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
       const url = item.url || item.external_url || '#';
       // Extract title from content_html by stripping the source link
       var doc = new DOMParser().parseFromString(item.content_html || '<p></p>', 'text/html');
@@ -227,8 +227,15 @@
 
   <section class="media-section">
     <h2><em>Posts</em></h2>
-    <div class="thoughts-list" id="thoughts-list">
+    <div class="thoughts-list" id="posts-list">
       <p class="loading">Loading posts...</p>
+    </div>
+  </section>
+
+  <section class="media-section">
+    <h2><em>Notes</em></h2>
+    <div class="thoughts-list" id="notes-list">
+      <p class="loading">Loading notes...</p>
     </div>
   </section>
 
@@ -242,29 +249,50 @@
 
 <script>
 (function() {
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function hasTag(item, tag) {
+    if (!item.tags) return false;
+    if (Array.isArray(item.tags)) return item.tags.some(t => t.toLowerCase() === tag);
+    if (typeof item.tags === 'string') return item.tags.toLowerCase().split(',').map(t => t.trim()).includes(tag);
+    return false;
+  }
+
+  function renderList(el, items, max) {
+    if (items.length === 0) {
+      el.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
+      return;
+    }
+    el.innerHTML = items.slice(0, max).map(item => {
+      var title = item.title || item.content_text?.slice(0, 100) || '';
+      var url = item.url || '#';
+      return '<a href="' + url + '" class="thoughts-item">' +
+        '<span class="thoughts-date">' + fmtDate(item.date_published) + '</span>' +
+        '<span class="thoughts-title">' + title + '</span>' +
+        '</a>';
+    }).join('');
+  }
+
   fetch('https://sophiealula.micro.blog/feed.json')
   .then(r => r.json())
   .then(data => {
-    var items = (data.items || []).slice(0, 50);
+    var items = data.items || [];
 
-    // Posts list
-    var container = document.getElementById('thoughts-list');
-    if (items.length === 0) {
-      container.innerHTML = '<p class="empty-state">No posts yet.</p>';
-    } else {
-      container.innerHTML = items.map(item => {
-        var date = new Date(item.date_published);
-        var dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        var title = item.title || item.content_text?.slice(0, 100) || '';
-        var url = item.url || '#';
-        return '<a href="' + url + '" class="thoughts-item">' +
-          '<span class="thoughts-date">' + dateStr + '</span>' +
-          '<span class="thoughts-title">' + title + '</span>' +
-          '</a>';
-      }).join('');
-    }
+    // Posts — items in "posts" category
+    var posts = items.filter(item => hasTag(item, 'posts'));
+    renderList(document.getElementById('posts-list'), posts, 5);
 
-    // Photos grid — extract images from posts
+    // Notes — items tagged "notes"
+    var notes = items.filter(item => hasTag(item, 'notes'));
+    renderList(document.getElementById('notes-list'), notes, 5);
+
+    // Photos — extract images from all posts
     var photosGrid = document.getElementById('photos-grid');
     var photos = [];
     items.forEach(item => {
@@ -287,7 +315,8 @@
     }
   })
   .catch(() => {
-    document.getElementById('thoughts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
+    document.getElementById('posts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
+    document.getElementById('notes-list').innerHTML = '<p class="empty-state">Could not load notes.</p>';
     document.getElementById('photos-grid').innerHTML = '<p class="empty-state">Could not load photos.</p>';
   });
 })();

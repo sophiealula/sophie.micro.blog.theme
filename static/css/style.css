@@ -579,7 +579,7 @@ main {
   color: var(--text-muted);
   font-size: 0.9rem;
   flex-shrink: 0;
-  width: 60px;
+  width: 90px;
 }
 
 .bookmark-emoji {
@@ -1359,7 +1359,7 @@ body:has(.about-page) main {
   font-family: var(--font-sans);
   font-style: italic;
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 0.9rem;
   flex-shrink: 0;
   width: 100px;
 }
