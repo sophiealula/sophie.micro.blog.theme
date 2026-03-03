@@ -13,16 +13,16 @@
   </section>
 
   <section class="media-section">
-    <h2><em>Currently Reading</em></h2>
+    <h2><em>Reading</em></h2>
     <div class="media-grid" id="reading-list">
-      <div class="media-card loading"></div>
+      <div class="media-card loading"><div class="media-cover"></div></div>
     </div>
   </section>
 
   <section class="media-section">
-    <h2><em>Recently Listened</em></h2>
+    <h2><em>Listening</em></h2>
     <div class="media-grid" id="listening-list">
-      <div class="media-card loading"></div>
+      <div class="media-card loading"><div class="media-cover"></div></div>
     </div>
   </section>
 </div>
@@ -54,6 +54,7 @@
       const title = item.title || item.content_text?.slice(0, 80) || 'Untitled';
       return '<li class="bookmark-item">' +
         '<span class="bookmark-date">' + dateStr + '</span>' +
+        '<span class="bookmark-emoji">\u{1F517}</span>' +
         '<a href="' + url + '" target="_blank" rel="noopener">' + title + '</a>' +
         '</li>';
     }).join('');
@@ -134,40 +135,49 @@
 {{ else if eq .Title "Contact" }}
 <!-- ===================== CONTACT PAGE ===================== -->
 <div class="contact-page">
-  <h1 class="contact-heading">Let's <em>talk</em></h1>
-  <p class="contact-intro">Have a question or just want to say hi? Drop me a message below.</p>
+  <h1 class="contact-heading">Let's <em>chat</em></h1>
+  <p class="contact-intro">Always open to interesting conversations.</p>
 
   <div class="terminal">
     <div class="terminal-header">
-      <span class="terminal-dot red"></span>
-      <span class="terminal-dot yellow"></span>
-      <span class="terminal-dot green"></span>
-      <span class="terminal-title">sophie@blog ~ %</span>
+      <div class="terminal-buttons">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+      </div>
+      <span class="terminal-title">contact.sh</span>
     </div>
     <div class="terminal-body">
       <form class="terminal-form" id="contact-form" action="https://formspree.io/f/mlggrovy" method="POST">
         <div class="terminal-line">
-          <span class="terminal-prompt">→</span>
-          <label for="name">name</label>
+          <span class="terminal-prompt">$</span>
+          <label for="name">name:</label>
           <input type="text" id="name" name="name" placeholder="your name" required>
         </div>
         <div class="terminal-line">
-          <span class="terminal-prompt">→</span>
-          <label for="email">email</label>
-          <input type="email" id="email" name="email" placeholder="you@email.com" required>
+          <span class="terminal-prompt">$</span>
+          <label for="email">email:</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
         </div>
         <div class="terminal-line terminal-line-textarea">
-          <span class="terminal-prompt">→</span>
-          <label for="message">message</label>
-          <textarea id="message" name="message" placeholder="what's on your mind?" rows="4" required></textarea>
+          <span class="terminal-prompt">$</span>
+          <label for="message">message:</label>
+          <textarea id="message" name="message" placeholder="what's on your mind?" rows="3" required></textarea>
         </div>
-        <div class="terminal-submit">
-          <button type="submit">send_message()</button>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <button type="submit" class="terminal-submit">send_message --to sophie</button>
         </div>
       </form>
-      <div class="terminal-success" id="contact-success" style="display: none;">
-        <span class="terminal-prompt">→</span>
-        <span style="color: #27ca40; font-family: 'SF Mono', monospace; font-size: 15px;">Message sent! I'll get back to you soon.</span>
+      <div id="contact-success" class="terminal-success" style="display: none;">
+        <div class="terminal-line">
+          <span class="terminal-prompt" style="color: #27ca40;">&#10003;</span>
+          <span style="color: #27ca40;">Message sent successfully!</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span style="color: #888;">I'll get back to you soon.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -178,11 +188,12 @@
   var form = document.getElementById('contact-form');
   form.addEventListener('submit', function(e) {
     e.preventDefault();
-    var btn = form.querySelector('button');
+    var btn = form.querySelector('.terminal-submit');
+    var originalText = btn.textContent;
     btn.textContent = 'sending...';
     btn.disabled = true;
 
-    fetch(form.action, {
+    fetch('https://formspree.io/f/mlggrovy', {
       method: 'POST',
       body: new FormData(form),
       headers: { 'Accept': 'application/json' }
@@ -190,17 +201,15 @@
     .then(function(r) {
       if (r.ok) {
         form.style.display = 'none';
-        document.getElementById('contact-success').style.display = 'flex';
+        document.getElementById('contact-success').style.display = 'block';
       } else {
-        btn.textContent = 'send_message()';
+        btn.textContent = 'error - try again';
         btn.disabled = false;
-        alert('Something went wrong. Try again?');
       }
     })
     .catch(function() {
-      btn.textContent = 'send_message()';
+      btn.textContent = 'error - try again';
       btn.disabled = false;
-      alert('Something went wrong. Try again?');
     });
   });
 })();
