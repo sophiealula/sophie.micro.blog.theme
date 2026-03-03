@@ -49,9 +49,14 @@
     }
     list.innerHTML = items.map(item => {
       const date = new Date(item.date_published);
-      const dateStr = (date.getMonth() + 1) + '/' + date.getDate();
+      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const url = item.url || item.external_url || '#';
-      const title = item.title || item.content_text?.slice(0, 80) || 'Untitled';
+      // Extract title from content_html by stripping the source link
+      var doc = new DOMParser().parseFromString(item.content_html || '<p></p>', 'text/html');
+      var p = doc.querySelector('p');
+      var link = p ? p.querySelector('a') : null;
+      if (link) link.remove();
+      const title = (p ? p.textContent.trim() : '') || item.title || 'Untitled';
       return '<li class="bookmark-item">' +
         '<span class="bookmark-date">' + dateStr + '</span>' +
         '<span class="bookmark-emoji">\u{1F517}</span>' +
