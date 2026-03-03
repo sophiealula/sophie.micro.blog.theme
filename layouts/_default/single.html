@@ -220,7 +220,7 @@
 <div class="thoughts-page">
   <h1 class="page-title">Thoughts</h1>
   <p class="thoughts-intro">Short posts, links, and things on my mind.</p>
-  <div id="thoughts-list">
+  <div class="thoughts-list" id="thoughts-list">
     <p class="loading">Loading posts...</p>
   </div>
 </div>
@@ -238,7 +238,7 @@
     }
     container.innerHTML = items.map(item => {
       var date = new Date(item.date_published);
-      var dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      var dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       var title = item.title || item.content_text?.slice(0, 100) || '';
       var url = item.url || '#';
       return '<a href="' + url + '" class="thoughts-item">' +
