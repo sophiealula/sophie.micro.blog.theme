@@ -1332,25 +1332,9 @@ body:has(.about-page) main {
   margin: 0 auto;
 }
 
-.thoughts-page .page-title {
-  font-family: var(--font-sans);
-  font-size: 36px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  margin-bottom: var(--space-xs);
-}
-
-.thoughts-intro {
-  font-size: 17px;
-  line-height: 27px;
-  color: var(--text-muted);
-  margin-bottom: 3rem;
-}
-
 .thoughts-list {
   display: flex;
   flex-direction: column;
-  margin-top: 3rem;
 }
 
 .thoughts-item {
@@ -1388,23 +1372,44 @@ body:has(.about-page) main {
   color: var(--text);
 }
 
+/* Photos Grid */
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.photo-item {
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  transition: opacity 0.2s ease;
+}
+
+.photo-item::after {
+  display: none;
+}
+
+.photo-item:hover {
+  opacity: 0.85;
+}
+
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* Thoughts Responsive */
 @media (max-width: 768px) {
-  .thoughts-page .page-title {
-    font-size: 28px;
-  }
-
-  .thoughts-intro {
-    font-size: 16px;
-    line-height: 26px;
+  .photos-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
-  .thoughts-page .page-title {
-    font-size: 24px;
-  }
-
   .thoughts-item {
     flex-direction: column;
     gap: 2px;
@@ -1412,5 +1417,10 @@ body:has(.about-page) main {
 
   .thoughts-date {
     width: auto;
+  }
+
+  .photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
   }
 }

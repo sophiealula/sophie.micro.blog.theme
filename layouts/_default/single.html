@@ -223,11 +223,21 @@
 {{ else if eq .Title "Thoughts" }}
 <!-- ===================== THOUGHTS PAGE ===================== -->
 <div class="thoughts-page">
-  <h1 class="page-title">Thoughts</h1>
-  <p class="thoughts-intro">Short posts, links, and things on my mind.</p>
-  <div class="thoughts-list" id="thoughts-list">
-    <p class="loading">Loading posts...</p>
-  </div>
+  <p class="media-intro">Here you'll find longer form blog posts and short form notes. You can also just see <a href="#photos">photos</a>.</p>
+
+  <section class="media-section">
+    <h2><em>Posts</em></h2>
+    <div class="thoughts-list" id="thoughts-list">
+      <p class="loading">Loading posts...</p>
+    </div>
+  </section>
+
+  <section class="media-section" id="photos">
+    <h2><em>Photos</em></h2>
+    <div class="photos-grid" id="photos-grid">
+      <p class="loading">Loading photos...</p>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -235,25 +245,50 @@
   fetch('https://sophiealula.micro.blog/feed.json')
   .then(r => r.json())
   .then(data => {
+    var items = (data.items || []).slice(0, 50);
+
+    // Posts list
     var container = document.getElementById('thoughts-list');
-    var items = (data.items || []).slice(0, 30);
     if (items.length === 0) {
       container.innerHTML = '<p class="empty-state">No posts yet.</p>';
-      return;
+    } else {
+      container.innerHTML = items.map(item => {
+        var date = new Date(item.date_published);
+        var dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        var title = item.title || item.content_text?.slice(0, 100) || '';
+        var url = item.url || '#';
+        return '<a href="' + url + '" class="thoughts-item">' +
+          '<span class="thoughts-date">' + dateStr + '</span>' +
+          '<span class="thoughts-title">' + title + '</span>' +
+          '</a>';
+      }).join('');
     }
-    container.innerHTML = items.map(item => {
-      var date = new Date(item.date_published);
-      var dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      var title = item.title || item.content_text?.slice(0, 100) || '';
-      var url = item.url || '#';
-      return '<a href="' + url + '" class="thoughts-item">' +
-        '<span class="thoughts-date">' + dateStr + '</span>' +
-        '<span class="thoughts-title">' + title + '</span>' +
-        '</a>';
-    }).join('');
+
+    // Photos grid — extract images from posts
+    var photosGrid = document.getElementById('photos-grid');
+    var photos = [];
+    items.forEach(item => {
+      var html = item.content_html || '';
+      var imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
+      var match;
+      while ((match = imgRegex.exec(html)) !== null) {
+        photos.push({ src: match[1], url: item.url || '#' });
+      }
+    });
+
+    if (photos.length === 0) {
+      photosGrid.innerHTML = '<p class="empty-state">No photos yet.</p>';
+    } else {
+      photosGrid.innerHTML = photos.slice(0, 20).map(photo => {
+        return '<a href="' + photo.url + '" class="photo-item" target="_blank" rel="noopener">' +
+          '<img src="' + photo.src + '" loading="lazy" alt="">' +
+          '</a>';
+      }).join('');
+    }
   })
   .catch(() => {
     document.getElementById('thoughts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
+    document.getElementById('photos-grid').innerHTML = '<p class="empty-state">Could not load photos.</p>';
   });
 })();
 </script>
