@@ -91,7 +91,7 @@ em {
 
 a {
   color: var(--text);
-  font-weight: 500;
+  font-weight: inherit;
   text-decoration: none;
   position: relative;
   display: inline;
