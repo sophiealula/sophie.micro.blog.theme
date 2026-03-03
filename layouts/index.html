@@ -15,42 +15,5 @@
     {{ end }}
   </div>
 
-  <!-- Reading Section (JS-powered) -->
-  <section class="media-section" id="homepage-reading" style="display: none;">
-    <h2>Currently Reading</h2>
-    <div class="media-grid" id="homepage-reading-list"></div>
-  </section>
 </div>
-
-<script>
-(function() {
-  fetch('https://micro.blog/books/bookshelves/29981', {
-    headers: { 'Authorization': 'Bearer 0FDAA2CD89BE2BA239CF' }
-  })
-  .then(r => r.json())
-  .then(data => {
-    var books = data.items || [];
-    if (books.length === 0) return;
-    var section = document.getElementById('homepage-reading');
-    var grid = document.getElementById('homepage-reading-list');
-    section.style.display = 'block';
-    grid.innerHTML = books.map(function(book) {
-      var cover = book.image || '';
-      var title = book.title || 'Untitled';
-      var author = book.authors ? book.authors.map(function(a) { return a.name; }).join(', ') : '';
-      var isbn = book._microblog ? book._microblog.isbn : '';
-      var href = isbn ? 'https://micro.blog/books/' + isbn : '#';
-      return '<a href="' + href + '" class="media-card" target="_blank" rel="noopener">' +
-        '<div class="media-cover">' +
-        (cover ? '<img src="' + cover + '" alt="' + title + ' cover" loading="lazy">' : '') +
-        '</div>' +
-        '<div class="media-info">' +
-        '<span class="media-title">' + title + '</span>' +
-        '<span class="media-artist">' + author + '</span>' +
-        '</div></a>';
-    }).join('');
-  })
-  .catch(function() {});
-})();
-</script>
 {{ end }}
