@@ -652,6 +652,26 @@ main {
   color: var(--text);
 }
 
+/* Loading state */
+.loading {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 15px;
+}
+
+.media-card.loading {
+  width: 140px;
+  height: 180px;
+  background: var(--border);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.3; }
+}
+
 /* Empty state */
 .media-section:empty,
 .media-grid:empty {
@@ -709,7 +729,9 @@ main {
 .post.single:has(.contact-page) > .post-title,
 .post.single:has(.contact-page) > .post-meta,
 .post.single:has(.now-page) > .post-title,
-.post.single:has(.media-page) > .post-title {
+.post.single:has(.media-page) > .post-title,
+.post.single:has(.thoughts-page) > .post-title,
+.post.single:has(.thoughts-page) > .post-meta {
   display: none;
 }
 
@@ -922,12 +944,39 @@ main {
   outline: none;
 }
 
-.terminal-line input::placeholder {
+.terminal-line input::placeholder,
+.terminal-line textarea::placeholder {
   color: #666;
 }
 
-.terminal-line input:focus {
+.terminal-line input:focus,
+.terminal-line textarea:focus {
   color: #fff;
+}
+
+.terminal-line textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.terminal-line-textarea {
+  align-items: flex-start;
+}
+
+.terminal-success {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+  font-size: 15px;
+  padding: var(--space-sm) 0;
 }
 
 .terminal-submit {
@@ -1122,5 +1171,103 @@ main {
 @media (max-width: 480px) {
   .now-date {
     font-size: 24px;
+  }
+}
+
+/* ===========================================
+   Thoughts Page
+   =========================================== */
+
+.thoughts-page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.thoughts-page .page-title {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-xs);
+}
+
+.thoughts-intro {
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.thoughts-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  transition: opacity 0.2s ease;
+}
+
+.thoughts-item::after {
+  display: none;
+}
+
+.thoughts-item:hover {
+  opacity: 0.7;
+}
+
+.thoughts-item:last-child {
+  border-bottom: none;
+}
+
+.thoughts-date {
+  font-size: 14px;
+  color: var(--text-muted);
+  min-width: 90px;
+  flex-shrink: 0;
+  font-weight: 400;
+}
+
+.thoughts-title {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* Thoughts Responsive */
+@media (max-width: 768px) {
+  .thoughts-page .page-title {
+    font-size: 28px;
+  }
+
+  .thoughts-intro {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .thoughts-date {
+    min-width: 75px;
+    font-size: 13px;
+  }
+
+  .thoughts-title {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .thoughts-page .page-title {
+    font-size: 24px;
+  }
+
+  .thoughts-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .thoughts-date {
+    min-width: auto;
   }
 }
