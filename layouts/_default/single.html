@@ -223,7 +223,7 @@
 {{ else if eq .Title "Thoughts" }}
 <!-- ===================== THOUGHTS PAGE ===================== -->
 <div class="thoughts-page">
-  <p class="media-intro">Here you'll find longer form blog posts and short form notes. You can also just see <a href="#photos">photos</a>.</p>
+  <p class="media-intro">Here you'll find longer form blog posts and short form notes. You can also just see <a href="/photos/">photos</a>.</p>
 
   <section class="media-section">
     <h2><em>Posts</em></h2>
@@ -236,13 +236,6 @@
     <h2><em>Notes</em></h2>
     <div class="thoughts-list" id="notes-list">
       <p class="loading">Loading notes...</p>
-    </div>
-  </section>
-
-  <section class="media-section" id="photos">
-    <h2><em>Photos</em></h2>
-    <div class="photos-grid" id="photos-grid">
-      <p class="loading">Loading photos...</p>
     </div>
   </section>
 </div>
@@ -283,16 +276,33 @@
   .then(r => r.json())
   .then(data => {
     var items = data.items || [];
-
-    // Posts — items in "posts" category
     var posts = items.filter(item => hasTag(item, 'posts'));
     renderList(document.getElementById('posts-list'), posts, 5);
-
-    // Notes — items tagged "notes"
     var notes = items.filter(item => hasTag(item, 'notes'));
     renderList(document.getElementById('notes-list'), notes, 5);
+  })
+  .catch(() => {
+    document.getElementById('posts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
+    document.getElementById('notes-list').innerHTML = '<p class="empty-state">Could not load notes.</p>';
+  });
+})();
+</script>
 
-    // Photos — extract images from all posts
+{{ else if eq .Title "Photos" }}
+<!-- ===================== PHOTOS PAGE ===================== -->
+<div class="thoughts-page">
+  <p class="media-intro">A gallery of photos from my posts.</p>
+  <div class="photos-grid" id="photos-grid">
+    <p class="loading">Loading photos...</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(r => r.json())
+  .then(data => {
+    var items = data.items || [];
     var photosGrid = document.getElementById('photos-grid');
     var photos = [];
     items.forEach(item => {
@@ -303,11 +313,10 @@
         photos.push({ src: match[1], url: item.url || '#' });
       }
     });
-
     if (photos.length === 0) {
       photosGrid.innerHTML = '<p class="empty-state">No photos yet.</p>';
     } else {
-      photosGrid.innerHTML = photos.slice(0, 20).map(photo => {
+      photosGrid.innerHTML = photos.slice(0, 30).map(photo => {
         return '<a href="' + photo.url + '" class="photo-item" target="_blank" rel="noopener">' +
           '<img src="' + photo.src + '" loading="lazy" alt="">' +
           '</a>';
@@ -315,8 +324,6 @@
     }
   })
   .catch(() => {
-    document.getElementById('posts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
-    document.getElementById('notes-list').innerHTML = '<p class="empty-state">Could not load notes.</p>';
     document.getElementById('photos-grid').innerHTML = '<p class="empty-state">Could not load photos.</p>';
   });
 })();
