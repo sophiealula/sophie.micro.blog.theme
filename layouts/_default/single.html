@@ -253,6 +253,12 @@
 })();
 </script>
 
+{{ else if eq .Title "About" }}
+<!-- ===================== ABOUT PAGE ===================== -->
+<div class="about-page">
+  {{ .Content }}
+</div>
+
 {{ else }}
 <!-- ===================== DEFAULT POST ===================== -->
 <article class="post single">
