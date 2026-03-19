@@ -1,10 +1,10 @@
 <header class="site-header">
   <nav class="site-nav">
     <a href="{{ .Site.BaseURL }}about/" class="nav-link{{ if eq .RelPermalink "/about/" }} active{{ end }}">About</a>
+    <a href="{{ .Site.BaseURL }}lab/" class="nav-link{{ if eq .Title "Lab" }} active{{ end }}">Lab</a>
     <a href="{{ .Site.BaseURL }}" class="nav-link{{ if .IsHome }} active{{ end }}">
       <span class="nav-dot"></span>Now
     </a>
-    <a href="{{ .Site.BaseURL }}thoughts/" class="nav-link{{ if eq .Title "Thoughts" }} active{{ end }}">Thoughts</a>
     <a href="{{ .Site.BaseURL }}media/" class="nav-link{{ if eq .Title "Media" }} active{{ end }}">Media</a>
     <a href="{{ .Site.BaseURL }}contact/" class="nav-link{{ if eq .Title "Contact" }} active{{ end }}">Contact</a>
   </nav>
