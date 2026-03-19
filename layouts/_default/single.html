@@ -220,6 +220,37 @@
 })();
 </script>
 
+{{ else if eq .Title "Lab" }}
+<!-- ===================== LAB PAGE ===================== -->
+<div class="lab-page">
+  <p class="lab-intro">Things I've built for fun or out of frustration.</p>
+
+  {{ $building := where .Site.RegularPages "Params.categories" "intersect" (slice "Building") }}
+
+  {{ if $building }}
+  <div class="building-list">
+    {{ range $building }}
+    <a href="{{ .Permalink }}" class="building-card">
+      {{ $img := "" }}
+      {{ $content := .Content }}
+      {{ $imgTag := index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
+      {{ with $imgTag }}
+        {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
+      {{ end }}
+      <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
+      </div>
+      <div class="building-info">
+        <h3>{{ .Title }}</h3>
+        <span class="building-date">{{ .Date.Format "Jan 2006" }}</span>
+      </div>
+    </a>
+    {{ end }}
+  </div>
+  {{ else }}
+  <p class="empty-state">Nothing here yet.</p>
+  {{ end }}
+</div>
+
 {{ else if eq .Title "Thoughts" }}
 <!-- ===================== THOUGHTS PAGE ===================== -->
 <div class="thoughts-page">
@@ -336,6 +367,42 @@
 </div>
 
 {{ else }}
+
+{{ $isBuilding := false }}
+{{ with .Params.categories }}
+  {{ if intersect . (slice "Building") }}
+    {{ $isBuilding = true }}
+  {{ end }}
+{{ end }}
+
+{{ if $isBuilding }}
+<!-- ===================== BUILDING DETAIL ===================== -->
+<div class="building-detail">
+  <a href="{{ .Site.BaseURL }}lab/" class="back-link">← Lab</a>
+
+  <div class="detail-header">
+    <h1>{{ .Title }}</h1>
+    <span class="detail-date">{{ .Date.Format "January 2006" }}</span>
+  </div>
+
+  {{ $content := .Content }}
+  {{ $imgMatch := findRE `<img[^>]+src="([^"]+)"[^>]*>` $content 1 }}
+  {{ with $imgMatch }}
+  <div class="detail-hero">
+    {{ index . 0 | safeHTML }}
+  </div>
+  {{ end }}
+
+  <div class="detail-content">
+    {{ $contentNoFirstImg := $content }}
+    {{ with $imgMatch }}
+      {{ $contentNoFirstImg = replace $contentNoFirstImg (index $imgMatch 0) "" }}
+    {{ end }}
+    {{ $contentNoFirstImg | safeHTML }}
+  </div>
+</div>
+
+{{ else }}
 <!-- ===================== DEFAULT POST ===================== -->
 <article class="post single">
   {{ if .Title }}
@@ -350,6 +417,8 @@
     </time>
   </div>
 </article>
+{{ end }}
+
 {{ end }}
 
 {{ end }}
