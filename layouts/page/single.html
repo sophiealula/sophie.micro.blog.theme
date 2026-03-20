@@ -1,0 +1,325 @@
+{{ define "main" }}
+
+{{ if eq .Title "About" }}
+<!-- ===================== ABOUT PAGE ===================== -->
+<div class="about-page">
+  <div class="about-layout">
+    <div class="about-image">
+      {{ with .Params.photo }}
+      <img src="{{ . }}" alt="{{ $.Site.Title }}" class="about-photo">
+      {{ else }}
+      <img src="{{ "images/profile.jpg" | relURL }}" alt="{{ .Site.Title }}" class="about-photo">
+      {{ end }}
+    </div>
+    <div class="about-content">
+      {{ .Content }}
+    </div>
+  </div>
+</div>
+
+{{ else if eq .Title "Now" }}
+<!-- ===================== NOW PAGE ===================== -->
+<div class="now-page">
+  <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/">Harper</a>, who was inspired by <a href="https://nownownow.com">nownownow.com</a>, and so on.</p>
+
+  <h1 class="now-date">Now @ {{ now.Format "January 2, 2006" }}</h1>
+
+  <div class="now-content">
+    <div class="now-post">
+      {{ .Content }}
+    </div>
+  </div>
+</div>
+
+{{ else if eq .Title "Media" }}
+<!-- ===================== MEDIA PAGE ===================== -->
+<div class="media-page">
+  <p class="media-intro">Here's what I'm reading and bookmarking, updated {{ now.Format "January 2, 2006" }}.</p>
+
+  {{ with .Site.Data.bookshelves.reading }}
+  <section class="media-section">
+    <h2>Currently Reading</h2>
+    <div class="media-grid">
+      {{ range . }}
+      {{ $book := . }}
+      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
+        <div class="media-cover">
+          {{ with .cover_url }}
+          <img src="{{ . }}" alt="{{ $book.title }} cover" loading="lazy">
+          {{ end }}
+        </div>
+        <div class="media-info">
+          <span class="media-title">{{ .title }}</span>
+          <span class="media-artist">{{ .author }}</span>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  {{ with .Site.Data.bookshelves.finished }}
+  <section class="media-section">
+    <h2>Recently Finished</h2>
+    <div class="media-grid">
+      {{ range first 6 . }}
+      {{ $book := . }}
+      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
+        <div class="media-cover">
+          {{ with .cover_url }}
+          <img src="{{ . }}" alt="{{ $book.title }} cover" loading="lazy">
+          {{ end }}
+        </div>
+        <div class="media-info">
+          <span class="media-title">{{ .title }}</span>
+          <span class="media-artist">{{ .author }}</span>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  {{ with .Content }}
+  <section class="media-section">
+    <h2>Bookmarks</h2>
+    {{ . }}
+  </section>
+  {{ end }}
+</div>
+
+{{ else if eq .Title "Contact" }}
+<!-- ===================== CONTACT PAGE ===================== -->
+<div class="contact-page">
+  <h1 class="contact-heading">Let's <em>chat</em></h1>
+  <p class="contact-intro">Always open to interesting conversations.</p>
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <div class="terminal-buttons">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+      </div>
+      <span class="terminal-title">contact.sh</span>
+    </div>
+    <div class="terminal-body">
+      <form class="terminal-form" id="contact-form" action="https://formspree.io/f/{{ .Site.Params.formspree_id | default "mlggrovy" }}" method="POST">
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label for="name">name:</label>
+          <input type="text" id="name" name="name" placeholder="your name" required>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label for="email">email:</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="terminal-line terminal-line-textarea">
+          <span class="terminal-prompt">$</span>
+          <label for="message">message:</label>
+          <textarea id="message" name="message" placeholder="what's on your mind?" rows="3" required></textarea>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <button type="submit" class="terminal-submit">send_message --to sophie</button>
+        </div>
+      </form>
+      <div id="contact-success" class="terminal-success" style="display: none;">
+        <div class="terminal-line">
+          <span class="terminal-prompt" style="color: #27ca40;">&#10003;</span>
+          <span style="color: #27ca40;">Message sent successfully!</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span style="color: #888;">I'll get back to you soon.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var form = document.getElementById('contact-form');
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = form.querySelector('.terminal-submit');
+    btn.textContent = 'sending...';
+    btn.disabled = true;
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function(r) {
+      if (r.ok) {
+        form.style.display = 'none';
+        document.getElementById('contact-success').style.display = 'block';
+      } else {
+        btn.textContent = 'error - try again';
+        btn.disabled = false;
+      }
+    })
+    .catch(function() {
+      btn.textContent = 'error - try again';
+      btn.disabled = false;
+    });
+  });
+})();
+</script>
+
+{{ else if eq .Title "Lab" }}
+<!-- ===================== LAB PAGE ===================== -->
+<div class="lab-page">
+  <p class="lab-intro">Things I've built for fun or out of frustration.</p>
+
+  {{ $building := where .Site.RegularPages "Params.categories" "intersect" (slice "Building") }}
+
+  {{ if $building }}
+  <div class="building-list">
+    {{ range $building }}
+    <a href="{{ .Permalink }}" class="building-card">
+      {{ $img := "" }}
+      {{ $content := .Content }}
+      {{ $imgTag := index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
+      {{ with $imgTag }}
+        {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
+      {{ end }}
+      <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
+      </div>
+      <div class="building-info">
+        <h3>{{ .Title }}</h3>
+        <span class="building-date">{{ .Date.Format "Jan 2006" }}</span>
+      </div>
+    </a>
+    {{ end }}
+  </div>
+  {{ else }}
+  <p class="empty-state">Nothing here yet.</p>
+  {{ end }}
+</div>
+
+{{ else if eq .Title "Thoughts" }}
+<!-- ===================== THOUGHTS PAGE ===================== -->
+<div class="thoughts-page">
+  <p class="media-intro">Here you'll find longer form blog posts and short form notes. You can also just see <a href="/photos/"><strong>photos</strong></a>.</p>
+
+  <section class="media-section">
+    <h2><em>Posts</em></h2>
+    <div class="thoughts-list" id="posts-list">
+      <p class="loading">Loading posts...</p>
+    </div>
+  </section>
+
+  <section class="media-section">
+    <h2><em>Notes</em></h2>
+    <div class="thoughts-list" id="notes-list">
+      <p class="loading">Loading notes...</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function() {
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function hasTag(item, tag) {
+    if (!item.tags) return false;
+    if (Array.isArray(item.tags)) return item.tags.some(t => t.toLowerCase() === tag);
+    if (typeof item.tags === 'string') return item.tags.toLowerCase().split(',').map(t => t.trim()).includes(tag);
+    return false;
+  }
+
+  function renderList(el, items, max) {
+    if (items.length === 0) {
+      el.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
+      return;
+    }
+    el.innerHTML = items.slice(0, max).map(item => {
+      var title = item.title || item.content_text?.slice(0, 100) || '';
+      var url = item.url || '#';
+      return '<a href="' + url + '" class="thoughts-item">' +
+        '<span class="thoughts-date">' + fmtDate(item.date_published) + '</span>' +
+        '<span class="thoughts-title">' + title + '</span>' +
+        '</a>';
+    }).join('');
+  }
+
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(r => r.json())
+  .then(data => {
+    var items = data.items || [];
+    var posts = items.filter(item => hasTag(item, 'posts'));
+    renderList(document.getElementById('posts-list'), posts, 5);
+    var notes = items.filter(item => hasTag(item, 'notes'));
+    renderList(document.getElementById('notes-list'), notes, 5);
+  })
+  .catch(() => {
+    document.getElementById('posts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
+    document.getElementById('notes-list').innerHTML = '<p class="empty-state">Could not load notes.</p>';
+  });
+})();
+</script>
+
+{{ else if eq .Title "Photos" }}
+<!-- ===================== PHOTOS PAGE ===================== -->
+<div class="thoughts-page">
+  <p class="media-intro">A gallery of photos from my posts.</p>
+  <div class="photos-grid" id="photos-grid">
+    <p class="loading">Loading photos...</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(r => r.json())
+  .then(data => {
+    var items = data.items || [];
+    var photosGrid = document.getElementById('photos-grid');
+    var photos = [];
+    items.forEach(item => {
+      var html = item.content_html || '';
+      var imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
+      var match;
+      while ((match = imgRegex.exec(html)) !== null) {
+        photos.push({ src: match[1], url: item.url || '#' });
+      }
+    });
+    if (photos.length === 0) {
+      photosGrid.innerHTML = '<p class="empty-state">No photos yet.</p>';
+    } else {
+      photosGrid.innerHTML = photos.slice(0, 30).map(photo => {
+        return '<a href="' + photo.url + '" class="photo-item" target="_blank" rel="noopener">' +
+          '<img src="' + photo.src + '" loading="lazy" alt="">' +
+          '</a>';
+      }).join('');
+    }
+  })
+  .catch(() => {
+    document.getElementById('photos-grid').innerHTML = '<p class="empty-state">Could not load photos.</p>';
+  });
+})();
+</script>
+
+{{ else }}
+<!-- ===================== DEFAULT PAGE ===================== -->
+<article class="post single">
+  {{ if .Title }}
+  <h1 class="post-title">{{ .Title }}</h1>
+  {{ end }}
+  <div class="post-content">
+    {{ .Content }}
+  </div>
+</article>
+{{ end }}
+
+{{ end }}
