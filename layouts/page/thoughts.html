@@ -1,0 +1,67 @@
+{{ define "main" }}
+<div class="thoughts-page">
+  <p class="media-intro">Here you'll find longer form blog posts and short form notes. You can also just see <a href="/photos/"><strong>photos</strong></a>.</p>
+
+  <section class="media-section">
+    <h2><em>Posts</em></h2>
+    <div class="thoughts-list" id="posts-list">
+      <p class="loading">Loading posts...</p>
+    </div>
+  </section>
+
+  <section class="media-section">
+    <h2><em>Notes</em></h2>
+    <div class="thoughts-list" id="notes-list">
+      <p class="loading">Loading notes...</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function() {
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function hasTag(item, tag) {
+    if (!item.tags) return false;
+    if (Array.isArray(item.tags)) return item.tags.some(t => t.toLowerCase() === tag);
+    if (typeof item.tags === 'string') return item.tags.toLowerCase().split(',').map(t => t.trim()).includes(tag);
+    return false;
+  }
+
+  function renderList(el, items, max) {
+    if (items.length === 0) {
+      el.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
+      return;
+    }
+    el.innerHTML = items.slice(0, max).map(item => {
+      var title = item.title || item.content_text?.slice(0, 100) || '';
+      var url = item.url || '#';
+      return '<a href="' + url + '" class="thoughts-item">' +
+        '<span class="thoughts-date">' + fmtDate(item.date_published) + '</span>' +
+        '<span class="thoughts-title">' + title + '</span>' +
+        '</a>';
+    }).join('');
+  }
+
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(r => r.json())
+  .then(data => {
+    var items = data.items || [];
+    var posts = items.filter(item => hasTag(item, 'posts'));
+    renderList(document.getElementById('posts-list'), posts, 5);
+    var notes = items.filter(item => hasTag(item, 'notes'));
+    renderList(document.getElementById('notes-list'), notes, 5);
+  })
+  .catch(() => {
+    document.getElementById('posts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
+    document.getElementById('notes-list').innerHTML = '<p class="empty-state">Could not load notes.</p>';
+  });
+})();
+</script>
+{{ end }}

@@ -1,0 +1,40 @@
+{{ define "main" }}
+<div class="thoughts-page">
+  <p class="media-intro">A gallery of photos from my posts.</p>
+  <div class="photos-grid" id="photos-grid">
+    <p class="loading">Loading photos...</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(r => r.json())
+  .then(data => {
+    var items = data.items || [];
+    var photosGrid = document.getElementById('photos-grid');
+    var photos = [];
+    items.forEach(item => {
+      var html = item.content_html || '';
+      var imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
+      var match;
+      while ((match = imgRegex.exec(html)) !== null) {
+        photos.push({ src: match[1], url: item.url || '#' });
+      }
+    });
+    if (photos.length === 0) {
+      photosGrid.innerHTML = '<p class="empty-state">No photos yet.</p>';
+    } else {
+      photosGrid.innerHTML = photos.slice(0, 30).map(photo => {
+        return '<a href="' + photo.url + '" class="photo-item" target="_blank" rel="noopener">' +
+          '<img src="' + photo.src + '" loading="lazy" alt="">' +
+          '</a>';
+      }).join('');
+    }
+  })
+  .catch(() => {
+    document.getElementById('photos-grid').innerHTML = '<p class="empty-state">Could not load photos.</p>';
+  });
+})();
+</script>
+{{ end }}
