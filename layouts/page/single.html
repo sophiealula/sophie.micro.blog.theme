@@ -311,6 +311,42 @@
 </script>
 
 {{ else }}
+
+{{ $isBuilding := false }}
+{{ with .Params.categories }}
+  {{ if intersect . (slice "Building") }}
+    {{ $isBuilding = true }}
+  {{ end }}
+{{ end }}
+
+{{ if $isBuilding }}
+<!-- ===================== BUILDING DETAIL ===================== -->
+<div class="building-detail">
+  <a href="{{ .Site.BaseURL }}lab/" class="back-link">← Lab</a>
+
+  <div class="detail-header">
+    <h1>{{ .Title }}</h1>
+    <span class="detail-date">{{ .Date.Format "January 2006" }}</span>
+  </div>
+
+  {{ $content := .Content }}
+  {{ $imgMatch := findRE `<img[^>]+src="([^"]+)"[^>]*>` $content 1 }}
+  {{ with $imgMatch }}
+  <div class="detail-hero">
+    {{ index . 0 | safeHTML }}
+  </div>
+  {{ end }}
+
+  <div class="detail-content">
+    {{ $contentNoFirstImg := $content }}
+    {{ with $imgMatch }}
+      {{ $contentNoFirstImg = replace $contentNoFirstImg (index $imgMatch 0) "" }}
+    {{ end }}
+    {{ $contentNoFirstImg | safeHTML }}
+  </div>
+</div>
+
+{{ else }}
 <!-- ===================== DEFAULT PAGE ===================== -->
 <article class="post single">
   {{ if .Title }}
@@ -320,6 +356,8 @@
     {{ .Content }}
   </div>
 </article>
+{{ end }}
+
 {{ end }}
 
 {{ end }}
