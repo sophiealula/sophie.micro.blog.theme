@@ -44,59 +44,138 @@
 {{ else if eq .Title "Media" }}
 <!-- ===================== MEDIA PAGE ===================== -->
 <div class="media-page">
-  <p class="media-intro">Here's what I'm reading and bookmarking, updated {{ now.Format "January 2, 2006" }}.</p>
+  <p class="media-intro">Here's what I'm reading and listening to, updated <span id="last-updated"></span>.</p>
 
-  {{ with .Site.Data.bookshelves.reading }}
   <section class="media-section">
-    <h2>Currently Reading</h2>
-    <div class="media-grid">
-      {{ range . }}
-      {{ $book := . }}
-      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
-        <div class="media-cover">
-          {{ with .cover_url }}
-          <img src="{{ . }}" alt="{{ $book.title }} cover" loading="lazy">
-          {{ end }}
-        </div>
-        <div class="media-info">
-          <span class="media-title">{{ .title }}</span>
-          <span class="media-artist">{{ .author }}</span>
-        </div>
-      </a>
-      {{ end }}
+    <h2><em>Bookmarks</em></h2>
+    <ul class="bookmark-list" id="bookmarks-list">
+      <li class="loading">Loading bookmarks...</li>
+    </ul>
+  </section>
+
+  <section class="media-section">
+    <h2><em>Reading</em></h2>
+    <div class="media-grid" id="reading-list">
+      <div class="media-card loading"><div class="media-cover"></div></div>
     </div>
   </section>
-  {{ end }}
 
-  {{ with .Site.Data.bookshelves.finished }}
   <section class="media-section">
-    <h2>Recently Finished</h2>
-    <div class="media-grid">
-      {{ range first 6 . }}
-      {{ $book := . }}
-      <a href="https://micro.blog/books/{{ .isbn }}" class="media-card" target="_blank" rel="noopener">
-        <div class="media-cover">
-          {{ with .cover_url }}
-          <img src="{{ . }}" alt="{{ $book.title }} cover" loading="lazy">
-          {{ end }}
-        </div>
-        <div class="media-info">
-          <span class="media-title">{{ .title }}</span>
-          <span class="media-artist">{{ .author }}</span>
-        </div>
-      </a>
-      {{ end }}
+    <h2><em>Listening</em></h2>
+    <div class="media-grid" id="listening-list">
+      <div class="media-card loading"><div class="media-cover"></div></div>
     </div>
   </section>
-  {{ end }}
-
-  {{ with .Content }}
-  <section class="media-section">
-    <h2>Bookmarks</h2>
-    {{ . }}
-  </section>
-  {{ end }}
 </div>
+
+<script>
+(function() {
+  const MB_TOKEN = '0FDAA2CD89BE2BA239CF';
+  const LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
+  const LASTFM_USER = 'sophiealu';
+
+  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Bookmarks
+  fetch('https://micro.blog/posts/bookmarks', {
+    headers: { 'Authorization': 'Bearer ' + MB_TOKEN }
+  })
+  .then(r => r.json())
+  .then(data => {
+    const list = document.getElementById('bookmarks-list');
+    const items = (data.items || []).slice(0, 20);
+    if (items.length === 0) {
+      list.innerHTML = '<li class="empty-state">No bookmarks yet.</li>';
+      return;
+    }
+    list.innerHTML = items.map(item => {
+      const date = new Date(item.date_published);
+      const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+      const url = item.url || item.external_url || '#';
+      var doc = new DOMParser().parseFromString(item.content_html || '<p></p>', 'text/html');
+      var p = doc.querySelector('p');
+      var link = p ? p.querySelector('a') : null;
+      if (link) link.remove();
+      const title = (p ? p.textContent.trim() : '') || item.title || 'Untitled';
+      return '<li class="bookmark-item">' +
+        '<span class="bookmark-date">' + dateStr + '</span>' +
+        '<span class="bookmark-emoji">\u{1F517}</span>' +
+        '<a href="' + url + '" target="_blank" rel="noopener">' + title + '</a>' +
+        '</li>';
+    }).join('');
+  })
+  .catch(() => {
+    document.getElementById('bookmarks-list').innerHTML = '<li class="empty-state">Could not load bookmarks.</li>';
+  });
+
+  // Reading
+  fetch('https://micro.blog/books/bookshelves/29981', {
+    headers: { 'Authorization': 'Bearer ' + MB_TOKEN }
+  })
+  .then(r => r.json())
+  .then(data => {
+    const grid = document.getElementById('reading-list');
+    const books = data.items || [];
+    if (books.length === 0) {
+      grid.innerHTML = '<p class="empty-state">Nothing on the shelf right now.</p>';
+      return;
+    }
+    grid.innerHTML = books.map(book => {
+      const cover = book.image || '';
+      const title = book.title || 'Untitled';
+      const author = book.authors ? book.authors.map(a => a.name).join(', ') : '';
+      const isbn = book._microblog?.isbn || '';
+      const href = isbn ? 'https://micro.blog/books/' + isbn : '#';
+      return '<a href="' + href + '" class="media-card" target="_blank" rel="noopener">' +
+        '<div class="media-cover">' +
+        (cover ? '<img src="' + cover + '" alt="' + title + ' cover" loading="lazy">' : '') +
+        '</div>' +
+        '<div class="media-info">' +
+        '<span class="media-title">' + title + '</span>' +
+        '<span class="media-artist">' + author + '</span>' +
+        '</div></a>';
+    }).join('');
+  })
+  .catch(() => {
+    document.getElementById('reading-list').innerHTML = '<p class="empty-state">Could not load reading list.</p>';
+  });
+
+  // Listening
+  fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=10')
+  .then(r => r.json())
+  .then(data => {
+    const grid = document.getElementById('listening-list');
+    const tracks = data.recenttracks?.track || [];
+    if (tracks.length === 0) {
+      grid.innerHTML = '<p class="empty-state">No recent tracks.</p>';
+      return;
+    }
+    const seen = new Set();
+    const unique = tracks.filter(t => {
+      const key = t.artist['#text'] + '|' + t.name;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 8);
+
+    grid.innerHTML = unique.map(track => {
+      const image = track.image[2]?.['#text'] || track.image[3]?.['#text'] || '';
+      const url = 'https://open.spotify.com/search/' + encodeURIComponent(track.artist['#text'] + ' ' + track.name);
+      return '<a href="' + url + '" class="media-card" target="_blank" rel="noopener">' +
+        '<div class="media-cover">' +
+        (image ? '<img src="' + image + '" alt="' + track.name + '" loading="lazy">' : '') +
+        '</div>' +
+        '<div class="media-info">' +
+        '<span class="media-title">' + track.name + '</span>' +
+        '<span class="media-artist">' + track.artist['#text'] + '</span>' +
+        '</div></a>';
+    }).join('');
+  })
+  .catch(() => {
+    document.getElementById('listening-list').innerHTML = '<p class="empty-state">Could not load listening data.</p>';
+  });
+})();
+</script>
 
 {{ else if eq .Title "Contact" }}
 <!-- ===================== CONTACT PAGE ===================== -->
