@@ -44,126 +44,349 @@
 {{ else if eq .Title "Media" }}
 <!-- ===================== MEDIA PAGE ===================== -->
 <div class="media-page">
-  <p class="media-intro">Here's what I'm reading and listening to, updated <span id="last-updated"></span>.</p>
+  <p class="media-intro">Here's what I'm <a href="{{ .Site.BaseURL }}links/">reading</a> and <a href="{{ .Site.BaseURL }}music/">listening</a> to, updated <span id="last-updated"></span>.</p>
 
-  <section class="media-section">
-    <h2><em>Bookmarks</em></h2>
-    <ul class="bookmark-list" id="bookmarks-list">
-      <li class="loading">Loading bookmarks...</li>
-    </ul>
-  </section>
+  <div class="media-feed" id="media-feed">
+    <p class="loading">Loading...</p>
+  </div>
 
-  <section class="media-section">
-    <h2><em>Reading</em></h2>
-    <div class="media-grid" id="reading-list">
-      <div class="media-card loading"><div class="media-cover"></div></div>
-    </div>
-  </section>
-
-  <section class="media-section">
-    <h2><em>Listening</em></h2>
-    <div class="media-grid" id="listening-list">
-      <div class="media-card loading"><div class="media-cover"></div></div>
-    </div>
-  </section>
+  <nav class="feed-pagination" id="feed-pagination"></nav>
 </div>
 
 <script>
 (function() {
-  const MB_TOKEN = '0FDAA2CD89BE2BA239CF';
-  const LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
-  const LASTFM_USER = 'sophiealu';
+  var LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
+  var LASTFM_USER = 'sophiealu';
+  var PER_PAGE = 30;
+
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function getPage() {
+    var match = location.hash.match(/page=(\d+)/);
+    return match ? parseInt(match[1], 10) : 1;
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function extractSource(title) {
+    try {
+      var url = new URL(title);
+      return url.hostname.replace('www.', '');
+    } catch(e) {}
+    var m = title.match(/[|–—-]\s*(.+)$/);
+    return m ? m[1].trim() : '';
+  }
+
+  function renderFeed(items) {
+    var page = getPage();
+    var total = Math.ceil(items.length / PER_PAGE);
+    var start = (page - 1) * PER_PAGE;
+    var slice = items.slice(start, start + PER_PAGE);
+    var feed = document.getElementById('media-feed');
+
+    if (slice.length === 0) {
+      feed.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
+      return;
+    }
+
+    feed.innerHTML = slice.map(function(item) {
+      var label = '';
+      if (item.type === 'track') {
+        label = escHtml(item.title) + ' &mdash; ' + escHtml(item.artist);
+      } else {
+        var source = extractSource(item.title);
+        var clean = item.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').trim();
+        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
+        if (source) label += ' <span class="feed-source">[' + escHtml(source) + ']</span>';
+      }
+      if (item.type === 'track') {
+        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' + label + '</a>';
+      }
+      return '<div class="feed-item">' +
+        '<span class="feed-date">' + item.date + '</span>' +
+        '<span class="feed-title">' + label + '</span>' +
+        '</div>';
+    }).join('');
+
+    var nav = document.getElementById('feed-pagination');
+    var html = '';
+    if (page > 1) html += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
+    if (page < total) html += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
+    nav.innerHTML = html;
+  }
+
+  var allItems = [];
+  var loaded = 0;
+
+  function checkReady() {
+    loaded++;
+    if (loaded >= 2) {
+      allItems.sort(function(a, b) { return b.date.localeCompare(a.date); });
+      renderFeed(allItems);
+      window.addEventListener('hashchange', function() { renderFeed(allItems); });
+    }
+  }
 
   document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  // Bookmarks (from Slack via portfolio site)
+  // Bookmarks
   fetch('https://sophiedavis.org/data/bookmarks.json')
-  .then(r => r.json())
-  .then(data => {
-    const list = document.getElementById('bookmarks-list');
-    const items = (data.bookmarks || []);
-    if (items.length === 0) {
-      list.innerHTML = '<li class="empty-state">No bookmarks yet.</li>';
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    (data.bookmarks || []).forEach(function(b) {
+      allItems.push({ date: fmtDate(b.date), title: b.title, url: b.url, type: 'link' });
+    });
+    checkReady();
+  })
+  .catch(function() { checkReady(); });
+
+  // Last.fm recent tracks
+  fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var tracks = data.recenttracks?.track || [];
+    tracks.forEach(function(t) {
+      if (!t.date) return; // skip now playing
+      var d = fmtDate(new Date(t.date.uts * 1000));
+      var url = 'https://open.spotify.com/search/' + encodeURIComponent(t.artist['#text'] + ' ' + t.name);
+      allItems.push({ date: d, title: t.name, artist: t.artist['#text'], url: url, type: 'track' });
+    });
+    checkReady();
+  })
+  .catch(function() { checkReady(); });
+})();
+</script>
+
+{{ else if eq .Title "Links" }}
+<!-- ===================== LINKS PAGE ===================== -->
+<div class="media-page">
+  <p class="media-intro">Links I've been <a href="{{ .Site.BaseURL }}media/">reading</a>.</p>
+
+  <div class="media-feed" id="links-feed">
+    <p class="loading">Loading...</p>
+  </div>
+
+  <nav class="feed-pagination" id="links-pagination"></nav>
+</div>
+
+<script>
+(function() {
+  var PER_PAGE = 30;
+
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function getPage() {
+    var match = location.hash.match(/page=(\d+)/);
+    return match ? parseInt(match[1], 10) : 1;
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function renderLinks(items) {
+    var page = getPage();
+    var total = Math.ceil(items.length / PER_PAGE);
+    var start = (page - 1) * PER_PAGE;
+    var slice = items.slice(start, start + PER_PAGE);
+    var feed = document.getElementById('links-feed');
+
+    if (slice.length === 0) {
+      feed.innerHTML = '<p class="empty-state">No links yet.</p>';
       return;
     }
-    list.innerHTML = items.map(bookmark => {
-      return '<li class="bookmark-item">' +
-        '<span class="bookmark-date">' + (bookmark.dateFormatted || '') + '</span>' +
-        '<span class="bookmark-emoji">\u{1F517}</span>' +
-        '<a href="' + bookmark.url + '" target="_blank" rel="noopener">' + bookmark.title + '</a>' +
-        '</li>';
-    }).join('');
-  })
-  .catch(() => {
-    document.getElementById('bookmarks-list').innerHTML = '<li class="empty-state">Could not load bookmarks.</li>';
-  });
 
-  // Reading
-  fetch('https://micro.blog/books/bookshelves/29981', {
-    headers: { 'Authorization': 'Bearer ' + MB_TOKEN }
+    feed.innerHTML = slice.map(function(b) {
+      var clean = b.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').trim();
+      var source = '';
+      try { source = new URL(b.url).hostname.replace('www.', ''); } catch(e) {}
+      var label = '<a href="' + escHtml(b.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
+      if (source) label += ' <span class="feed-source">[' + escHtml(source) + ']</span>';
+      return '<div class="feed-item">' +
+        '<span class="feed-date">' + fmtDate(b.date) + '</span>' +
+        '<span class="feed-title">' + label + '</span>' +
+        '</div>';
+    }).join('');
+
+    var nav = document.getElementById('links-pagination');
+    var html = '';
+    if (page > 1) html += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
+    if (page < total) html += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
+    nav.innerHTML = html;
+  }
+
+  fetch('https://sophiedavis.org/data/bookmarks.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var items = (data.bookmarks || []).sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date);
+    });
+    renderLinks(items);
+    window.addEventListener('hashchange', function() { renderLinks(items); });
   })
-  .then(r => r.json())
-  .then(data => {
-    const grid = document.getElementById('reading-list');
-    const books = data.items || [];
-    if (books.length === 0) {
-      grid.innerHTML = '<p class="empty-state">Nothing on the shelf right now.</p>';
-      return;
+  .catch(function() {
+    document.getElementById('links-feed').innerHTML = '<p class="empty-state">Could not load links.</p>';
+  });
+})();
+</script>
+
+{{ else if eq .Title "Music" }}
+<!-- ===================== MUSIC PAGE ===================== -->
+<div class="media-page">
+  <h1 class="music-header" id="music-header">Loading...</h1>
+  <p class="music-stats" id="music-stats"></p>
+
+  <nav class="month-nav" id="month-nav"></nav>
+
+  <div class="album-grid" id="album-grid">
+    <p class="loading">Loading...</p>
+  </div>
+
+  <!-- Style toggle for user to preview both -->
+  <div class="album-style-toggle" id="style-toggle">
+    <span>View:</span>
+    <button class="toggle-btn active" data-style="art-title">Covers + titles</button>
+    <button class="toggle-btn" data-style="art-only">Covers only</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  var LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
+  var LASTFM_USER = 'sophiealu';
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function getMonth() {
+    var match = location.hash.match(/(\d{4})-(\d{2})/);
+    if (match) return { year: parseInt(match[1]), month: parseInt(match[2]) };
+    var now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1 };
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function loadMonth(ym) {
+    var from = new Date(ym.year, ym.month - 1, 1);
+    var to = new Date(ym.year, ym.month, 1);
+    var fromTs = Math.floor(from.getTime() / 1000);
+    var toTs = Math.floor(to.getTime() / 1000);
+
+    document.getElementById('music-header').textContent = MONTHS[ym.month - 1] + ' ' + ym.year + ' Listens';
+    document.getElementById('music-stats').textContent = '';
+    document.getElementById('album-grid').innerHTML = '<p class="loading">Loading...</p>';
+
+    // Build month nav
+    var prev = ym.month === 1 ? { year: ym.year - 1, month: 12 } : { year: ym.year, month: ym.month - 1 };
+    var next = ym.month === 12 ? { year: ym.year + 1, month: 1 } : { year: ym.year, month: ym.month + 1 };
+    var now = new Date();
+    var navHtml = '<a href="#' + prev.year + '-' + String(prev.month).padStart(2, '0') + '" class="month-prev">&larr; ' + MONTHS[prev.month - 1] + ' ' + prev.year + '</a>';
+    if (next.year < now.getFullYear() || (next.year === now.getFullYear() && next.month <= now.getMonth() + 1)) {
+      navHtml += '<a href="#' + next.year + '-' + String(next.month).padStart(2, '0') + '" class="month-next">' + MONTHS[next.month - 1] + ' ' + next.year + ' &rarr;</a>';
     }
-    grid.innerHTML = books.map(book => {
-      const cover = book.image || '';
-      const title = book.title || 'Untitled';
-      const author = book.authors ? book.authors.map(a => a.name).join(', ') : '';
-      const isbn = book._microblog?.isbn || '';
-      const href = isbn ? 'https://micro.blog/books/' + isbn : '#';
-      return '<a href="' + href + '" class="media-card" target="_blank" rel="noopener">' +
-        '<div class="media-cover">' +
-        (cover ? '<img src="' + cover + '" alt="' + title + ' cover" loading="lazy">' : '') +
-        '</div>' +
-        '<div class="media-info">' +
-        '<span class="media-title">' + title + '</span>' +
-        '<span class="media-artist">' + author + '</span>' +
-        '</div></a>';
-    }).join('');
-  })
-  .catch(() => {
-    document.getElementById('reading-list').innerHTML = '<p class="empty-state">Could not load reading list.</p>';
-  });
+    document.getElementById('month-nav').innerHTML = navHtml;
 
-  // Listening
-  fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=10')
-  .then(r => r.json())
-  .then(data => {
-    const grid = document.getElementById('listening-list');
-    const tracks = data.recenttracks?.track || [];
-    if (tracks.length === 0) {
-      grid.innerHTML = '<p class="empty-state">No recent tracks.</p>';
-      return;
+    // Fetch all tracks for the month, paginating
+    var allTracks = [];
+    function fetchPage(page) {
+      return fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200&from=' + fromTs + '&to=' + toTs + '&page=' + page)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var tracks = data.recenttracks?.track || [];
+        allTracks = allTracks.concat(tracks);
+        var totalPages = parseInt(data.recenttracks?.['@attr']?.totalPages || '1');
+        if (page < totalPages && page < 10) return fetchPage(page + 1);
+      });
     }
-    const seen = new Set();
-    const unique = tracks.filter(t => {
-      const key = t.artist['#text'] + '|' + t.name;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    }).slice(0, 8);
 
-    grid.innerHTML = unique.map(track => {
-      const image = track.image[2]?.['#text'] || track.image[3]?.['#text'] || '';
-      const url = 'https://open.spotify.com/search/' + encodeURIComponent(track.artist['#text'] + ' ' + track.name);
-      return '<a href="' + url + '" class="media-card" target="_blank" rel="noopener">' +
-        '<div class="media-cover">' +
-        (image ? '<img src="' + image + '" alt="' + track.name + '" loading="lazy">' : '') +
-        '</div>' +
-        '<div class="media-info">' +
-        '<span class="media-title">' + track.name + '</span>' +
-        '<span class="media-artist">' + track.artist['#text'] + '</span>' +
-        '</div></a>';
-    }).join('');
-  })
-  .catch(() => {
-    document.getElementById('listening-list').innerHTML = '<p class="empty-state">Could not load listening data.</p>';
+    fetchPage(1).then(function() {
+      // Group by album, deduplicate
+      var albumMap = {};
+      var totalTracks = 0;
+      allTracks.forEach(function(t) {
+        if (!t.date) return;
+        var key = (t.album?.['#text'] || 'Unknown') + '|||' + t.artist['#text'];
+        totalTracks++;
+        if (!albumMap[key]) {
+          albumMap[key] = {
+            album: t.album?.['#text'] || 'Unknown',
+            artist: t.artist['#text'],
+            image: t.image?.[3]?.['#text'] || t.image?.[2]?.['#text'] || '',
+            lastPlayed: parseInt(t.date.uts),
+            count: 0
+          };
+        }
+        albumMap[key].count++;
+        var ts = parseInt(t.date.uts);
+        if (ts > albumMap[key].lastPlayed) albumMap[key].lastPlayed = ts;
+      });
+
+      // Sort chronologically (most recent first)
+      var albums = Object.values(albumMap).sort(function(a, b) { return b.lastPlayed - a.lastPlayed; });
+
+      document.getElementById('music-stats').textContent = albums.length + ' albums \u00B7 ' + totalTracks + ' tracks';
+
+      var grid = document.getElementById('album-grid');
+      if (albums.length === 0) {
+        grid.innerHTML = '<p class="empty-state">No listens this month.</p>';
+        return;
+      }
+
+      grid.innerHTML = albums.map(function(a) {
+        var url = 'https://open.spotify.com/search/' + encodeURIComponent(a.artist + ' ' + a.album);
+        return '<a href="' + url + '" class="album-card" target="_blank" rel="noopener">' +
+          '<div class="album-cover">' +
+          (a.image ? '<img src="' + escHtml(a.image) + '" alt="' + escHtml(a.album) + '" loading="lazy">' : '') +
+          '</div>' +
+          '<div class="album-info">' +
+          '<span class="album-title">' + escHtml(a.album) + '</span>' +
+          '<span class="album-artist">' + escHtml(a.artist) + '</span>' +
+          '</div>' +
+          '</a>';
+      }).join('');
+    })
+    .catch(function() {
+      document.getElementById('album-grid').innerHTML = '<p class="empty-state">Could not load listening data.</p>';
+    });
+  }
+
+  // Style toggle
+  document.getElementById('style-toggle').addEventListener('click', function(e) {
+    var btn = e.target.closest('.toggle-btn');
+    if (!btn) return;
+    document.querySelectorAll('.toggle-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var grid = document.getElementById('album-grid');
+    if (btn.dataset.style === 'art-only') {
+      grid.classList.add('art-only');
+    } else {
+      grid.classList.remove('art-only');
+    }
   });
+
+  loadMonth(getMonth());
+  window.addEventListener('hashchange', function() { loadMonth(getMonth()); });
 })();
 </script>
 
