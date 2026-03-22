@@ -1,5 +1,619 @@
 {{ define "main" }}
 
+{{ if eq .Title "About" }}
+<!-- ===================== ABOUT PAGE ===================== -->
+{{ $content := .Content }}
+{{ $imgMatch := findRE `<img[^>]+src="([^"]+)"[^>]*>` $content 1 }}
+{{ $photoSrc := "" }}
+{{ with $imgMatch }}
+  {{ $photoSrc = replaceRE `.*src="([^"]+)".*` "$1" (index . 0) }}
+{{ end }}
+{{ $contentNoImg := $content }}
+{{ with $imgMatch }}
+  {{ $contentNoImg = replace $contentNoImg (index $imgMatch 0) "" }}
+{{ end }}
+<div class="about-page">
+  <div class="about-layout">
+    <div class="about-image">
+      {{ if $photoSrc }}
+      <img src="{{ $photoSrc }}" alt="{{ .Site.Title }}" class="about-photo">
+      {{ else }}
+      <img src="{{ "images/profile.jpg" | relURL }}" alt="{{ .Site.Title }}" class="about-photo">
+      {{ end }}
+    </div>
+    <div class="about-content">
+      {{ $contentNoImg | safeHTML }}
+    </div>
+  </div>
+</div>
+
+{{ else if eq .Title "Now" }}
+<!-- ===================== NOW PAGE ===================== -->
+<div class="now-page">
+  <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/">Harper</a>, who was inspired by <a href="https://nownownow.com">nownownow.com</a>, and so on.</p>
+
+  <h1 class="now-date">Now @ {{ now.Format "January 2, 2006" }}</h1>
+
+  <div class="now-content">
+    <div class="now-post">
+      {{ .Content }}
+    </div>
+  </div>
+</div>
+
+{{ else if eq .Title "Media" }}
+<!-- ===================== MEDIA PAGE ===================== -->
+<div class="media-page">
+  <p class="media-intro">Here's what I'm <a href="{{ .Site.BaseURL }}links/">reading</a> and <a href="{{ .Site.BaseURL }}music/">listening</a> to, updated <span id="last-updated"></span>.</p>
+
+  <div class="media-feed" id="media-feed">
+    <p class="loading">Loading...</p>
+  </div>
+
+  <nav class="feed-pagination" id="feed-pagination"></nav>
+</div>
+
+<script>
+(function() {
+  var LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
+  var LASTFM_USER = 'sophiealu';
+  var PER_PAGE = 30;
+
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function getPage() {
+    var match = location.hash.match(/page=(\d+)/);
+    return match ? parseInt(match[1], 10) : 1;
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function extractSource(title) {
+    try {
+      var url = new URL(title);
+      return url.hostname.replace('www.', '');
+    } catch(e) {}
+    var m = title.match(/[|–—-]\s*(.+)$/);
+    return m ? m[1].trim() : '';
+  }
+
+  function renderFeed(items) {
+    var page = getPage();
+    var total = Math.ceil(items.length / PER_PAGE);
+    var start = (page - 1) * PER_PAGE;
+    var slice = items.slice(start, start + PER_PAGE);
+    var feed = document.getElementById('media-feed');
+
+    if (slice.length === 0) {
+      feed.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
+      return;
+    }
+
+    feed.innerHTML = slice.map(function(item) {
+      var label = '';
+      if (item.type === 'track') {
+        label = escHtml(item.title) + ' &mdash; ' + escHtml(item.artist);
+      } else {
+        var source = extractSource(item.title);
+        var clean = item.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').trim();
+        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
+        if (source) label += ' <span class="feed-source">[' + escHtml(source) + ']</span>';
+      }
+      if (item.type === 'track') {
+        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' + label + '</a>';
+      }
+      return '<div class="feed-item">' +
+        '<span class="feed-date">' + item.date + '</span>' +
+        '<span class="feed-title">' + label + '</span>' +
+        '</div>';
+    }).join('');
+
+    var nav = document.getElementById('feed-pagination');
+    var html = '';
+    if (page > 1) html += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
+    if (page < total) html += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
+    nav.innerHTML = html;
+  }
+
+  var allItems = [];
+  var loaded = 0;
+
+  function checkReady() {
+    loaded++;
+    if (loaded >= 2) {
+      allItems.sort(function(a, b) { return b.date.localeCompare(a.date); });
+      renderFeed(allItems);
+      window.addEventListener('hashchange', function() { renderFeed(allItems); });
+    }
+  }
+
+  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Bookmarks
+  fetch('https://sophiedavis.org/data/bookmarks.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    (data.bookmarks || []).forEach(function(b) {
+      allItems.push({ date: fmtDate(b.date), title: b.title, url: b.url, type: 'link' });
+    });
+    checkReady();
+  })
+  .catch(function() { checkReady(); });
+
+  // Last.fm recent tracks
+  fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var tracks = data.recenttracks?.track || [];
+    tracks.forEach(function(t) {
+      if (!t.date) return; // skip now playing
+      var d = fmtDate(new Date(t.date.uts * 1000));
+      var url = 'https://open.spotify.com/search/' + encodeURIComponent(t.artist['#text'] + ' ' + t.name);
+      allItems.push({ date: d, title: t.name, artist: t.artist['#text'], url: url, type: 'track' });
+    });
+    checkReady();
+  })
+  .catch(function() { checkReady(); });
+})();
+</script>
+
+{{ else if eq .Title "Links" }}
+<!-- ===================== LINKS PAGE ===================== -->
+<div class="media-page">
+  <p class="media-intro">Links I've been <a href="{{ .Site.BaseURL }}media/">reading</a>.</p>
+
+  <div class="media-feed" id="links-feed">
+    <p class="loading">Loading...</p>
+  </div>
+
+  <nav class="feed-pagination" id="links-pagination"></nav>
+</div>
+
+<script>
+(function() {
+  var PER_PAGE = 30;
+
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function getPage() {
+    var match = location.hash.match(/page=(\d+)/);
+    return match ? parseInt(match[1], 10) : 1;
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function renderLinks(items) {
+    var page = getPage();
+    var total = Math.ceil(items.length / PER_PAGE);
+    var start = (page - 1) * PER_PAGE;
+    var slice = items.slice(start, start + PER_PAGE);
+    var feed = document.getElementById('links-feed');
+
+    if (slice.length === 0) {
+      feed.innerHTML = '<p class="empty-state">No links yet.</p>';
+      return;
+    }
+
+    feed.innerHTML = slice.map(function(b) {
+      var clean = b.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').trim();
+      var source = '';
+      try { source = new URL(b.url).hostname.replace('www.', ''); } catch(e) {}
+      var label = '<a href="' + escHtml(b.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
+      if (source) label += ' <span class="feed-source">[' + escHtml(source) + ']</span>';
+      return '<div class="feed-item">' +
+        '<span class="feed-date">' + fmtDate(b.date) + '</span>' +
+        '<span class="feed-title">' + label + '</span>' +
+        '</div>';
+    }).join('');
+
+    var nav = document.getElementById('links-pagination');
+    var html = '';
+    if (page > 1) html += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
+    if (page < total) html += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
+    nav.innerHTML = html;
+  }
+
+  fetch('https://sophiedavis.org/data/bookmarks.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var items = (data.bookmarks || []).sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date);
+    });
+    renderLinks(items);
+    window.addEventListener('hashchange', function() { renderLinks(items); });
+  })
+  .catch(function() {
+    document.getElementById('links-feed').innerHTML = '<p class="empty-state">Could not load links.</p>';
+  });
+})();
+</script>
+
+{{ else if eq .Title "Music" }}
+<!-- ===================== MUSIC PAGE ===================== -->
+<div class="media-page">
+  <h1 class="music-header" id="music-header">Loading...</h1>
+  <p class="music-stats" id="music-stats"></p>
+
+  <nav class="month-nav" id="month-nav"></nav>
+
+  <div class="album-grid" id="album-grid">
+    <p class="loading">Loading...</p>
+  </div>
+
+  <!-- Style toggle for user to preview both -->
+  <div class="album-style-toggle" id="style-toggle">
+    <span>View:</span>
+    <button class="toggle-btn active" data-style="art-title">Covers + titles</button>
+    <button class="toggle-btn" data-style="art-only">Covers only</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  var LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
+  var LASTFM_USER = 'sophiealu';
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function getMonth() {
+    var match = location.hash.match(/(\d{4})-(\d{2})/);
+    if (match) return { year: parseInt(match[1]), month: parseInt(match[2]) };
+    var now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1 };
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function loadMonth(ym) {
+    var from = new Date(ym.year, ym.month - 1, 1);
+    var to = new Date(ym.year, ym.month, 1);
+    var fromTs = Math.floor(from.getTime() / 1000);
+    var toTs = Math.floor(to.getTime() / 1000);
+
+    document.getElementById('music-header').textContent = MONTHS[ym.month - 1] + ' ' + ym.year + ' Listens';
+    document.getElementById('music-stats').textContent = '';
+    document.getElementById('album-grid').innerHTML = '<p class="loading">Loading...</p>';
+
+    // Build month nav
+    var prev = ym.month === 1 ? { year: ym.year - 1, month: 12 } : { year: ym.year, month: ym.month - 1 };
+    var next = ym.month === 12 ? { year: ym.year + 1, month: 1 } : { year: ym.year, month: ym.month + 1 };
+    var now = new Date();
+    var navHtml = '<a href="#' + prev.year + '-' + String(prev.month).padStart(2, '0') + '" class="month-prev">&larr; ' + MONTHS[prev.month - 1] + ' ' + prev.year + '</a>';
+    if (next.year < now.getFullYear() || (next.year === now.getFullYear() && next.month <= now.getMonth() + 1)) {
+      navHtml += '<a href="#' + next.year + '-' + String(next.month).padStart(2, '0') + '" class="month-next">' + MONTHS[next.month - 1] + ' ' + next.year + ' &rarr;</a>';
+    }
+    document.getElementById('month-nav').innerHTML = navHtml;
+
+    // Fetch all tracks for the month, paginating
+    var allTracks = [];
+    function fetchPage(page) {
+      return fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200&from=' + fromTs + '&to=' + toTs + '&page=' + page)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var tracks = data.recenttracks?.track || [];
+        allTracks = allTracks.concat(tracks);
+        var totalPages = parseInt(data.recenttracks?.['@attr']?.totalPages || '1');
+        if (page < totalPages && page < 10) return fetchPage(page + 1);
+      });
+    }
+
+    fetchPage(1).then(function() {
+      // Group by album, deduplicate
+      var albumMap = {};
+      var totalTracks = 0;
+      allTracks.forEach(function(t) {
+        if (!t.date) return;
+        var key = (t.album?.['#text'] || 'Unknown') + '|||' + t.artist['#text'];
+        totalTracks++;
+        if (!albumMap[key]) {
+          albumMap[key] = {
+            album: t.album?.['#text'] || 'Unknown',
+            artist: t.artist['#text'],
+            image: t.image?.[3]?.['#text'] || t.image?.[2]?.['#text'] || '',
+            lastPlayed: parseInt(t.date.uts),
+            count: 0
+          };
+        }
+        albumMap[key].count++;
+        var ts = parseInt(t.date.uts);
+        if (ts > albumMap[key].lastPlayed) albumMap[key].lastPlayed = ts;
+      });
+
+      // Sort chronologically (most recent first)
+      var albums = Object.values(albumMap).sort(function(a, b) { return b.lastPlayed - a.lastPlayed; });
+
+      document.getElementById('music-stats').textContent = albums.length + ' albums \u00B7 ' + totalTracks + ' tracks';
+
+      var grid = document.getElementById('album-grid');
+      if (albums.length === 0) {
+        grid.innerHTML = '<p class="empty-state">No listens this month.</p>';
+        return;
+      }
+
+      grid.innerHTML = albums.map(function(a) {
+        var url = 'https://open.spotify.com/search/' + encodeURIComponent(a.artist + ' ' + a.album);
+        return '<a href="' + url + '" class="album-card" target="_blank" rel="noopener">' +
+          '<div class="album-cover">' +
+          (a.image ? '<img src="' + escHtml(a.image) + '" alt="' + escHtml(a.album) + '" loading="lazy">' : '') +
+          '</div>' +
+          '<div class="album-info">' +
+          '<span class="album-title">' + escHtml(a.album) + '</span>' +
+          '<span class="album-artist">' + escHtml(a.artist) + '</span>' +
+          '</div>' +
+          '</a>';
+      }).join('');
+    })
+    .catch(function() {
+      document.getElementById('album-grid').innerHTML = '<p class="empty-state">Could not load listening data.</p>';
+    });
+  }
+
+  // Style toggle
+  document.getElementById('style-toggle').addEventListener('click', function(e) {
+    var btn = e.target.closest('.toggle-btn');
+    if (!btn) return;
+    document.querySelectorAll('.toggle-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var grid = document.getElementById('album-grid');
+    if (btn.dataset.style === 'art-only') {
+      grid.classList.add('art-only');
+    } else {
+      grid.classList.remove('art-only');
+    }
+  });
+
+  loadMonth(getMonth());
+  window.addEventListener('hashchange', function() { loadMonth(getMonth()); });
+})();
+</script>
+
+{{ else if eq .Title "Contact" }}
+<!-- ===================== CONTACT PAGE ===================== -->
+<div class="contact-page">
+  <h1 class="contact-heading">Let's <em>chat</em></h1>
+  <p class="contact-intro">Always open to interesting conversations.</p>
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <div class="terminal-buttons">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+      </div>
+      <span class="terminal-title">contact.sh</span>
+    </div>
+    <div class="terminal-body">
+      <form class="terminal-form" id="contact-form" action="https://formspree.io/f/{{ .Site.Params.formspree_id | default "mlggrovy" }}" method="POST">
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label for="name">name:</label>
+          <input type="text" id="name" name="name" placeholder="your name" required>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label for="email">email:</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="terminal-line terminal-line-textarea">
+          <span class="terminal-prompt">$</span>
+          <label for="message">message:</label>
+          <textarea id="message" name="message" placeholder="what's on your mind?" rows="3" required></textarea>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <button type="submit" class="terminal-submit">send_message --to sophie</button>
+        </div>
+      </form>
+      <div id="contact-success" class="terminal-success" style="display: none;">
+        <div class="terminal-line">
+          <span class="terminal-prompt" style="color: #27ca40;">&#10003;</span>
+          <span style="color: #27ca40;">Message sent successfully!</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span style="color: #888;">I'll get back to you soon.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var form = document.getElementById('contact-form');
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = form.querySelector('.terminal-submit');
+    btn.textContent = 'sending...';
+    btn.disabled = true;
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function(r) {
+      if (r.ok) {
+        form.style.display = 'none';
+        document.getElementById('contact-success').style.display = 'block';
+      } else {
+        btn.textContent = 'error - try again';
+        btn.disabled = false;
+      }
+    })
+    .catch(function() {
+      btn.textContent = 'error - try again';
+      btn.disabled = false;
+    });
+  });
+})();
+</script>
+
+{{ else if eq .Title "Lab" }}
+<!-- ===================== LAB PAGE ===================== -->
+<div class="lab-page">
+  <p class="lab-intro">Things I've built for fun or out of frustration.</p>
+
+  {{ $building := where .Site.RegularPages "Params.categories" "intersect" (slice "Building") }}
+
+  {{ if $building }}
+  <div class="building-list">
+    {{ range $building }}
+    <a href="{{ .Permalink }}" class="building-card">
+      {{ $img := "" }}
+      {{ $content := .Content }}
+      {{ $imgTag := index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
+      {{ with $imgTag }}
+        {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
+      {{ end }}
+      <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
+      </div>
+      <div class="building-info">
+        <h3>{{ .Title }}</h3>
+        <span class="building-date">{{ .Date.Format "Jan 2006" }}</span>
+      </div>
+    </a>
+    {{ end }}
+  </div>
+  {{ else }}
+  <p class="empty-state">Nothing here yet.</p>
+  {{ end }}
+</div>
+
+{{ else if eq .Title "Thoughts" }}
+<!-- ===================== THOUGHTS PAGE ===================== -->
+<div class="thoughts-page">
+  <p class="media-intro">Here you'll find longer form blog posts and short form notes. You can also just see <a href="/photos/"><strong>photos</strong></a>.</p>
+
+  <section class="media-section">
+    <h2><em>Posts</em></h2>
+    <div class="thoughts-list" id="posts-list">
+      <p class="loading">Loading posts...</p>
+    </div>
+  </section>
+
+  <section class="media-section">
+    <h2><em>Notes</em></h2>
+    <div class="thoughts-list" id="notes-list">
+      <p class="loading">Loading notes...</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function() {
+  function fmtDate(d) {
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function hasTag(item, tag) {
+    if (!item.tags) return false;
+    if (Array.isArray(item.tags)) return item.tags.some(t => t.toLowerCase() === tag);
+    if (typeof item.tags === 'string') return item.tags.toLowerCase().split(',').map(t => t.trim()).includes(tag);
+    return false;
+  }
+
+  function renderList(el, items, max) {
+    if (items.length === 0) {
+      el.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
+      return;
+    }
+    el.innerHTML = items.slice(0, max).map(item => {
+      var title = item.title || item.content_text?.slice(0, 100) || '';
+      var url = item.url || '#';
+      return '<a href="' + url + '" class="thoughts-item">' +
+        '<span class="thoughts-date">' + fmtDate(item.date_published) + '</span>' +
+        '<span class="thoughts-title">' + title + '</span>' +
+        '</a>';
+    }).join('');
+  }
+
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(r => r.json())
+  .then(data => {
+    var items = data.items || [];
+    var posts = items.filter(item => hasTag(item, 'posts'));
+    renderList(document.getElementById('posts-list'), posts, 5);
+    var notes = items.filter(item => hasTag(item, 'notes'));
+    renderList(document.getElementById('notes-list'), notes, 5);
+  })
+  .catch(() => {
+    document.getElementById('posts-list').innerHTML = '<p class="empty-state">Could not load posts.</p>';
+    document.getElementById('notes-list').innerHTML = '<p class="empty-state">Could not load notes.</p>';
+  });
+})();
+</script>
+
+{{ else if eq .Title "Photos" }}
+<!-- ===================== PHOTOS PAGE ===================== -->
+<div class="thoughts-page">
+  <p class="media-intro">A gallery of photos from my posts.</p>
+  <div class="photos-grid" id="photos-grid">
+    <p class="loading">Loading photos...</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(r => r.json())
+  .then(data => {
+    var items = data.items || [];
+    var photosGrid = document.getElementById('photos-grid');
+    var photos = [];
+    items.forEach(item => {
+      var html = item.content_html || '';
+      var imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
+      var match;
+      while ((match = imgRegex.exec(html)) !== null) {
+        photos.push({ src: match[1], url: item.url || '#' });
+      }
+    });
+    if (photos.length === 0) {
+      photosGrid.innerHTML = '<p class="empty-state">No photos yet.</p>';
+    } else {
+      photosGrid.innerHTML = photos.slice(0, 30).map(photo => {
+        return '<a href="' + photo.url + '" class="photo-item" target="_blank" rel="noopener">' +
+          '<img src="' + photo.src + '" loading="lazy" alt="">' +
+          '</a>';
+      }).join('');
+    }
+  })
+  .catch(() => {
+    document.getElementById('photos-grid').innerHTML = '<p class="empty-state">Could not load photos.</p>';
+  });
+})();
+</script>
+
+{{ else }}
+
 {{ $isBuilding := false }}
 {{ with .Params.categories }}
   {{ if intersect . (slice "Building") }}
@@ -35,7 +649,7 @@
 </div>
 
 {{ else }}
-<!-- ===================== DEFAULT POST ===================== -->
+<!-- ===================== DEFAULT PAGE ===================== -->
 <article class="post single">
   {{ if .Title }}
   <h1 class="post-title">{{ .Title }}</h1>
@@ -43,12 +657,9 @@
   <div class="post-content">
     {{ .Content }}
   </div>
-  <div class="post-meta">
-    <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
-      {{ .Date.Format "Jan 2, 2006 at 3:04 PM" }}
-    </time>
-  </div>
 </article>
+{{ end }}
+
 {{ end }}
 
 {{ end }}
