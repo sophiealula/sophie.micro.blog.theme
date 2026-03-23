@@ -1667,6 +1667,7 @@ body:has(.about-page) main {
 .feed-pagination {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: var(--space-md) 0;
   margin-top: var(--space-sm);
 }
@@ -1686,12 +1687,17 @@ body:has(.about-page) main {
   color: var(--text);
 }
 
-.feed-newer::before {
-  content: '\2190 ';
+.feed-page-info {
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
-.feed-older::after {
-  content: ' \2192';
+.feed-prev {
+  margin-right: auto;
+}
+
+.feed-next {
+  margin-left: auto;
 }
 
 /* ===========================================

@@ -42,9 +42,9 @@
 </div>
 
 {{ else if eq .Title "Media" }}
-<!-- ===================== MEDIA PAGE ===================== -->
+<!-- ===================== MEDIA PAGE (Links) ===================== -->
 <div class="media-page">
-  <p class="media-intro">Here's what I'm <a href="{{ .Site.BaseURL }}links/">reading</a> and <a href="{{ .Site.BaseURL }}music/">listening</a> to, updated <span id="last-updated"></span>.</p>
+  <p class="media-intro">Here's what I'm reading, updated <span id="last-updated"></span>. You can also check out <a href="{{ .Site.BaseURL }}music/">music I'm listening to</a>.</p>
 
   <div class="media-feed" id="media-feed">
     <p class="loading">Loading...</p>
@@ -55,9 +55,7 @@
 
 <script>
 (function() {
-  var LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
-  var LASTFM_USER = 'sophiealu';
-  var PER_PAGE = 50;
+  var PER_PAGE = 30;
 
   function fmtDate(d) {
     var date = new Date(d);
@@ -78,132 +76,15 @@
     return d.innerHTML;
   }
 
-  function renderGroupedFeed(items, feedId, navId) {
+  function render(items) {
     var page = getPage();
     var total = Math.ceil(items.length / PER_PAGE);
     var start = (page - 1) * PER_PAGE;
     var slice = items.slice(start, start + PER_PAGE);
-    var feed = document.getElementById(feedId);
+    var feed = document.getElementById('media-feed');
 
     if (slice.length === 0) {
       feed.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
-      return;
-    }
-
-    var html = '';
-    var lastDate = '';
-    slice.forEach(function(item) {
-      if (item.date !== lastDate) {
-        html += '<div class="feed-date-header"><em>' + item.date + '</em></div>';
-        lastDate = item.date;
-      }
-      var label = '';
-      if (item.type === 'track') {
-        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' +
-          escHtml(item.title) + ' (by ' + escHtml(item.artist) + ')</a>';
-      } else {
-        var source = '';
-        try { source = new URL(item.url).hostname.replace('www.', ''); } catch(e) {}
-        var clean = item.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').replace(/&#\d+;/g, '').trim();
-        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
-        if (source) label += ' <span class="feed-source">(' + escHtml(source) + ')</span>';
-      }
-      html += '<div class="feed-entry">' + label + '</div>';
-    });
-
-    feed.innerHTML = html;
-
-    var nav = document.getElementById(navId);
-    var navHtml = '';
-    if (page > 1) navHtml += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
-    if (page < total) navHtml += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
-    nav.innerHTML = navHtml;
-  }
-
-  var allItems = [];
-  var loaded = 0;
-
-  function checkReady() {
-    loaded++;
-    if (loaded >= 2) {
-      allItems.sort(function(a, b) { return b.date.localeCompare(a.date); });
-      renderGroupedFeed(allItems, 'media-feed', 'feed-pagination');
-      window.addEventListener('hashchange', function() { renderGroupedFeed(allItems, 'media-feed', 'feed-pagination'); });
-    }
-  }
-
-  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-  fetch('https://sophiedavis.org/data/bookmarks.json')
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    (data.bookmarks || []).forEach(function(b) {
-      allItems.push({ date: fmtDate(b.date), title: b.title, url: b.url, type: 'link' });
-    });
-    checkReady();
-  })
-  .catch(function() { checkReady(); });
-
-  fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200')
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var tracks = data.recenttracks?.track || [];
-    tracks.forEach(function(t) {
-      if (!t.date) return;
-      var d = fmtDate(new Date(t.date.uts * 1000));
-      var url = 'https://open.spotify.com/search/' + encodeURIComponent(t.artist['#text'] + ' ' + t.name);
-      allItems.push({ date: d, title: t.name, artist: t.artist['#text'], url: url, type: 'track' });
-    });
-    checkReady();
-  })
-  .catch(function() { checkReady(); });
-})();
-</script>
-
-{{ else if eq .Title "Links" }}
-<!-- ===================== LINKS PAGE ===================== -->
-<div class="media-page">
-  <p class="media-intro">Here's what I'm <a href="{{ .Site.BaseURL }}links/">reading</a> and <a href="{{ .Site.BaseURL }}music/">listening</a> to, updated <span id="links-updated"></span>.</p>
-
-  <div class="media-feed" id="links-feed">
-    <p class="loading">Loading...</p>
-  </div>
-
-  <nav class="feed-pagination" id="links-pagination"></nav>
-</div>
-
-<script>
-(function() {
-  var PER_PAGE = 50;
-
-  function fmtDate(d) {
-    var date = new Date(d);
-    var y = date.getFullYear();
-    var m = String(date.getMonth() + 1).padStart(2, '0');
-    var day = String(date.getDate()).padStart(2, '0');
-    return y + '-' + m + '-' + day;
-  }
-
-  function getPage() {
-    var match = location.hash.match(/page=(\d+)/);
-    return match ? parseInt(match[1], 10) : 1;
-  }
-
-  function escHtml(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  function renderLinks(items) {
-    var page = getPage();
-    var total = Math.ceil(items.length / PER_PAGE);
-    var start = (page - 1) * PER_PAGE;
-    var slice = items.slice(start, start + PER_PAGE);
-    var feed = document.getElementById('links-feed');
-
-    if (slice.length === 0) {
-      feed.innerHTML = '<p class="empty-state">No links yet.</p>';
       return;
     }
 
@@ -225,14 +106,17 @@
 
     feed.innerHTML = html;
 
-    var nav = document.getElementById('links-pagination');
+    var nav = document.getElementById('feed-pagination');
     var navHtml = '';
-    if (page > 1) navHtml += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
-    if (page < total) navHtml += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
+    if (total > 1) {
+      if (page > 1) navHtml += '<a href="#page=' + (page - 1) + '" class="feed-prev">\u2190 Previous page</a>';
+      navHtml += '<span class="feed-page-info">Page ' + page + ' of ' + total + '</span>';
+      if (page < total) navHtml += '<a href="#page=' + (page + 1) + '" class="feed-next">Next page \u2192</a>';
+    }
     nav.innerHTML = navHtml;
   }
 
-  document.getElementById('links-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
   fetch('https://sophiedavis.org/data/bookmarks.json')
   .then(function(r) { return r.json(); })
@@ -240,11 +124,11 @@
     var items = (data.bookmarks || []).sort(function(a, b) {
       return new Date(b.date) - new Date(a.date);
     });
-    renderLinks(items);
-    window.addEventListener('hashchange', function() { renderLinks(items); });
+    render(items);
+    window.addEventListener('hashchange', function() { render(items); });
   })
   .catch(function() {
-    document.getElementById('links-feed').innerHTML = '<p class="empty-state">Could not load links.</p>';
+    document.getElementById('media-feed').innerHTML = '<p class="empty-state">Could not load links.</p>';
   });
 })();
 </script>
