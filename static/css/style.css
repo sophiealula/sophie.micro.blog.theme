@@ -833,6 +833,10 @@ body:has(.about-page) main {
   max-width: 420px;
 }
 
+.about-content > *:first-child {
+  margin-top: 0;
+}
+
 .about-content h1 {
   font-family: var(--font-sans);
   font-size: 36px;

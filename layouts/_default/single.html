@@ -11,6 +11,8 @@
 {{ $contentNoImg := $content }}
 {{ with $imgMatch }}
   {{ $contentNoImg = replace $contentNoImg (index $imgMatch 0) "" }}
+  {{ $contentNoImg = replaceRE `<p>\s*</p>` "" $contentNoImg }}
+  {{ $contentNoImg = replaceRE `<figure>\s*</figure>` "" $contentNoImg }}
 {{ end }}
 <div class="about-page">
   <div class="about-layout">
