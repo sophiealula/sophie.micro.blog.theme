@@ -251,6 +251,7 @@
 
 {{ else if eq .Title "Music" }}
 <!-- ===================== MUSIC PAGE ===================== -->
+<link rel="preconnect" href="https://lastfm.freetls.fastly.net" crossorigin>
 <div class="music-page">
   <div class="music-page-header" id="music-page-header">
     <h1 class="music-month" id="music-header"></h1>
@@ -307,22 +308,11 @@
     }
     document.getElementById('month-nav').innerHTML = navHtml;
 
-    var allTracks = [];
-    function fetchPage(page) {
-      return fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200&from=' + fromTs + '&to=' + toTs + '&page=' + page)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var tracks = data.recenttracks?.track || [];
-        allTracks = allTracks.concat(tracks);
-        var totalPages = parseInt(data.recenttracks?.['@attr']?.totalPages || '1');
-        if (page < totalPages && page < 10) return fetchPage(page + 1);
-      });
-    }
+    var albumMap = {};
+    var totalTracks = 0;
 
-    fetchPage(1).then(function() {
-      var albumMap = {};
-      var totalTracks = 0;
-      allTracks.forEach(function(t) {
+    function processTracks(tracks) {
+      tracks.forEach(function(t) {
         if (!t.date) return;
         var key = (t.album?.['#text'] || 'Unknown') + '|||' + t.artist['#text'];
         totalTracks++;
@@ -330,7 +320,7 @@
           albumMap[key] = {
             album: t.album?.['#text'] || 'Unknown',
             artist: t.artist['#text'],
-            image: t.image?.[3]?.['#text'] || t.image?.[2]?.['#text'] || '',
+            image: t.image?.[2]?.['#text'] || t.image?.[1]?.['#text'] || '',
             lastPlayed: parseInt(t.date.uts),
             count: 0
           };
@@ -339,9 +329,10 @@
         var ts = parseInt(t.date.uts);
         if (ts > albumMap[key].lastPlayed) albumMap[key].lastPlayed = ts;
       });
+    }
 
+    function renderAlbums() {
       var albums = Object.values(albumMap).sort(function(a, b) { return b.lastPlayed - a.lastPlayed; });
-
       document.getElementById('music-stats').textContent = albums.length + ' albums \u00B7 ' + totalTracks + ' tracks';
       document.getElementById('music-page-header').classList.add('loaded');
 
@@ -353,9 +344,10 @@
 
       grid.innerHTML = albums.map(function(a, i) {
         var url = 'https://open.spotify.com/search/' + encodeURIComponent(a.artist + ' ' + a.album);
-        return '<a href="' + url + '" class="album-card" target="_blank" rel="noopener" style="animation-delay:' + (i * 30) + 'ms">' +
+        var lazy = i >= 20;
+        return '<a href="' + url + '" class="album-card" target="_blank" rel="noopener" style="animation-delay:' + (Math.min(i, 20) * 25) + 'ms">' +
           '<div class="album-cover">' +
-          (a.image ? '<img src="' + escHtml(a.image) + '" alt="' + escHtml(a.album) + '" loading="lazy">' : '') +
+          (a.image ? '<img src="' + escHtml(a.image) + '" alt="' + escHtml(a.album) + '" width="174" height="174" decoding="async"' + (lazy ? ' loading="lazy"' : '') + '>' : '') +
           '<div class="album-overlay">' +
           '<span class="album-overlay-title">' + escHtml(a.album) + '</span>' +
           '<span class="album-overlay-artist">' + escHtml(a.artist) + '</span>' +
@@ -363,8 +355,21 @@
           '</div>' +
           '</a>';
       }).join('');
-    })
-    .catch(function() {
+    }
+
+    function fetchPage(page) {
+      return fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200&from=' + fromTs + '&to=' + toTs + '&page=' + page)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var tracks = data.recenttracks?.track || [];
+        processTracks(tracks);
+        renderAlbums();
+        var totalPages = parseInt(data.recenttracks?.['@attr']?.totalPages || '1');
+        if (page < totalPages && page < 10) return fetchPage(page + 1);
+      });
+    }
+
+    fetchPage(1).catch(function() {
       document.getElementById('album-grid').innerHTML = '<p class="empty-state">Could not load listening data.</p>';
     });
   }
