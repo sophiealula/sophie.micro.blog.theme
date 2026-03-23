@@ -57,7 +57,7 @@
 (function() {
   var LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
   var LASTFM_USER = 'sophiealu';
-  var PER_PAGE = 30;
+  var PER_PAGE = 50;
 
   function fmtDate(d) {
     var date = new Date(d);
@@ -78,51 +78,46 @@
     return d.innerHTML;
   }
 
-  function extractSource(title) {
-    try {
-      var url = new URL(title);
-      return url.hostname.replace('www.', '');
-    } catch(e) {}
-    var m = title.match(/[|–—-]\s*(.+)$/);
-    return m ? m[1].trim() : '';
-  }
-
-  function renderFeed(items) {
+  function renderGroupedFeed(items, feedId, navId) {
     var page = getPage();
     var total = Math.ceil(items.length / PER_PAGE);
     var start = (page - 1) * PER_PAGE;
     var slice = items.slice(start, start + PER_PAGE);
-    var feed = document.getElementById('media-feed');
+    var feed = document.getElementById(feedId);
 
     if (slice.length === 0) {
       feed.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
       return;
     }
 
-    feed.innerHTML = slice.map(function(item) {
+    var html = '';
+    var lastDate = '';
+    slice.forEach(function(item) {
+      if (item.date !== lastDate) {
+        html += '<div class="feed-date-header"><em>' + item.date + '</em></div>';
+        lastDate = item.date;
+      }
       var label = '';
       if (item.type === 'track') {
-        label = escHtml(item.title) + ' &mdash; ' + escHtml(item.artist);
+        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' +
+          escHtml(item.title) + ' (by ' + escHtml(item.artist) + ')</a>';
       } else {
-        var source = extractSource(item.title);
-        var clean = item.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').trim();
+        var source = '';
+        try { source = new URL(item.url).hostname.replace('www.', ''); } catch(e) {}
+        var clean = item.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').replace(/&#\d+;/g, '').trim();
         label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
-        if (source) label += ' <span class="feed-source">[' + escHtml(source) + ']</span>';
+        if (source) label += ' <span class="feed-source">(' + escHtml(source) + ')</span>';
       }
-      if (item.type === 'track') {
-        label = '<a href="' + escHtml(item.url) + '" target="_blank" rel="noopener">' + label + '</a>';
-      }
-      return '<div class="feed-item">' +
-        '<span class="feed-date">' + item.date + '</span>' +
-        '<span class="feed-title">' + label + '</span>' +
-        '</div>';
-    }).join('');
+      html += '<div class="feed-entry">' + label + '</div>';
+    });
 
-    var nav = document.getElementById('feed-pagination');
-    var html = '';
-    if (page > 1) html += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
-    if (page < total) html += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
-    nav.innerHTML = html;
+    feed.innerHTML = html;
+
+    var nav = document.getElementById(navId);
+    var navHtml = '';
+    if (page > 1) navHtml += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
+    if (page < total) navHtml += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
+    nav.innerHTML = navHtml;
   }
 
   var allItems = [];
@@ -132,14 +127,13 @@
     loaded++;
     if (loaded >= 2) {
       allItems.sort(function(a, b) { return b.date.localeCompare(a.date); });
-      renderFeed(allItems);
-      window.addEventListener('hashchange', function() { renderFeed(allItems); });
+      renderGroupedFeed(allItems, 'media-feed', 'feed-pagination');
+      window.addEventListener('hashchange', function() { renderGroupedFeed(allItems, 'media-feed', 'feed-pagination'); });
     }
   }
 
   document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  // Bookmarks
   fetch('https://sophiedavis.org/data/bookmarks.json')
   .then(function(r) { return r.json(); })
   .then(function(data) {
@@ -150,13 +144,12 @@
   })
   .catch(function() { checkReady(); });
 
-  // Last.fm recent tracks
   fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200')
   .then(function(r) { return r.json(); })
   .then(function(data) {
     var tracks = data.recenttracks?.track || [];
     tracks.forEach(function(t) {
-      if (!t.date) return; // skip now playing
+      if (!t.date) return;
       var d = fmtDate(new Date(t.date.uts * 1000));
       var url = 'https://open.spotify.com/search/' + encodeURIComponent(t.artist['#text'] + ' ' + t.name);
       allItems.push({ date: d, title: t.name, artist: t.artist['#text'], url: url, type: 'track' });
@@ -170,7 +163,7 @@
 {{ else if eq .Title "Links" }}
 <!-- ===================== LINKS PAGE ===================== -->
 <div class="media-page">
-  <p class="media-intro">Links I've been <a href="{{ .Site.BaseURL }}media/">reading</a>.</p>
+  <p class="media-intro">Here's what I'm <a href="{{ .Site.BaseURL }}links/">reading</a> and <a href="{{ .Site.BaseURL }}music/">listening</a> to, updated <span id="links-updated"></span>.</p>
 
   <div class="media-feed" id="links-feed">
     <p class="loading">Loading...</p>
@@ -181,7 +174,7 @@
 
 <script>
 (function() {
-  var PER_PAGE = 30;
+  var PER_PAGE = 50;
 
   function fmtDate(d) {
     var date = new Date(d);
@@ -214,24 +207,32 @@
       return;
     }
 
-    feed.innerHTML = slice.map(function(b) {
-      var clean = b.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').trim();
+    var html = '';
+    var lastDate = '';
+    slice.forEach(function(b) {
+      var d = fmtDate(b.date);
+      if (d !== lastDate) {
+        html += '<div class="feed-date-header"><em>' + d + '</em></div>';
+        lastDate = d;
+      }
       var source = '';
       try { source = new URL(b.url).hostname.replace('www.', ''); } catch(e) {}
+      var clean = b.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').replace(/&#\d+;/g, '').trim();
       var label = '<a href="' + escHtml(b.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
-      if (source) label += ' <span class="feed-source">[' + escHtml(source) + ']</span>';
-      return '<div class="feed-item">' +
-        '<span class="feed-date">' + fmtDate(b.date) + '</span>' +
-        '<span class="feed-title">' + label + '</span>' +
-        '</div>';
-    }).join('');
+      if (source) label += ' <span class="feed-source">(' + escHtml(source) + ')</span>';
+      html += '<div class="feed-entry">' + label + '</div>';
+    });
+
+    feed.innerHTML = html;
 
     var nav = document.getElementById('links-pagination');
-    var html = '';
-    if (page > 1) html += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
-    if (page < total) html += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
-    nav.innerHTML = html;
+    var navHtml = '';
+    if (page > 1) navHtml += '<a href="#page=' + (page - 1) + '" class="feed-newer">Newer</a>';
+    if (page < total) navHtml += '<a href="#page=' + (page + 1) + '" class="feed-older">Older</a>';
+    nav.innerHTML = navHtml;
   }
+
+  document.getElementById('links-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
   fetch('https://sophiedavis.org/data/bookmarks.json')
   .then(function(r) { return r.json(); })

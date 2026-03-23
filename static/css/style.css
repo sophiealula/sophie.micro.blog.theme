@@ -1614,48 +1614,47 @@ body:has(.about-page) main {
   margin-top: var(--space-md);
 }
 
-.feed-item {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-md);
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 16px;
-  line-height: 1.5;
+.feed-date-header {
+  padding: var(--space-sm) 0 6px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
-.feed-item:first-child {
+.feed-date-header em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.feed-date-header:first-child {
   padding-top: 0;
 }
 
-.feed-item:last-child {
-  border-bottom: none;
-}
-
-.feed-date {
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  flex-shrink: 0;
-  width: 100px;
-}
-
-.feed-title {
-  flex: 1;
+.feed-entry {
+  padding: 4px 0 4px 1.25rem;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.6;
   color: var(--text);
 }
 
-.feed-title a {
+.feed-entry::before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
+.feed-entry a {
   color: var(--text);
   text-decoration: none;
   font-weight: 400;
 }
 
-.feed-title a::after {
+.feed-entry a::after {
   display: none;
 }
 
-.feed-title a:hover {
+.feed-entry a:hover {
   color: var(--accent);
 }
 
