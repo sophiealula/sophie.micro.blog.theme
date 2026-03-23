@@ -250,21 +250,19 @@
 
 {{ else if eq .Title "Music" }}
 <!-- ===================== MUSIC PAGE ===================== -->
-<div class="media-page">
-  <h1 class="music-header" id="music-header">Loading...</h1>
-  <p class="music-stats" id="music-stats"></p>
+<div class="music-page">
+  <div class="music-page-header" id="music-page-header">
+    <h1 class="music-month" id="music-header"></h1>
+    <p class="music-stats" id="music-stats"></p>
+  </div>
 
   <nav class="month-nav" id="month-nav"></nav>
 
   <div class="album-grid" id="album-grid">
-    <p class="loading">Loading...</p>
-  </div>
-
-  <!-- Style toggle for user to preview both -->
-  <div class="album-style-toggle" id="style-toggle">
-    <span>View:</span>
-    <button class="toggle-btn active" data-style="art-title">Covers + titles</button>
-    <button class="toggle-btn" data-style="art-only">Covers only</button>
+    <div class="album-grid-loading" id="album-loading">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
   </div>
 </div>
 
@@ -293,21 +291,21 @@
     var fromTs = Math.floor(from.getTime() / 1000);
     var toTs = Math.floor(to.getTime() / 1000);
 
-    document.getElementById('music-header').textContent = MONTHS[ym.month - 1] + ' ' + ym.year + ' Listens';
+    document.getElementById('music-header').innerHTML = MONTHS[ym.month - 1] + ' <em>' + ym.year + '</em> Listens';
     document.getElementById('music-stats').textContent = '';
-    document.getElementById('album-grid').innerHTML = '<p class="loading">Loading...</p>';
+    document.getElementById('album-grid').innerHTML = '<div class="album-grid-loading" id="album-loading"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>';
+    document.getElementById('music-page-header').classList.remove('loaded');
 
     // Build month nav
     var prev = ym.month === 1 ? { year: ym.year - 1, month: 12 } : { year: ym.year, month: ym.month - 1 };
     var next = ym.month === 12 ? { year: ym.year + 1, month: 1 } : { year: ym.year, month: ym.month + 1 };
     var now = new Date();
-    var navHtml = '<a href="#' + prev.year + '-' + String(prev.month).padStart(2, '0') + '" class="month-prev">&larr; ' + MONTHS[prev.month - 1] + ' ' + prev.year + '</a>';
+    var navHtml = '<a href="#' + prev.year + '-' + String(prev.month).padStart(2, '0') + '" class="month-prev">' + MONTHS[prev.month - 1] + ' ' + prev.year + '</a>';
     if (next.year < now.getFullYear() || (next.year === now.getFullYear() && next.month <= now.getMonth() + 1)) {
-      navHtml += '<a href="#' + next.year + '-' + String(next.month).padStart(2, '0') + '" class="month-next">' + MONTHS[next.month - 1] + ' ' + next.year + ' &rarr;</a>';
+      navHtml += '<a href="#' + next.year + '-' + String(next.month).padStart(2, '0') + '" class="month-next">' + MONTHS[next.month - 1] + ' ' + next.year + '</a>';
     }
     document.getElementById('month-nav').innerHTML = navHtml;
 
-    // Fetch all tracks for the month, paginating
     var allTracks = [];
     function fetchPage(page) {
       return fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200&from=' + fromTs + '&to=' + toTs + '&page=' + page)
@@ -321,7 +319,6 @@
     }
 
     fetchPage(1).then(function() {
-      // Group by album, deduplicate
       var albumMap = {};
       var totalTracks = 0;
       allTracks.forEach(function(t) {
@@ -342,10 +339,10 @@
         if (ts > albumMap[key].lastPlayed) albumMap[key].lastPlayed = ts;
       });
 
-      // Sort chronologically (most recent first)
       var albums = Object.values(albumMap).sort(function(a, b) { return b.lastPlayed - a.lastPlayed; });
 
       document.getElementById('music-stats').textContent = albums.length + ' albums \u00B7 ' + totalTracks + ' tracks';
+      document.getElementById('music-page-header').classList.add('loaded');
 
       var grid = document.getElementById('album-grid');
       if (albums.length === 0) {
@@ -353,15 +350,15 @@
         return;
       }
 
-      grid.innerHTML = albums.map(function(a) {
+      grid.innerHTML = albums.map(function(a, i) {
         var url = 'https://open.spotify.com/search/' + encodeURIComponent(a.artist + ' ' + a.album);
-        return '<a href="' + url + '" class="album-card" target="_blank" rel="noopener">' +
+        return '<a href="' + url + '" class="album-card" target="_blank" rel="noopener" style="animation-delay:' + (i * 30) + 'ms">' +
           '<div class="album-cover">' +
           (a.image ? '<img src="' + escHtml(a.image) + '" alt="' + escHtml(a.album) + '" loading="lazy">' : '') +
+          '<div class="album-overlay">' +
+          '<span class="album-overlay-title">' + escHtml(a.album) + '</span>' +
+          '<span class="album-overlay-artist">' + escHtml(a.artist) + '</span>' +
           '</div>' +
-          '<div class="album-info">' +
-          '<span class="album-title">' + escHtml(a.album) + '</span>' +
-          '<span class="album-artist">' + escHtml(a.artist) + '</span>' +
           '</div>' +
           '</a>';
       }).join('');
@@ -370,20 +367,6 @@
       document.getElementById('album-grid').innerHTML = '<p class="empty-state">Could not load listening data.</p>';
     });
   }
-
-  // Style toggle
-  document.getElementById('style-toggle').addEventListener('click', function(e) {
-    var btn = e.target.closest('.toggle-btn');
-    if (!btn) return;
-    document.querySelectorAll('.toggle-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    var grid = document.getElementById('album-grid');
-    if (btn.dataset.style === 'art-only') {
-      grid.classList.add('art-only');
-    } else {
-      grid.classList.remove('art-only');
-    }
-  });
 
   loadMonth(getMonth());
   window.addEventListener('hashchange', function() { loadMonth(getMonth()); });
