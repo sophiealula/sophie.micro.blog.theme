@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sophie.fm</title>
+<style>
+@font-face {
+    font-family: 'Rombyte';
+    src: url('https://walzr.com/rombyte.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Ari';
+    src: url('https://walzr.com/ari.ttf') format('truetype');
+}
+
+body { margin: 0; overflow-x: hidden; }
+
+h1, h2, h3, h4, p, a, th, td {
+    text-shadow: 1px 1px .5px rgba(0,0,0,.5);
+    opacity: 0.7;
+}
+h1, h2, h3, h4 { padding: 0; margin: 0; }
+
+#main {
+    background-image: url(assets/gridnew.png);
+    background-size: 60px 60px;
+    background-color: #7f9c68;
+    display: flex;
+    width: 100vw;
+    box-sizing: border-box;
+    height: 100vh;
+}
+
+/* Left panel */
+#left {
+    width: 50%;
+    max-width: 400px;
+    padding: 2rem;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+#left::-webkit-scrollbar { display: none; }
+
+#title {
+    font-family: Rombyte, monospace;
+    transform: translate(-3px, 10px);
+    margin-top: 10px;
+}
+
+#desc {
+    font-family: Ari, monospace;
+    font-size: 24px;
+    font-weight: 400;
+    margin-top: 40px;
+}
+
+.back-link {
+    font-family: Ari, monospace;
+    font-size: 16px;
+    color: #000;
+    text-decoration: none;
+    margin-top: 30px;
+    display: inline-block;
+}
+
+/* Info button — matching Bop Spotter exactly */
+.info-btn {
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+    filter: drop-shadow(1px 1px 0.5px rgba(0, 0, 0, 0.5));
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Genre kick — same style as #desc */
+#kick {
+    font-family: Ari, monospace;
+    font-size: 24px;
+    font-weight: 400;
+    margin-top: 0;
+}
+
+/* Right panel — matching Bop Spotter exactly */
+#right {
+    flex: 1;
+    gap: 40px;
+    padding: 50px 50px 0 50px;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Player */
+#player {
+    display: flex;
+    min-height: 280px;
+    background-color: black;
+    color: #7f9c68;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-image: url(assets/grid-inverted.png);
+    background-size: 60px 60px;
+    position: relative;
+    cursor: pointer;
+}
+
+.cover-art {
+    flex: 1;
+    max-width: 300px;
+    position: relative;
+    cursor: pointer;
+    background-color: #7f9c68;
+    display: flex;
+    align-items: center;
+}
+
+.cover-art img {
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    display: block;
+    position: relative;
+    filter: drop-shadow(1px 1px 0.5px rgba(0, 0, 0, 0.5));
+    z-index: 1;
+}
+
+.grid-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url(assets/grid-inverted.png);
+    background-size: 41px;
+    mix-blend-mode: difference;
+    background-color: black;
+    z-index: 7;
+    pointer-events: none;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+#player:hover .play-overlay { opacity: 1; }
+
+.play-overlay img {
+    width: 48px; height: 48px;
+    filter: invert(77%) sepia(8%) saturate(1558%) hue-rotate(50deg) brightness(75%) contrast(79%);
+}
+
+.song-info {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.song-info h2 {
+    font-family: 'Rombyte', monospace;
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.song-info .artist-name {
+    font-family: 'Ari', monospace;
+    font-size: 18px;
+    color: #7f9c68;
+    opacity: 0.5;
+    margin: 0;
+}
+
+.song-info .time-ago {
+    font-family: 'Ari', monospace;
+    font-size: 16px;
+    color: #7f9c68;
+    opacity: 0.4;
+    margin: 8px 0 0 0;
+}
+
+.music-links {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    z-index: 5618;
+}
+
+.music-links a {
+    display: flex;
+    align-items: center;
+    background-color: rgba(127, 156, 104, 0.2);
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #7f9c68;
+    transition: background-color 0.3s ease;
+    font-family: Ari, monospace;
+}
+.music-links a:hover { background-color: rgba(127, 156, 104, 0.3); }
+
+.link-text { display: flex; flex-direction: column; }
+.opening {
+    font-family: Rombyte, monospace;
+    font-size: 10px !important;
+    opacity: 0.7;
+}
+.service {
+    font-family: Ari, monospace;
+    font-size: 20px !important;
+    opacity: 0.7;
+}
+
+/* Tracklist */
+#songlist {
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+#songlist::-webkit-scrollbar { display: none; }
+
+#tracklist {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Ari', monospace;
+}
+
+#tracklist th, #tracklist td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 3px solid rgba(40,40,40,0.7);
+    font-size: 20px;
+}
+
+#tracklist tbody tr:not(.date-header) {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+#tracklist tbody tr:not(.date-header):hover {
+    background-color: rgba(127, 156, 104, 0.1);
+}
+
+.date-header td {
+    font-family: 'Rombyte', monospace;
+    font-size: 16px !important;
+    padding: 20px 10px 10px;
+    border-bottom: none;
+    color: #000;
+    background-color: rgba(127, 156, 104, 0.2);
+}
+
+.track-time {
+    font-family: 'Ari', monospace;
+    font-size: 14px;
+    color: #000;
+    opacity: 0.4;
+    white-space: nowrap;
+    vertical-align: top;
+    padding-top: 14px !important;
+    width: 80px;
+}
+
+.track-song {
+    font-family: 'Ari', monospace;
+    font-size: 22px;
+    color: #000;
+    display: block;
+}
+
+.track-artist {
+    font-family: 'Ari', monospace;
+    font-size: 17px;
+    color: #000;
+    opacity: 0.45;
+    display: block;
+    margin-top: 3px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #7f9c68;
+    background-image: url(assets/gridnew.png);
+    background-size: 60px 60px;
+    margin: 12% auto;
+    padding: 30px;
+    width: 400px;
+    max-width: 90%;
+    font-family: 'Ari', monospace;
+    font-size: 20px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.modal-content h3 {
+    font-family: 'Rombyte', monospace;
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.modal-content p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.modal-content a {
+    color: #000;
+}
+
+.close-modal {
+    color: #333;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 6px;
+    right: 14px;
+}
+.close-modal:hover { color: #000; }
+
+/* Mobile */
+@media (max-width: 1100px) {
+    #main {
+        flex-direction: column;
+        height: fit-content;
+        background-size: 45px !important;
+    }
+    #left { width: 100%; max-width: 100%; box-sizing: border-box; }
+    #right { padding: 0; max-width: 100%; }
+    #player {
+        min-height: auto !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+    }
+    .cover-art { flex: 0 0 120px; max-width: 120px; }
+    .song-info h2 { font-size: 15px !important; margin-bottom: 0 !important; }
+    #desc { font-size: 19px; }
+    #title { font-size: 25px; }
+    td { font-size: 19px !important; }
+    .track-artist { font-size: 14px !important; }
+    .track-time { font-size: 12px !important; }
+    tr td:first-child { min-width: 65px; }
+    .opening { display: none; }
+    .service { font-size: 11px !important; }
+    .music-links a { padding: 4px 6px !important; }
+}
+</style>
+</head>
+<body>
+<div id="main">
+    <div id="left">
+        <div id="banner">
+            <h1 id="title">SOPHIE.FM</h1>
+            <p id="desc">
+                A feed of everything I'm listening to.
+            </p>
+            <p id="kick"></p>
+            <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-top: 30px;">
+                <a href="/" class="back-link">&larr; back to site</a>
+                <img src="assets/info.png" class="info-btn" id="infoBtn" alt="Info">
+            </div>
+        </div>
+    </div>
+
+    <div id="right">
+        <div id="player">
+            <div class="cover-art">
+                <img id="coverArt" src="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" alt="">
+                <div class="grid-overlay"></div>
+                <div class="play-overlay">
+                    <img src="assets/play.png" class="play-icon" alt="Play">
+                </div>
+            </div>
+            <div class="song-info">
+                <div>
+                    <h2 id="songTitle">Back to the Future (Part II)</h2>
+                    <p class="artist-name" id="artistName">D'Angelo</p>
+                    <p class="time-ago" id="releaseDate">2 hours ago</p>
+                </div>
+                <div class="music-links">
+                    <a href="https://open.spotify.com/search/D%27Angelo%20Back%20to%20the%20Future" id="spotifyLink" target="_blank">
+                        <div class="link-text">
+                            <span class="opening">Open in</span>
+                            <span class="service">Spotify</span>
+                        </div>
+                    </a>
+                    <a href="https://music.apple.com/search?term=D%27Angelo%20Back%20to%20the%20Future" id="appleMusicLink" target="_blank">
+                        <div class="link-text">
+                            <span class="opening">Open in</span>
+                            <span class="service">Apple Music</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="songlist">
+            <table id="tracklist">
+                <tbody>
+                    <tr class="date-header"><td colspan="2">March 24, 2026</td></tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="Back to the Future (Part II)" data-artist="D'Angelo" data-relative="2 hours">
+                        <td class="track-time">12:51 PM</td>
+                        <td><span class="track-song">Back to the Future (Part II)</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="The Door" data-artist="D'Angelo" data-relative="2 hours">
+                        <td class="track-time">12:47 PM</td>
+                        <td><span class="track-song">The Door</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="Betray My Heart" data-artist="D'Angelo" data-relative="2 hours">
+                        <td class="track-time">12:42 PM</td>
+                        <td><span class="track-song">Betray My Heart</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="Prayer" data-artist="D'Angelo" data-relative="3 hours">
+                        <td class="track-time">12:37 PM</td>
+                        <td><span class="track-song">Prayer</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="Till It's Done (Tutu)" data-artist="D'Angelo" data-relative="3 hours">
+                        <td class="track-time">12:33 PM</td>
+                        <td><span class="track-song">Till It's Done (Tutu)</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="Back to the Future (Part I)" data-artist="D'Angelo" data-relative="3 hours">
+                        <td class="track-time">12:28 PM</td>
+                        <td><span class="track-song">Back to the Future (Part I)</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="Really Love" data-artist="D'Angelo" data-relative="3 hours">
+                        <td class="track-time">12:21 PM</td>
+                        <td><span class="track-song">Really Love</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="Sugah Daddy" data-artist="D'Angelo" data-relative="3 hours">
+                        <td class="track-time">12:16 PM</td>
+                        <td><span class="track-song">Sugah Daddy</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/98de1f5cf9594bc35bdbead4d8fc2dd2.png" data-title="1000 Deaths" data-artist="D'Angelo" data-relative="4 hours">
+                        <td class="track-time">12:03 PM</td>
+                        <td><span class="track-song">1000 Deaths</span><span class="track-artist">D'Angelo</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/0a1d78706cd8a048083546ecec4c0a0c.jpg" data-title="Dandou Kodjo" data-artist="Akofa Akoussah" data-relative="4 hours">
+                        <td class="track-time">11:48 AM</td>
+                        <td><span class="track-song">Dandou Kodjo</span><span class="track-artist">Akofa Akoussah</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/d9165c0a08e39398e770ed7fa85c5ed9.jpg" data-title="Homenagem aos Orixás" data-artist="Dona Onete" data-relative="4 hours">
+                        <td class="track-time">11:45 AM</td>
+                        <td><span class="track-song">Homenagem aos Orixás</span><span class="track-artist">Dona Onete</span></td>
+                    </tr>
+                    <tr data-cover-art="https://lastfm.freetls.fastly.net/i/u/64s/150cf399d8934cca9b1b04b676451d35.jpg" data-title="Mamaye" data-artist="Sergent Garcia" data-relative="4 hours">
+                        <td class="track-time">11:40 AM</td>
+                        <td><span class="track-song">Mamaye</span><span class="track-artist">Sergent Garcia</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal" id="infoModal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <p>Music data pulled from <a href="https://last.fm/user/sophiealu" target="_blank">Last.fm</a>. Previews via Spotify.</p>
+        <p>Inspired by <a href="https://walzr.com/bop-spotter" target="_blank">Bop Spotter</a> by Riley Walz.</p>
+        <p id="modal-stats"></p>
+    </div>
+</div>
+
+<audio id="audioPlayer" preload="none"></audio>
+
+<script>
+// Player clicks
+const rows = document.querySelectorAll('#tracklist tbody tr:not(.date-header)');
+rows.forEach(row => {
+    row.addEventListener('click', () => {
+        document.getElementById('coverArt').src = row.dataset.coverArt;
+        document.getElementById('songTitle').textContent = row.dataset.title;
+        document.getElementById('artistName').textContent = row.dataset.artist;
+        document.getElementById('releaseDate').textContent = row.dataset.relative + ' ago';
+        const q = encodeURIComponent(row.dataset.artist + ' ' + row.dataset.title);
+        document.getElementById('spotifyLink').href = 'https://open.spotify.com/search/' + q;
+        document.getElementById('appleMusicLink').href = 'https://music.apple.com/search?term=' + q;
+    });
+});
+
+// Info modal
+document.getElementById('infoBtn').addEventListener('click', () => {
+    document.getElementById('infoModal').style.display = 'block';
+});
+document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('infoModal').style.display = 'none';
+});
+window.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('infoModal')) {
+        document.getElementById('infoModal').style.display = 'none';
+    }
+});
+
+// Genre kick + monthly stats
+const LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
+const LASTFM_USER = 'sophiealu';
+
+(async function() {
+    try {
+        // Genre kick
+        const res = await fetch('https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&period=7day&limit=1');
+        const data = await res.json();
+        const topArtist = data.topartists.artist[0];
+
+        const tagsRes = await fetch('https://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=' + encodeURIComponent(topArtist.name) + '&api_key=' + LASTFM_KEY + '&format=json');
+        const tagsData = await tagsRes.json();
+        const genre = tagsData.toptags.tag[0]?.name || 'music';
+
+        document.getElementById('kick').textContent =
+            'On a ' + genre.toLowerCase() + ' wave this week \u2014 ' + topArtist.name + ' on repeat (' + topArtist.playcount + ' plays).';
+
+        // Monthly stats for modal
+        var now = new Date();
+        var from = new Date(now.getFullYear(), now.getMonth(), 1);
+        var fromTs = Math.floor(from.getTime() / 1000);
+        var toTs = Math.floor(now.getTime() / 1000);
+
+        const monthRes = await fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=1&from=' + fromTs + '&to=' + toTs);
+        const monthData = await monthRes.json();
+        var totalThisMonth = monthData.recenttracks?.['@attr']?.total || '0';
+
+        var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        document.getElementById('modal-stats').textContent = totalThisMonth + ' tracks played in ' + monthNames[now.getMonth()] + ' ' + now.getFullYear() + '.';
+    } catch(e) { console.error(e); }
+})();
+</script>
+</body>
+</html>

@@ -136,36 +136,77 @@
 </script>
 
 {{ else if eq .Title "Music" }}
-<!-- ===================== MUSIC PAGE ===================== -->
+<!-- ===================== SOPHIE.FM — MUSIC PAGE ===================== -->
 <link rel="preconnect" href="https://lastfm.freetls.fastly.net" crossorigin>
-<div class="music-page">
-  <div class="music-page-header" id="music-page-header">
-    <h1 class="music-month" id="music-header"></h1>
-    <p class="music-stats" id="music-stats"></p>
+
+<div class="sophie-fm" id="sophie-fm">
+  <div class="sfm-left">
+    <h1 class="sfm-title">SOPHIE.FM</h1>
+    <p class="sfm-desc">A feed of everything I'm listening to.</p>
+    <p class="sfm-kick" id="sfm-kick"></p>
+    <div class="sfm-footer">
+      <a href="{{ .Site.BaseURL }}" class="sfm-back">&larr; back to site</a>
+      <img src="{{ "music/info.png" | relURL }}" class="sfm-info-btn" id="sfm-info-btn" alt="Info">
+    </div>
   </div>
 
-  <nav class="month-nav" id="month-nav"></nav>
+  <div class="sfm-right">
+    <div class="sfm-player" id="sfm-player">
+      <div class="sfm-cover-art">
+        <img id="sfm-cover" src="" alt="">
+        <div class="sfm-grid-overlay"></div>
+        <div class="sfm-play-overlay">
+          <img src="{{ "music/play.png" | relURL }}" class="sfm-play-icon" id="sfm-play-icon" alt="Play">
+          <img src="{{ "music/pause.png" | relURL }}" class="sfm-pause-icon" id="sfm-pause-icon" alt="Pause" style="display:none">
+        </div>
+      </div>
+      <div class="sfm-song-info">
+        <div>
+          <h2 id="sfm-song-title">Loading...</h2>
+          <p class="sfm-artist" id="sfm-artist-name"></p>
+          <p class="sfm-time-ago" id="sfm-time-ago"></p>
+        </div>
+        <div class="sfm-links">
+          <a href="#" id="sfm-spotify" target="_blank">
+            <div class="sfm-link-text">
+              <span class="sfm-link-label">Open in</span>
+              <span class="sfm-link-service">Spotify</span>
+            </div>
+          </a>
+          <a href="#" id="sfm-apple" target="_blank">
+            <div class="sfm-link-text">
+              <span class="sfm-link-label">Open in</span>
+              <span class="sfm-link-service">Apple Music</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
 
-  <div class="album-grid" id="album-grid">
-    <div class="album-grid-loading" id="album-loading">
-      <span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
+    <div class="sfm-tracklist-wrap" id="sfm-tracklist-wrap">
+      <table class="sfm-tracklist" id="sfm-tracklist">
+        <tbody id="sfm-tbody"></tbody>
+      </table>
     </div>
   </div>
 </div>
+
+<!-- Info Modal -->
+<div class="sfm-modal" id="sfm-modal">
+  <div class="sfm-modal-content">
+    <span class="sfm-close-modal" id="sfm-close-modal">&times;</span>
+    <p>Music data pulled from <a href="https://last.fm/user/sophiealu" target="_blank">Last.fm</a>. Previews via Spotify.</p>
+    <p>Inspired by <a href="https://walzr.com/bop-spotter" target="_blank">Bop Spotter</a> by Riley Walz.</p>
+    <p id="sfm-modal-stats"></p>
+  </div>
+</div>
+
+<audio id="sfm-audio" preload="none"></audio>
 
 <script>
 (function() {
   var LASTFM_KEY = '8b61de3f5eb035dd820b09c27fc7f129';
   var LASTFM_USER = 'sophiealu';
-  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-  function getMonth() {
-    var match = location.hash.match(/(\d{4})-(\d{2})/);
-    if (match) return { year: parseInt(match[1]), month: parseInt(match[2]) };
-    var now = new Date();
-    return { year: now.getFullYear(), month: now.getMonth() + 1 };
-  }
 
   function escHtml(s) {
     var d = document.createElement('div');
@@ -173,95 +214,144 @@
     return d.innerHTML;
   }
 
-  function loadMonth(ym) {
-    var from = new Date(ym.year, ym.month - 1, 1);
-    var to = new Date(ym.year, ym.month, 1);
-    var fromTs = Math.floor(from.getTime() / 1000);
-    var toTs = Math.floor(to.getTime() / 1000);
-
-    document.getElementById('music-header').innerHTML = MONTHS[ym.month - 1] + ' <em>' + ym.year + '</em> Listens';
-    document.getElementById('music-stats').textContent = '';
-    document.getElementById('album-grid').innerHTML = '<div class="album-grid-loading" id="album-loading"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>';
-    document.getElementById('music-page-header').classList.remove('loaded');
-
-    // Build month nav
-    var prev = ym.month === 1 ? { year: ym.year - 1, month: 12 } : { year: ym.year, month: ym.month - 1 };
-    var next = ym.month === 12 ? { year: ym.year + 1, month: 1 } : { year: ym.year, month: ym.month + 1 };
-    var now = new Date();
-    var navHtml = '<a href="#' + prev.year + '-' + String(prev.month).padStart(2, '0') + '" class="month-prev">' + MONTHS[prev.month - 1] + ' ' + prev.year + '</a>';
-    if (next.year < now.getFullYear() || (next.year === now.getFullYear() && next.month <= now.getMonth() + 1)) {
-      navHtml += '<a href="#' + next.year + '-' + String(next.month).padStart(2, '0') + '" class="month-next">' + MONTHS[next.month - 1] + ' ' + next.year + '</a>';
-    }
-    document.getElementById('month-nav').innerHTML = navHtml;
-
-    var albumMap = {};
-    var totalTracks = 0;
-
-    function processTracks(tracks) {
-      tracks.forEach(function(t) {
-        if (!t.date) return;
-        var key = (t.album?.['#text'] || 'Unknown') + '|||' + t.artist['#text'];
-        totalTracks++;
-        if (!albumMap[key]) {
-          albumMap[key] = {
-            album: t.album?.['#text'] || 'Unknown',
-            artist: t.artist['#text'],
-            image: t.image?.[2]?.['#text'] || t.image?.[1]?.['#text'] || '',
-            lastPlayed: parseInt(t.date.uts),
-            count: 0
-          };
-        }
-        albumMap[key].count++;
-        var ts = parseInt(t.date.uts);
-        if (ts > albumMap[key].lastPlayed) albumMap[key].lastPlayed = ts;
-      });
-    }
-
-    function renderAlbums() {
-      var albums = Object.values(albumMap).sort(function(a, b) { return b.lastPlayed - a.lastPlayed; });
-      document.getElementById('music-stats').textContent = albums.length + ' albums \u00B7 ' + totalTracks + ' tracks';
-      document.getElementById('music-page-header').classList.add('loaded');
-
-      var grid = document.getElementById('album-grid');
-      if (albums.length === 0) {
-        grid.innerHTML = '<p class="empty-state">No listens this month.</p>';
-        return;
-      }
-
-      grid.innerHTML = albums.map(function(a, i) {
-        var url = 'https://open.spotify.com/search/' + encodeURIComponent(a.artist + ' ' + a.album);
-        var lazy = i >= 20;
-        return '<a href="' + url + '" class="album-card" target="_blank" rel="noopener" style="animation-delay:' + (Math.min(i, 20) * 25) + 'ms">' +
-          '<div class="album-cover">' +
-          (a.image ? '<img src="' + escHtml(a.image) + '" alt="' + escHtml(a.album) + '" width="174" height="174" decoding="async"' + (lazy ? ' loading="lazy"' : '') + '>' : '') +
-          '<div class="album-overlay">' +
-          '<span class="album-overlay-title">' + escHtml(a.album) + '</span>' +
-          '<span class="album-overlay-artist">' + escHtml(a.artist) + '</span>' +
-          '</div>' +
-          '</div>' +
-          '</a>';
-      }).join('');
-    }
-
-    function fetchPage(page) {
-      return fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=200&from=' + fromTs + '&to=' + toTs + '&page=' + page)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var tracks = data.recenttracks?.track || [];
-        processTracks(tracks);
-        renderAlbums();
-        var totalPages = parseInt(data.recenttracks?.['@attr']?.totalPages || '1');
-        if (page < totalPages && page < 10) return fetchPage(page + 1);
-      });
-    }
-
-    fetchPage(1).catch(function() {
-      document.getElementById('album-grid').innerHTML = '<p class="empty-state">Could not load listening data.</p>';
-    });
+  function timeAgo(ts) {
+    var diff = Math.floor((Date.now() / 1000) - ts);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' hours ago';
+    return Math.floor(diff / 86400) + ' days ago';
   }
 
-  loadMonth(getMonth());
-  window.addEventListener('hashchange', function() { loadMonth(getMonth()); });
+  function fmtTime(ts) {
+    var d = new Date(ts * 1000);
+    var h = d.getHours();
+    var m = String(d.getMinutes()).padStart(2, '0');
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return h + ':' + m + ' ' + ampm;
+  }
+
+  function fmtDate(ts) {
+    var d = new Date(ts * 1000);
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  }
+
+  function updatePlayer(track) {
+    var img = track.image?.replace('/300x300/', '/64s/').replace('/174s/', '/64s/') || '';
+    document.getElementById('sfm-cover').src = img;
+    document.getElementById('sfm-song-title').textContent = track.title;
+    document.getElementById('sfm-artist-name').textContent = track.artist;
+    document.getElementById('sfm-time-ago').textContent = track.ago;
+    var q = encodeURIComponent(track.artist + ' ' + track.title);
+    document.getElementById('sfm-spotify').href = 'https://open.spotify.com/search/' + q;
+    document.getElementById('sfm-apple').href = 'https://music.apple.com/search?term=' + q;
+  }
+
+  // Load recent tracks
+  var page = 1;
+  var loading = false;
+
+  function loadTracks() {
+    if (loading) return;
+    loading = true;
+    fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=50&page=' + page)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var tracks = data.recenttracks?.track || [];
+      var tbody = document.getElementById('sfm-tbody');
+      var lastDate = tbody.lastElementChild?.dataset?.date || '';
+      var isFirst = tbody.children.length === 0;
+
+      tracks.forEach(function(t, i) {
+        if (!t.date) return;
+        var ts = parseInt(t.date.uts);
+        var dateStr = fmtDate(ts);
+        var img300 = t.image?.[3]?.['#text'] || t.image?.[2]?.['#text'] || '';
+
+        if (dateStr !== lastDate) {
+          var dh = document.createElement('tr');
+          dh.className = 'sfm-date-header';
+          dh.dataset.date = dateStr;
+          dh.innerHTML = '<td colspan="2">' + dateStr + '</td>';
+          tbody.appendChild(dh);
+          lastDate = dateStr;
+        }
+
+        var tr = document.createElement('tr');
+        tr.dataset.coverArt = img300;
+        tr.dataset.title = t.name;
+        tr.dataset.artist = t.artist['#text'];
+        tr.dataset.relative = timeAgo(ts);
+        tr.dataset.image = img300;
+        tr.innerHTML = '<td class="sfm-track-time">' + fmtTime(ts) + '</td>' +
+          '<td><span class="sfm-track-song">' + escHtml(t.name) + '</span><span class="sfm-track-artist">' + escHtml(t.artist['#text']) + '</span></td>';
+
+        tr.addEventListener('click', function() {
+          updatePlayer({ title: t.name, artist: t.artist['#text'], image: img300, ago: timeAgo(ts) });
+        });
+
+        tbody.appendChild(tr);
+
+        if (isFirst && i === 0) {
+          updatePlayer({ title: t.name, artist: t.artist['#text'], image: img300, ago: timeAgo(ts) });
+        }
+      });
+
+      var totalPages = parseInt(data.recenttracks?.['@attr']?.totalPages || '1');
+      if (page < totalPages) page++;
+      loading = false;
+    })
+    .catch(function() { loading = false; });
+  }
+
+  loadTracks();
+
+  // Infinite scroll
+  var wrap = document.getElementById('sfm-tracklist-wrap');
+  wrap.addEventListener('scroll', function() {
+    if (wrap.scrollTop + wrap.clientHeight >= wrap.scrollHeight - 200) {
+      loadTracks();
+    }
+  });
+
+  // Info modal
+  document.getElementById('sfm-info-btn').addEventListener('click', function() {
+    document.getElementById('sfm-modal').style.display = 'block';
+  });
+  document.getElementById('sfm-close-modal').addEventListener('click', function() {
+    document.getElementById('sfm-modal').style.display = 'none';
+  });
+  window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('sfm-modal')) {
+      document.getElementById('sfm-modal').style.display = 'none';
+    }
+  });
+
+  // Genre kick + monthly stats
+  (async function() {
+    try {
+      var res = await fetch('https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&period=7day&limit=1');
+      var data = await res.json();
+      var topArtist = data.topartists.artist[0];
+
+      var tagsRes = await fetch('https://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=' + encodeURIComponent(topArtist.name) + '&api_key=' + LASTFM_KEY + '&format=json');
+      var tagsData = await tagsRes.json();
+      var genre = tagsData.toptags.tag[0]?.name || 'music';
+
+      document.getElementById('sfm-kick').textContent = 'On a ' + genre.toLowerCase() + ' wave this week \u2014 ' + topArtist.name + ' on repeat (' + topArtist.playcount + ' plays).';
+
+      var now = new Date();
+      var fromTs = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
+      var toTs = Math.floor(now.getTime() / 1000);
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+      var monthRes = await fetch('https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + LASTFM_USER + '&api_key=' + LASTFM_KEY + '&format=json&limit=1&from=' + fromTs + '&to=' + toTs);
+      var monthData = await monthRes.json();
+      var total = monthData.recenttracks?.['@attr']?.total || '0';
+      document.getElementById('sfm-modal-stats').textContent = total + ' tracks played in ' + months[now.getMonth()] + ' ' + now.getFullYear() + '.';
+    } catch(e) { console.error(e); }
+  })();
 })();
 </script>
 

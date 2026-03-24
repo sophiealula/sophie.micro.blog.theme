@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Music V3 — Bop Clone</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --sage: #7f9c68;
+    --sage-dim: rgba(127, 156, 104, 0.12);
+    --sage-bright: #98b880;
+    --text: #d4d4d4;
+    --text-dim: #555;
+    --border: #1c1c1c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* Full-page grid texture — the signature bop spotter look */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--sage-dim) 1px, transparent 1px),
+      linear-gradient(90deg, var(--sage-dim) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    min-height: 100vh;
+  }
+
+  /* Left panel */
+  .sidebar {
+    padding: 48px 32px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .site-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--sage);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .site-subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 40px;
+  }
+
+  /* Player in sidebar */
+  .player-art-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .player-art-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Pixelated grid overlay */
+  .player-art-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(127,156,104,0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(127,156,104,0.18) 1px, transparent 1px);
+    background-size: 6px 6px;
+    mix-blend-mode: difference;
+    pointer-events: none;
+  }
+
+  .player-track {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .player-artist {
+    font-size: 13px;
+    color: var(--sage);
+    margin-bottom: 20px;
+  }
+
+  .player-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .ctrl-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .ctrl-btn:hover, .ctrl-btn.active {
+    border-color: var(--sage);
+    color: var(--sage);
+  }
+
+  .player-meta {
+    margin-top: auto;
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .player-meta a {
+    color: var(--sage);
+    text-decoration: none;
+  }
+
+  /* Right panel — tracklist */
+  .main {
+    padding: 48px 32px 120px;
+    overflow-y: auto;
+  }
+
+  .date-header {
+    font-size: 12px;
+    color: var(--sage);
+    padding: 28px 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    position: relative;
+  }
+
+  .date-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, var(--sage-dim), transparent);
+  }
+
+  .track-row {
+    display: grid;
+    grid-template-columns: 44px 1fr 1fr 50px;
+    gap: 14px;
+    align-items: center;
+    padding: 10px 8px;
+    margin: 0 -8px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+
+  .track-row:hover {
+    background: var(--sage-dim);
+  }
+
+  .track-row.active {
+    background: rgba(127, 156, 104, 0.08);
+  }
+
+  .track-row.active .track-title { color: var(--sage-bright); }
+
+  .track-thumb {
+    width: 44px;
+    height: 44px;
+    overflow: hidden;
+    position: relative;
+    background: #1a1a1a;
+  }
+
+  .track-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .track-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(127,156,104,0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(127,156,104,0.2) 1px, transparent 1px);
+    background-size: 4px 4px;
+    mix-blend-mode: difference;
+  }
+
+  .track-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .track-artist {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .track-time {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+  }
+
+  /* Loading bar at top */
+  .loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--sage);
+    width: 0;
+    z-index: 10;
+    animation: load-in 2s ease-out forwards;
+  }
+
+  @keyframes load-in {
+    to { width: 100%; opacity: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .page {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: relative;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding: 32px 20px;
+    }
+    .player-art-wrap {
+      max-width: 250px;
+    }
+    .main {
+      padding: 24px 20px 120px;
+    }
+    .track-row {
+      grid-template-columns: 36px 1fr 40px;
+    }
+    .track-artist { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="loading-bar"></div>
+<div class="page">
+  <div class="sidebar">
+    <h1 class="site-title">sophie.fm</h1>
+    <div class="site-subtitle">personal radio &middot; chicago</div>
+
+    <div class="player-art-wrap">
+      <img src="https://lastfm.freetls.fastly.net/i/u/300x300/4b441fa85b614e34b20eab0b1a6a57d8.jpg" alt="">
+    </div>
+
+    <div class="player-track">Motion Sickness</div>
+    <div class="player-artist">Phoebe Bridgers &middot; Stranger in the Alps</div>
+
+    <div class="player-controls">
+      <button class="ctrl-btn active">&#9654; play</button>
+      <a href="#" class="ctrl-btn">spotify</a>
+      <a href="#" class="ctrl-btn">apple</a>
+    </div>
+
+    <div class="player-meta">
+      data from <a href="https://last.fm/user/sophiealu">last.fm</a><br>
+      previews via spotify<br>
+      <br>
+      <a href="/">back to site</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="date-header">2026-03-24</div>
+
+    <div class="track-row active">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/4b441fa85b614e34b20eab0b1a6a57d8.jpg" alt=""></div>
+      <div class="track-title">Motion Sickness</div>
+      <div class="track-artist">Phoebe Bridgers</div>
+      <div class="track-time">14:32</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Pink + White</div>
+      <div class="track-artist">Frank Ocean</div>
+      <div class="track-time">14:28</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Heavenly Father</div>
+      <div class="track-artist">Bon Iver</div>
+      <div class="track-time">13:55</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Kyoto</div>
+      <div class="track-artist">Phoebe Bridgers</div>
+      <div class="track-time">13:41</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Cruel Summer</div>
+      <div class="track-artist">Taylor Swift</div>
+      <div class="track-time">12:15</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Espresso</div>
+      <div class="track-artist">Sabrina Carpenter</div>
+      <div class="track-time">11:50</div>
+    </div>
+
+    <div class="date-header">2026-03-23</div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Everything I Wanted</div>
+      <div class="track-artist">Billie Eilish</div>
+      <div class="track-time">23:10</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Bags</div>
+      <div class="track-artist">Clairo</div>
+      <div class="track-time">22:48</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Cherry Wine</div>
+      <div class="track-artist">Hozier</div>
+      <div class="track-time">21:30</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Dissolve</div>
+      <div class="track-artist">Absofacto</div>
+      <div class="track-time">20:05</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Line Without a Hook</div>
+      <div class="track-artist">Ricky Montgomery</div>
+      <div class="track-time">19:22</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Cellophane</div>
+      <div class="track-artist">FKA twigs</div>
+      <div class="track-time">18:14</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-title">Supercut</div>
+      <div class="track-artist">Lorde</div>
+      <div class="track-time">17:33</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

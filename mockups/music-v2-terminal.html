@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Music V2 — Terminal</title>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+
+  :root {
+    --bg: #0c0c0c;
+    --bg-player: #141414;
+    --green: #4a9f7e;
+    --green-bright: #5fbf96;
+    --green-dim: rgba(74, 159, 126, 0.15);
+    --text: #ccc;
+    --text-dim: #555;
+    --border: #1e1e1e;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-sans: 'General Sans', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+  }
+
+  /* Scanline effect */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 120px;
+  }
+
+  /* Header — terminal prompt style */
+  .header {
+    margin-bottom: 40px;
+    font-family: var(--font-mono);
+  }
+
+  .header-prompt {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .header-prompt span { color: var(--green); }
+
+  .header h1 {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--green);
+  }
+
+  .header .meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+
+  /* Player — big featured area */
+  .player {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0;
+    margin-bottom: 48px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .player-art {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    background: #1a1a1a;
+  }
+
+  .player-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(30%) contrast(1.1);
+  }
+
+  .player-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 70%, var(--green-dim), transparent 60%);
+    mix-blend-mode: screen;
+  }
+
+  .player-info {
+    background: var(--bg-player);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .player-now {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--green);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .player-now::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #e85a4f;
+    border-radius: 50%;
+    animation: blink 1.5s ease infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  .player-track {
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .player-artist {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .player-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .player-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+
+  .player-btn:hover { border-color: var(--green); color: var(--green); }
+  .player-btn.active { border-color: var(--green); color: var(--green); }
+
+  /* Waveform placeholder */
+  .waveform {
+    height: 32px;
+    margin-top: auto;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .waveform span {
+    flex: 1;
+    background: var(--green-dim);
+    border-radius: 1px;
+    animation: wave 1.2s ease-in-out infinite;
+  }
+
+  .waveform span:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .waveform span:nth-child(2) { height: 70%; animation-delay: 0.1s; }
+  .waveform span:nth-child(3) { height: 50%; animation-delay: 0.2s; }
+  .waveform span:nth-child(4) { height: 90%; animation-delay: 0.3s; }
+  .waveform span:nth-child(5) { height: 60%; animation-delay: 0.15s; }
+  .waveform span:nth-child(6) { height: 80%; animation-delay: 0.25s; }
+  .waveform span:nth-child(7) { height: 45%; animation-delay: 0.35s; }
+  .waveform span:nth-child(8) { height: 65%; animation-delay: 0.05s; }
+
+  @keyframes wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.4); }
+  }
+
+  /* Tracklist */
+  .tracklist {
+    font-family: var(--font-mono);
+  }
+
+  .date-header {
+    font-size: 12px;
+    color: var(--green);
+    padding: 24px 0 8px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  .track-row {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+
+  .track-row:hover {
+    background: rgba(74, 159, 126, 0.05);
+    padding-left: 8px;
+    margin-left: -8px;
+    padding-right: 8px;
+    margin-right: -8px;
+  }
+
+  .track-thumb {
+    width: 36px;
+    height: 36px;
+    background: #1a1a1a;
+    overflow: hidden;
+  }
+
+  .track-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%);
+  }
+
+  .track-info {
+    min-width: 0;
+  }
+
+  .track-title {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .track-artist {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .track-time {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 600px) {
+    .player { grid-template-columns: 1fr; }
+    .player-art { width: 100%; height: 180px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-prompt"><span>$</span> now playing --user sophiealu</div>
+    <h1>What I'm <em>listening</em> to</h1>
+    <div class="meta">sourced from last.fm &middot; previews via spotify</div>
+  </div>
+
+  <div class="player">
+    <div class="player-art">
+      <img src="https://lastfm.freetls.fastly.net/i/u/300x300/4b441fa85b614e34b20eab0b1a6a57d8.jpg" alt="">
+    </div>
+    <div class="player-info">
+      <div>
+        <div class="player-now">now playing</div>
+        <div class="player-track">Motion Sickness</div>
+        <div class="player-artist">Phoebe Bridgers</div>
+      </div>
+      <div class="waveform">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="player-actions">
+        <button class="player-btn active">&#9654; preview</button>
+        <a href="#" class="player-btn">spotify</a>
+        <a href="#" class="player-btn">apple</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tracklist">
+    <div class="date-header">2026-03-24</div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/4b441fa85b614e34b20eab0b1a6a57d8.jpg" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Motion Sickness</div>
+        <div class="track-artist">Phoebe Bridgers</div>
+      </div>
+      <div class="track-time">14:32</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Pink + White</div>
+        <div class="track-artist">Frank Ocean</div>
+      </div>
+      <div class="track-time">14:28</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Heavenly Father</div>
+        <div class="track-artist">Bon Iver</div>
+      </div>
+      <div class="track-time">13:55</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Kyoto</div>
+        <div class="track-artist">Phoebe Bridgers</div>
+      </div>
+      <div class="track-time">13:41</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Cruel Summer</div>
+        <div class="track-artist">Taylor Swift</div>
+      </div>
+      <div class="track-time">12:15</div>
+    </div>
+
+    <div class="date-header">2026-03-23</div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Everything I Wanted</div>
+        <div class="track-artist">Billie Eilish</div>
+      </div>
+      <div class="track-time">23:10</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Bags</div>
+        <div class="track-artist">Clairo</div>
+      </div>
+      <div class="track-time">22:48</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Cherry Wine</div>
+        <div class="track-artist">Hozier</div>
+      </div>
+      <div class="track-time">21:30</div>
+    </div>
+
+    <div class="track-row">
+      <div class="track-thumb"><img src="https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png" alt=""></div>
+      <div class="track-info">
+        <div class="track-title">Dissolve</div>
+        <div class="track-artist">Absofacto</div>
+      </div>
+      <div class="track-time">20:05</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
