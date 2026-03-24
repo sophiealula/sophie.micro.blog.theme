@@ -1769,14 +1769,15 @@ body:has(.sophie-fm) main {
 
 .sfm-title {
   font-family: Rombyte, monospace;
-  transform: translate(-3px, 0);
+  transform: translate(-3px, 10px);
+  margin-top: 10px;
 }
 
 .sfm-desc {
   font-family: Ari, monospace;
   font-size: 24px;
   font-weight: 400;
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .sfm-kick {
@@ -1800,6 +1801,7 @@ body:has(.sophie-fm) main {
   color: #000;
   text-decoration: none;
 }
+.sfm-back:hover { color: #000; }
 .sfm-back::after { display: none; }
 
 .sfm-info-btn {
@@ -1825,7 +1827,7 @@ body:has(.sophie-fm) main {
 /* Player */
 .sfm-player {
   display: flex;
-  min-height: 300px;
+  min-height: 280px;
   background-color: black;
   color: #7f9c68;
   overflow: hidden;
