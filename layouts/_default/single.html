@@ -440,33 +440,74 @@
 {{ else if eq .Title "Lab" }}
 <!-- ===================== LAB PAGE ===================== -->
 <div class="lab-page">
-  <p class="lab-intro">Things I've built for fun or out of frustration.</p>
+  <p class="lab-intro">Things I've built and things I've written.</p>
 
-  {{ $building := where .Site.RegularPages "Params.categories" "intersect" (slice "Building") }}
-
-  {{ if $building }}
-  <div class="building-list">
-    {{ range $building }}
-    <a href="{{ .Permalink }}" class="building-card">
-      {{ $img := "" }}
-      {{ $content := .Content }}
-      {{ $imgTag := index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
-      {{ with $imgTag }}
-        {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
+  <section class="media-section">
+    <h2><em>Projects</em></h2>
+    {{ $building := where .Site.RegularPages "Params.categories" "intersect" (slice "Building") }}
+    {{ if $building }}
+    <div class="thoughts-list">
+      {{ range $building }}
+      <a href="{{ .Permalink }}" class="thoughts-item">
+        <span class="thoughts-date">{{ .Date.Format "Jan 2006" }}</span>
+        <span class="thoughts-title">{{ .Title }}</span>
+      </a>
       {{ end }}
-      <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
-      </div>
-      <div class="building-info">
-        <h3>{{ .Title }}</h3>
-        <span class="building-date">{{ .Date.Format "Jan 2006" }}</span>
-      </div>
-    </a>
+    </div>
+    {{ else }}
+    <p class="empty-state">Nothing here yet.</p>
     {{ end }}
-  </div>
-  {{ else }}
-  <p class="empty-state">Nothing here yet.</p>
-  {{ end }}
+  </section>
+
+  <section class="media-section">
+    <h2><em>Notes</em></h2>
+    <div class="thoughts-list" id="notes-list">
+      <p class="loading">Loading notes...</p>
+    </div>
+  </section>
 </div>
+
+<script>
+(function() {
+  function fmtDate(d) {
+    var date = new Date(d);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[date.getMonth()] + ' ' + date.getFullYear();
+  }
+
+  function hasTag(item, tag) {
+    if (!item.tags) return false;
+    if (Array.isArray(item.tags)) return item.tags.some(function(t) { return t.toLowerCase() === tag; });
+    if (typeof item.tags === 'string') return item.tags.toLowerCase().split(',').map(function(t) { return t.trim(); }).includes(tag);
+    return false;
+  }
+
+  fetch('https://sophiealula.micro.blog/feed.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var items = data.items || [];
+    var notes = items.filter(function(item) { return hasTag(item, 'notes'); });
+    var el = document.getElementById('notes-list');
+
+    if (notes.length === 0) {
+      el.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
+      return;
+    }
+
+    el.innerHTML = notes.map(function(item) {
+      var title = item.title || item.content_text?.slice(0, 80) || '';
+      var url = item.url || '#';
+      return '<a href="' + url + '" class="thoughts-item">' +
+        '<span class="thoughts-date">' + fmtDate(item.date_published) + '</span>' +
+        '<span class="thoughts-title">' + title + '</span>' +
+        '</a>';
+    }).join('');
+  })
+  .catch(function() {
+    document.getElementById('notes-list').innerHTML = '<p class="empty-state">Could not load notes.</p>';
+  });
+})();
+</script>
 
 {{ else if eq .Title "Thoughts" }}
 <!-- ===================== THOUGHTS PAGE ===================== -->
