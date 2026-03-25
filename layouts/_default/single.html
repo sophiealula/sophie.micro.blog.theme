@@ -195,13 +195,23 @@
 <div class="sfm-modal" id="sfm-modal">
   <div class="sfm-modal-content">
     <span class="sfm-close-modal" id="sfm-close-modal">&times;</span>
-    <p>Music data pulled from <a href="https://last.fm/user/sophiealu" target="_blank">Last.fm</a>. Previews via Spotify.</p>
+    <p>Music data pulled from <a href="https://last.fm/user/sophiealu" target="_blank">Last.fm</a>. 30-second previews via Deezer.</p>
     <p>Inspired by <a href="https://walzr.com/bop-spotter" target="_blank">Bop Spotter</a> by Riley Walz.</p>
     <p id="sfm-modal-stats"></p>
   </div>
 </div>
 
 <audio id="sfm-audio" preload="none"></audio>
+
+<!-- Mini player bar -->
+<div class="sfm-mini-player" id="sfm-mini-player">
+  <div class="sfm-mini-progress" id="sfm-mini-progress"></div>
+  <div class="sfm-mini-inner">
+    <button class="sfm-mini-play" id="sfm-mini-play">&#9654;</button>
+    <span class="sfm-mini-title" id="sfm-mini-title"></span>
+    <span class="sfm-mini-time" id="sfm-mini-time">0:00</span>
+  </div>
+</div>
 
 <script>
 (function() {
@@ -237,6 +247,10 @@
     return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
   }
 
+  var audio = document.getElementById('sfm-audio');
+  var isPlaying = false;
+  var currentPreview = '';
+
   function updatePlayer(track) {
     var img = track.image?.replace('/300x300/', '/64s/').replace('/174s/', '/64s/') || '';
     document.getElementById('sfm-cover').src = img;
@@ -246,7 +260,69 @@
     var q = encodeURIComponent(track.artist + ' ' + track.title);
     document.getElementById('sfm-spotify').href = 'https://open.spotify.com/search/' + q;
     document.getElementById('sfm-apple').href = 'https://music.apple.com/search?term=' + q;
+
+    // Fetch Deezer preview
+    fetch('https://api.deezer.com/search?q=' + q + '&limit=1')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.data && data.data[0] && data.data[0].preview) {
+        currentPreview = data.data[0].preview;
+        audio.src = currentPreview;
+        document.getElementById('sfm-mini-player').classList.add('visible');
+        document.getElementById('sfm-mini-title').textContent = track.title + ' \u2014 ' + track.artist;
+        document.getElementById('sfm-mini-time').textContent = '0:30';
+        document.getElementById('sfm-mini-play').textContent = '\u25B6';
+        isPlaying = false;
+      }
+    })
+    .catch(function() {});
   }
+
+  // Play/pause from player click
+  document.getElementById('sfm-player').addEventListener('click', function(e) {
+    if (e.target.closest('.sfm-links') || e.target.closest('a')) return;
+    togglePlay();
+  });
+
+  // Play/pause from mini player
+  document.getElementById('sfm-mini-play').addEventListener('click', function() {
+    togglePlay();
+  });
+
+  function togglePlay() {
+    if (!audio.src) return;
+    if (isPlaying) {
+      audio.pause();
+      document.getElementById('sfm-mini-play').textContent = '\u25B6';
+      document.getElementById('sfm-play-icon').style.display = 'block';
+      document.getElementById('sfm-pause-icon').style.display = 'none';
+    } else {
+      audio.play();
+      document.getElementById('sfm-mini-play').textContent = '\u275A\u275A';
+      document.getElementById('sfm-play-icon').style.display = 'none';
+      document.getElementById('sfm-pause-icon').style.display = 'block';
+    }
+    isPlaying = !isPlaying;
+  }
+
+  // Progress bar
+  audio.addEventListener('timeupdate', function() {
+    if (audio.duration) {
+      var pct = (audio.currentTime / audio.duration) * 100;
+      document.getElementById('sfm-mini-progress').style.width = pct + '%';
+      var remaining = Math.ceil(audio.duration - audio.currentTime);
+      document.getElementById('sfm-mini-time').textContent = '0:' + String(remaining).padStart(2, '0');
+    }
+  });
+
+  audio.addEventListener('ended', function() {
+    isPlaying = false;
+    document.getElementById('sfm-mini-play').textContent = '\u25B6';
+    document.getElementById('sfm-play-icon').style.display = 'block';
+    document.getElementById('sfm-pause-icon').style.display = 'none';
+    document.getElementById('sfm-mini-progress').style.width = '0%';
+    document.getElementById('sfm-mini-time').textContent = '0:30';
+  });
 
   // Load recent tracks
   var page = 1;

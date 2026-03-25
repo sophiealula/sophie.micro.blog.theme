@@ -2054,6 +2054,69 @@ body:has(.sophie-fm) main {
 
 .sfm-modal-content a { color: #000; }
 
+/* Mini player bar */
+.sfm-mini-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #111;
+  height: 44px;
+  z-index: 9998;
+  display: none;
+  flex-direction: column;
+}
+
+.sfm-mini-player.visible {
+  display: flex;
+}
+
+.sfm-mini-progress {
+  height: 3px;
+  background: #7f9c68;
+  width: 0%;
+  transition: width 0.3s linear;
+}
+
+.sfm-mini-inner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+}
+
+.sfm-mini-play {
+  background: none;
+  border: none;
+  color: #7f9c68;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.sfm-mini-title {
+  flex: 1;
+  font-family: 'Ari', monospace;
+  font-size: 13px;
+  color: #7f9c68;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: none;
+}
+
+.sfm-mini-time {
+  font-family: 'Ari', monospace;
+  font-size: 12px;
+  color: #7f9c68;
+  opacity: 0.4;
+  text-shadow: none;
+}
+
 .sfm-close-modal {
   color: #333;
   font-size: 28px;
