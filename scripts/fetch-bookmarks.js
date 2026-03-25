@@ -131,6 +131,7 @@ async function main() {
   };
 
   const outputPath = path.join(__dirname, '..', 'static', 'data', 'bookmarks.json');
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
   console.log(`Written to ${outputPath}`);
 }
