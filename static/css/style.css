@@ -1719,17 +1719,19 @@ body:has(.about-page) main {
 
 /* Hide site chrome when sophie.fm is active */
 body:has(.sophie-fm) {
-  padding-top: 0;
-  overflow: hidden;
+  padding-top: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
 }
 body:has(.sophie-fm) .site-header,
 body:has(.sophie-fm) .site-footer {
-  display: none;
+  display: none !important;
 }
 body:has(.sophie-fm) main {
-  max-width: none;
-  padding: 0;
-  margin: 0;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Sophie.fm text styles */
