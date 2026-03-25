@@ -1771,6 +1771,7 @@ body:has(.sophie-fm) main {
 
 .sfm-title {
   font-family: Rombyte, monospace;
+  font-size: 27px;
   transform: translate(-3px, 10px);
   margin-top: 10px;
   color: #000;
