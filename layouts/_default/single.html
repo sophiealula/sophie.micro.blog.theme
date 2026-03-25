@@ -524,13 +524,18 @@
     {{ if $building }}
     <div class="building-list">
       {{ range $building }}
-      <a href="{{ .Permalink }}" class="building-card">
-        {{ $img := "" }}
-        {{ $content := .Content }}
-        {{ $imgTag := index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
-        {{ with $imgTag }}
-          {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
-        {{ end }}
+      {{ $img := "" }}
+      {{ $content := .Content }}
+      {{ $imgTag := index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
+      {{ with $imgTag }}
+        {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
+      {{ end }}
+      {{ $extLink := "" }}
+      {{ $linkTag := index (findRE `<a[^>]+href="(https?://[^"]+)"` $content) 0 }}
+      {{ with $linkTag }}
+        {{ $extLink = replaceRE `.*href="([^"]+)".*` "$1" . }}
+      {{ end }}
+      <a href="{{ with $extLink }}{{ . }}{{ else }}{{ $.Permalink }}{{ end }}" class="building-card"{{ with $extLink }} target="_blank" rel="noopener"{{ end }}>
         <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
         </div>
         <div class="building-info">
