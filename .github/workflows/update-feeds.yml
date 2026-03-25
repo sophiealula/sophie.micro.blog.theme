@@ -21,12 +21,14 @@ jobs:
           node-version: '20'
 
       - name: Fetch bookmarks from Slack
+        continue-on-error: true
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
         run: node scripts/fetch-bookmarks.js
 
       - name: Fetch microblog
+        continue-on-error: true
         run: node scripts/fetch-microblog.js
 
       - name: Commit changes
