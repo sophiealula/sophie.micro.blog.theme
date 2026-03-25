@@ -522,11 +522,21 @@
     <h2><em>Projects</em></h2>
     {{ $building := where .Site.RegularPages "Params.categories" "intersect" (slice "Building") }}
     {{ if $building }}
-    <div class="thoughts-list">
+    <div class="building-list">
       {{ range $building }}
-      <a href="{{ .Permalink }}" class="thoughts-item">
-        <span class="thoughts-date">{{ .Date.Format "Jan 2006" }}</span>
-        <span class="thoughts-title">{{ .Title }}</span>
+      <a href="{{ .Permalink }}" class="building-card">
+        {{ $img := "" }}
+        {{ $content := .Content }}
+        {{ $imgTag := index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
+        {{ with $imgTag }}
+          {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
+        {{ end }}
+        <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
+        </div>
+        <div class="building-info">
+          <h3>{{ .Title }}</h3>
+          <span class="building-date">{{ .Date.Format "Jan 2006" }}</span>
+        </div>
       </a>
       {{ end }}
     </div>
