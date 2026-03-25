@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab — Mockup</title>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F6F6F7;
+  --bg-nav: rgba(255, 255, 255, 0.95);
+  --text: #403E43;
+  --text-muted: #8E9196;
+  --accent: #4a9f7e;
+  --border: #e5e5e5;
+  --font-sans: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 6rem;
+  --max-width: 680px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  padding-top: calc(60px + var(--space-lg));
+}
+
+strong, b { font-weight: 500; }
+
+h1, h2, h3 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+em { font-style: italic; font-weight: 400; }
+
+a {
+  color: var(--text);
+  font-weight: inherit;
+  text-decoration: none;
+  position: relative;
+  display: inline;
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s ease;
+}
+
+a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Nav */
+.site-header {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: var(--space-md);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.site-nav {
+  display: inline-flex;
+  gap: var(--space-xs);
+  background: var(--bg-nav);
+  padding: 6px;
+  border-radius: 50px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  pointer-events: auto;
+}
+
+.nav-link {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.6rem 1.4rem;
+  border-radius: 40px;
+  transition: all 0.2s ease;
+}
+
+.nav-link::after { display: none; }
+.nav-link:hover { color: var(--text); }
+.nav-link.active { background: var(--bg); color: var(--text); }
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  background: #e85a4f;
+  border-radius: 50%;
+}
+
+/* Main */
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* Lab page */
+.lab-page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.lab-intro {
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--text);
+  margin-bottom: var(--space-lg);
+}
+
+/* Section headers — italic like old media page */
+.media-section {
+  margin-bottom: var(--space-xl);
+}
+
+.media-section h2 {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: var(--space-md);
+}
+
+.media-section h2 em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Building cards — vertical list with thumbnail */
+.building-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.building-card {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.building-card::after { display: none; }
+.building-card:first-child { padding-top: 0; }
+.building-card:last-child { border-bottom: none; }
+.building-card:hover { opacity: 0.6; }
+
+.building-thumb {
+  width: 140px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.building-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.building-info h3 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.building-date {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Notes list */
+.thoughts-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-md);
+}
+
+.thoughts-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  transition: color 0.2s ease;
+}
+
+.thoughts-item:last-child { border-bottom: none; }
+.thoughts-item::after { display: none; }
+.thoughts-item:hover { color: var(--accent); }
+
+.thoughts-date {
+  font-family: var(--font-sans);
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  width: 90px;
+}
+
+.thoughts-title {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+/* Footer */
+.site-footer { padding: var(--space-lg) 0; }
+.site-footer .container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  text-align: center;
+}
+.site-footer p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="site-nav">
+    <a href="#" class="nav-link">About</a>
+    <a href="#" class="nav-link active">Lab</a>
+    <a href="#" class="nav-link"><span class="nav-dot"></span>Now</a>
+    <a href="#" class="nav-link">Media</a>
+    <a href="#" class="nav-link">Contact</a>
+  </nav>
+</header>
+
+<main>
+<div class="lab-page">
+  <p class="lab-intro">Things I've built and things I've written.</p>
+
+  <section class="media-section">
+    <h2><em>Projects</em></h2>
+    <div class="building-list">
+
+      <a href="#" class="building-card">
+        <div class="building-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/unnamed.png')"></div>
+        <div class="building-info">
+          <h3>Letterboxd Streaming Checker</h3>
+          <span class="building-date">Mar 2026</span>
+        </div>
+      </a>
+
+      <a href="#" class="building-card">
+        <div class="building-thumb" style="background: linear-gradient(135deg, #7f9c68 0%, #5a7a4a 100%)"></div>
+        <div class="building-info">
+          <h3>Sophie.fm</h3>
+          <span class="building-date">Mar 2026</span>
+        </div>
+      </a>
+
+      <a href="#" class="building-card">
+        <div class="building-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/unnamed-1.png')"></div>
+        <div class="building-info">
+          <h3>Landing Page Design Tool</h3>
+          <span class="building-date">Feb 2026</span>
+        </div>
+      </a>
+
+      <a href="#" class="building-card">
+        <div class="building-thumb" style="background: linear-gradient(135deg, #e8f5ef 0%, #c8e6c9 100%)"></div>
+        <div class="building-info">
+          <h3>Hungry App</h3>
+          <span class="building-date">Jan 2026</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="media-section">
+    <h2><em>Notes</em></h2>
+    <div class="thoughts-list">
+
+      <a href="#" class="thoughts-item">
+        <span class="thoughts-date">Mar 2026</span>
+        <span class="thoughts-title">My workflow for building websites with Claude Code</span>
+      </a>
+
+      <a href="#" class="thoughts-item">
+        <span class="thoughts-date">Mar 2026</span>
+        <span class="thoughts-title">I can build apps on my walk to work</span>
+      </a>
+
+      <a href="#" class="thoughts-item">
+        <span class="thoughts-date">Mar 2026</span>
+        <span class="thoughts-title">Experimenting with voice UX</span>
+      </a>
+
+      <a href="#" class="thoughts-item">
+        <span class="thoughts-date">Feb 2026</span>
+        <span class="thoughts-title">Digital cameras are great</span>
+      </a>
+
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2026 Sophie Davis</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab V2 — Unified Cards</title>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F6F6F7;
+  --bg-nav: rgba(255, 255, 255, 0.95);
+  --text: #403E43;
+  --text-muted: #8E9196;
+  --accent: #4a9f7e;
+  --border: #e5e5e5;
+  --font-sans: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 6rem;
+  --max-width: 680px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  padding-top: calc(60px + var(--space-lg));
+}
+
+h1, h2, h3 { font-family: var(--font-sans); font-weight: 500; line-height: 1.3; }
+em { font-style: italic; font-weight: 400; }
+a { color: var(--text); text-decoration: none; }
+
+.site-header { display: flex; justify-content: center; position: fixed; top: var(--space-md); left: 0; right: 0; z-index: 100; pointer-events: none; }
+.site-nav { display: inline-flex; gap: var(--space-xs); background: var(--bg-nav); padding: 6px; border-radius: 50px; box-shadow: 0 2px 20px rgba(0,0,0,0.06); pointer-events: auto; }
+.nav-link { font-size: 0.95rem; font-weight: 400; color: var(--text-muted); padding: 0.6rem 1.4rem; border-radius: 40px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
+.nav-link:hover { color: var(--text); }
+.nav-link.active { background: var(--bg); color: var(--text); }
+.nav-dot { width: 8px; height: 8px; background: #e85a4f; border-radius: 50%; }
+
+main { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-md); }
+
+.lab-intro { font-size: 17px; line-height: 27px; color: var(--text); margin-bottom: var(--space-lg); }
+
+.section { margin-bottom: var(--space-xl); }
+.section h2 { font-size: 1.25rem; font-weight: 500; color: var(--text); margin-bottom: var(--space-md); }
+.section h2 em { font-style: italic; font-weight: 400; }
+
+/* Version label */
+.version-label {
+  display: inline-block;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: var(--space-md);
+}
+
+/* Card list — shared between projects and notes */
+.card-list { display: flex; flex-direction: column; }
+
+.card-item {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.card-item:first-child { padding-top: 0; }
+.card-item:last-child { border-bottom: none; }
+.card-item:hover { opacity: 0.6; }
+
+.card-thumb {
+  width: 140px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.card-info { flex: 1; min-width: 0; }
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.card-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Option A: date as small tag above title */
+.card-date-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Option B: date inline after description */
+.card-date-inline {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Divider between versions */
+.version-divider {
+  border: none;
+  border-top: 2px dashed var(--border);
+  margin: var(--space-xl) 0;
+}
+
+.site-footer { padding: var(--space-lg) 0; text-align: center; }
+.site-footer p { font-size: 14px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="site-nav">
+    <a href="#" class="nav-link">About</a>
+    <a href="#" class="nav-link active">Lab</a>
+    <a href="#" class="nav-link"><span class="nav-dot"></span>Now</a>
+    <a href="#" class="nav-link">Media</a>
+    <a href="#" class="nav-link">Contact</a>
+  </nav>
+</header>
+
+<main>
+<div>
+  <p class="lab-intro">Things I've built and things I've written.</p>
+
+  <!-- ============================================ -->
+  <span class="version-label">Version A — Date above title, description below</span>
+
+  <section class="section">
+    <h2><em>Projects</em></h2>
+    <div class="card-list">
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/unnamed.png')"></div>
+        <div class="card-info">
+          <span class="card-date-tag">Mar 2026</span>
+          <div class="card-title">Letterboxd Streaming Checker</div>
+          <div class="card-desc">See which movies from your Letterboxd watchlist are streaming and where.</div>
+        </div>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #7f9c68 0%, #5a7a4a 100%)"></div>
+        <div class="card-info">
+          <span class="card-date-tag">Mar 2026</span>
+          <div class="card-title">Sophie.fm</div>
+          <div class="card-desc">Personal radio station pulling from Last.fm. Bop Spotter-inspired.</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2><em>Notes</em></h2>
+    <div class="card-list">
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/image.png')"></div>
+        <div class="card-info">
+          <span class="card-date-tag">Mar 2026</span>
+          <div class="card-title">My workflow for building websites with Claude Code</div>
+          <div class="card-desc">How I go from idea to deployed site using AI-assisted development.</div>
+        </div>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #f0e6d3 0%, #e8d5b8 100%)"></div>
+        <div class="card-info">
+          <span class="card-date-tag">Mar 2026</span>
+          <div class="card-title">I can build apps on my walk to work</div>
+          <div class="card-desc">Coding on the go with Blink shell and tmux on an iPad.</div>
+        </div>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #e3e8f0 0%, #c8d0e0 100%)"></div>
+        <div class="card-info">
+          <span class="card-date-tag">Mar 2026</span>
+          <div class="card-title">Experimenting with voice UX</div>
+          <div class="card-desc">Playing around with voice interfaces and what feels natural.</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <hr class="version-divider">
+
+  <!-- ============================================ -->
+  <span class="version-label">Version B — No date shown, just title + description</span>
+
+  <section class="section">
+    <h2><em>Projects</em></h2>
+    <div class="card-list">
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/unnamed.png')"></div>
+        <div class="card-info">
+          <div class="card-title">Letterboxd Streaming Checker</div>
+          <div class="card-desc">See which movies from your Letterboxd watchlist are streaming and where.</div>
+        </div>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #7f9c68 0%, #5a7a4a 100%)"></div>
+        <div class="card-info">
+          <div class="card-title">Sophie.fm</div>
+          <div class="card-desc">Personal radio station pulling from Last.fm. Bop Spotter-inspired.</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2><em>Notes</em></h2>
+    <div class="card-list">
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/image.png')"></div>
+        <div class="card-info">
+          <div class="card-title">My workflow for building websites with Claude Code</div>
+          <div class="card-desc">How I go from idea to deployed site using AI-assisted development.</div>
+        </div>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #f0e6d3 0%, #e8d5b8 100%)"></div>
+        <div class="card-info">
+          <div class="card-title">I can build apps on my walk to work</div>
+          <div class="card-desc">Coding on the go with Blink shell and tmux on an iPad.</div>
+        </div>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #e3e8f0 0%, #c8d0e0 100%)"></div>
+        <div class="card-info">
+          <div class="card-title">Experimenting with voice UX</div>
+          <div class="card-desc">Playing around with voice interfaces and what feels natural.</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <hr class="version-divider">
+
+  <!-- ============================================ -->
+  <span class="version-label">Version C — Title + description, date tucked right</span>
+
+  <section class="section">
+    <h2><em>Projects</em></h2>
+    <div class="card-list">
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/unnamed.png')"></div>
+        <div class="card-info">
+          <div class="card-title">Letterboxd Streaming Checker</div>
+          <div class="card-desc">See which movies from your Letterboxd watchlist are streaming and where.</div>
+        </div>
+        <span class="card-date-inline">Mar '26</span>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #7f9c68 0%, #5a7a4a 100%)"></div>
+        <div class="card-info">
+          <div class="card-title">Sophie.fm</div>
+          <div class="card-desc">Personal radio station pulling from Last.fm. Bop Spotter-inspired.</div>
+        </div>
+        <span class="card-date-inline">Mar '26</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2><em>Notes</em></h2>
+    <div class="card-list">
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background-image: url('https://sophiealula.micro.blog/uploads/2026/image.png')"></div>
+        <div class="card-info">
+          <div class="card-title">My workflow for building websites with Claude Code</div>
+          <div class="card-desc">How I go from idea to deployed site using AI-assisted development.</div>
+        </div>
+        <span class="card-date-inline">Mar '26</span>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #f0e6d3 0%, #e8d5b8 100%)"></div>
+        <div class="card-info">
+          <div class="card-title">I can build apps on my walk to work</div>
+          <div class="card-desc">Coding on the go with Blink shell and tmux on an iPad.</div>
+        </div>
+        <span class="card-date-inline">Mar '26</span>
+      </a>
+      <a href="#" class="card-item">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #e3e8f0 0%, #c8d0e0 100%)"></div>
+        <div class="card-info">
+          <div class="card-title">Experimenting with voice UX</div>
+          <div class="card-desc">Playing around with voice interfaces and what feels natural.</div>
+        </div>
+        <span class="card-date-inline">Mar '26</span>
+      </a>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Sophie Davis</p>
+</footer>
+
+</body>
+</html>

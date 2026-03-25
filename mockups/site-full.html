@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sophie Davis — Full Site Mockup</title>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../static/css/style.css">
+<style>
+  /* Mockup nav to switch between pages */
+  .mockup-switcher {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e1e1e;
+    padding: 8px;
+    border-radius: 50px;
+    display: flex;
+    gap: 4px;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .mockup-switcher a {
+    color: #888;
+    font-size: 12px;
+    font-family: 'General Sans', sans-serif;
+    padding: 6px 14px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .mockup-switcher a::after { display: none; }
+  .mockup-switcher a:hover, .mockup-switcher a.active {
+    background: #333;
+    color: #fff;
+  }
+  /* Page sections — show/hide */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+  .page-section.active-flex { display: flex; }
+
+  /* Fix for about page centering in mockup */
+  .page-about { min-height: calc(100vh - 100px); display: none; align-items: center; }
+  .page-about.active-flex { display: flex; }
+</style>
+</head>
+<body>
+
+<!-- Site Header -->
+<header class="site-header">
+  <nav class="site-nav">
+    <a href="#about" class="nav-link active" data-page="about">About</a>
+    <a href="#lab" class="nav-link" data-page="lab">Lab</a>
+    <a href="#now" class="nav-link" data-page="now">
+      <span class="nav-dot"></span>Now
+    </a>
+    <a href="#media" class="nav-link" data-page="media">Media</a>
+    <a href="#contact" class="nav-link" data-page="contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ===================== ABOUT ===================== -->
+<div class="page-section page-about active-flex" id="page-about">
+<div class="about-page" style="width:100%">
+  <div class="about-layout">
+    <div class="about-image">
+      <img src="https://sophiealula.micro.blog/uploads/2026/dscf1711.jpg" alt="Sophie Davis" class="about-photo">
+    </div>
+    <div class="about-content">
+      <h1>Hi, I'm Sophie</h1>
+      <p>I think a lot about why people adopt new products.</p>
+      <p>Currently at <a href="https://2389.ai"><strong>2389 Research</strong></a>, building tools and exploring what idea validation looks like when anyone can ship a product in a weekend.</p>
+      <p>Previously launched 0→1 products at <a href="https://atomic.vc"><strong>Atomic</strong></a> and <a href="https://www.techstars.com/"><strong>invested in startups</strong></a>.</p>
+      <div class="about-links">
+        <a href="https://github.com/sophiealula">GitHub</a>
+        <a href="https://www.linkedin.com/in/sophie-davis-a11477172/">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== NOW ===================== -->
+<div class="page-section" id="page-now">
+<div class="now-page">
+  <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/">Harper</a>, who was inspired by <a href="https://nownownow.com">nownownow.com</a>, and so on.</p>
+
+  <h1 class="now-date">Now @ March 24, 2026</h1>
+
+  <div class="now-content">
+    <div class="now-post">
+      <p>Building at 2389</p>
+      <ul>
+        <li>Building with Claude Code!</li>
+        <li>Focused on using AI to design UI/UX. We launched our own landing page design <a href="https://skills.2389.ai/plugins/landing-page-design/">tool</a>, which I used to build this website.</li>
+        <li>I'm exploring what idea validation looks like in the age where everything is reproducible.</li>
+        <li>Building <a href="https://skills.2389.ai/#about">GTM tools</a> for our products. Pushing myself to make things more autonomous and accurate.</li>
+        <li>Thinking about how to build product while spending less time at a computer screen. I've been coding on the go with Blink and tmux.</li>
+      </ul>
+      <p>Studying global adoption of AI</p>
+      <ul>
+        <li>Reading a lot about how different countries are engaging with AI. Anthropic's economic index reports have been useful.</li>
+        <li>Reading about the labor dynamics of AI development.</li>
+        <li>Recently went to Japan for an AI conference. I met a lot of wonderful people and got a glimpse of Japan's relationship with robots. Joi Ito <a href="https://www.wired.com/story/ideas-joi-ito-robot-overlords/">sums this up well.</a></li>
+      </ul>
+      <p>The Normal</p>
+      <ul>
+        <li>Building software for fun, most recently an app for my <a href="http://letterboxd-streaming.netlify.app">Letterboxd-obsessed friends.</a></li>
+        <li>I'm training for a 10k with the goal of climbing <a href="https://shastaguides.com/">Mount Shasta</a> sometime next year.</li>
+        <li>Enduring the Arctic temps of Chicago with as much soup as possible</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== MEDIA ===================== -->
+<div class="page-section" id="page-media">
+<div class="media-page">
+  <p class="media-intro">Here's what I'm reading, updated March 24, 2026. You can also check out <a href="music-v4-bop-faithful.html">music I'm listening to</a>.</p>
+
+  <div class="media-feed" id="media-feed">
+    <div class="feed-date-header"><em>2026-03-10</em></div>
+    <div class="feed-entry"><a href="https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/" target="_blank">The Five Levels: from Spicy Autocomplete to the Dark Factory</a> <span class="feed-source">(danshapiro.com)</span></div>
+
+    <div class="feed-date-header"><em>2026-03-06</em></div>
+    <div class="feed-entry"><a href="https://harpers.org/archive/2026/03/childs-play-sam-kriss-ai-startup-roy-lee/" target="_blank">Child's Play, by Sam Kriss</a> <span class="feed-source">(harpers.org)</span></div>
+
+    <div class="feed-date-header"><em>2026-03-03</em></div>
+    <div class="feed-entry"><a href="https://robdodson.me/posts/how-i-built-my-mobile-second-brain/" target="_blank">How I Built My Mobile Second Brain</a> <span class="feed-source">(robdodson.me)</span></div>
+
+    <div class="feed-date-header"><em>2026-02-02</em></div>
+    <div class="feed-entry"><a href="https://www.wired.com/story/ideas-joi-ito-robot-overlords/" target="_blank">Why Westerners Fear Robots and the Japanese Do Not</a> <span class="feed-source">(wired.com)</span></div>
+
+    <div class="feed-date-header"><em>2026-02-01</em></div>
+    <div class="feed-entry"><a href="https://www.anthropic.com/research/anthropic-economic-index-january-2026-report" target="_blank">Anthropic Economic Index report: Economic primitives</a> <span class="feed-source">(anthropic.com)</span></div>
+    <div class="feed-entry"><a href="https://ghuntley.com/loop/" target="_blank">everything is a ralph loop</a> <span class="feed-source">(ghuntley.com)</span></div>
+    <div class="feed-entry"><a href="https://www.collisiondetector.com/riskmaxxing-and-the-death-of-the-middle-path/" target="_blank">Risk-maxxing and the Death of the Middle Path</a> <span class="feed-source">(collisiondetector.com)</span></div>
+  </div>
+
+  <nav class="feed-pagination">
+    <span class="feed-page-info">Page 1 of 1</span>
+  </nav>
+</div>
+</div>
+
+<!-- ===================== CONTACT ===================== -->
+<div class="page-section" id="page-contact">
+<div class="contact-page">
+  <h1 class="contact-heading">Let's <em>chat</em></h1>
+  <p class="contact-intro">Always open to interesting conversations.</p>
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <div class="terminal-buttons">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+      </div>
+      <span class="terminal-title">contact.sh</span>
+    </div>
+    <div class="terminal-body">
+      <form class="terminal-form" onsubmit="return false">
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label>name:</label>
+          <input type="text" placeholder="your name">
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <label>email:</label>
+          <input type="email" placeholder="you@example.com">
+        </div>
+        <div class="terminal-line terminal-line-textarea">
+          <span class="terminal-prompt">$</span>
+          <label>message:</label>
+          <textarea placeholder="what's on your mind?" rows="3"></textarea>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <button type="submit" class="terminal-submit">send_message --to sophie</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== LAB ===================== -->
+<div class="page-section" id="page-lab">
+<div class="lab-page">
+  <p class="lab-intro">Things I've built for fun or out of frustration.</p>
+  <p class="empty-state">Nothing here yet.</p>
+</div>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2026 Sophie Davis</p>
+  </div>
+</footer>
+
+<!-- Page switcher -->
+<div class="mockup-switcher" id="switcher">
+  <a data-page="about" class="active">About</a>
+  <a data-page="now">Now</a>
+  <a data-page="media">Media</a>
+  <a data-page="music">Music</a>
+  <a data-page="contact">Contact</a>
+  <a data-page="lab">Lab</a>
+</div>
+
+<script>
+// Page switching
+var pages = {about:1, now:1, media:1, contact:1, lab:1, music:1};
+var navLinks = document.querySelectorAll('.nav-link');
+
+function showPage(id) {
+  if (id === 'music') {
+    window.open('music-v4-bop-faithful.html', '_self');
+    return;
+  }
+
+  // Hide all
+  document.querySelectorAll('.page-section').forEach(function(el) {
+    el.classList.remove('active', 'active-flex');
+  });
+
+  // Show target
+  var target = document.getElementById('page-' + id);
+  if (target) {
+    if (id === 'about') {
+      target.classList.add('active-flex');
+    } else {
+      target.classList.add('active');
+    }
+  }
+
+  // Update nav
+  navLinks.forEach(function(a) {
+    a.classList.remove('active');
+    if (a.dataset.page === id) a.classList.add('active');
+  });
+
+  // Update switcher
+  document.querySelectorAll('.mockup-switcher a').forEach(function(a) {
+    a.classList.remove('active');
+    if (a.dataset.page === id) a.classList.add('active');
+  });
+
+  // About page special body styling
+  if (id === 'about') {
+    document.body.style.paddingTop = '0';
+    document.querySelector('main').style.maxWidth = '860px';
+    document.querySelector('main').style.display = 'flex';
+    document.querySelector('main').style.alignItems = 'center';
+    document.querySelector('main').style.minHeight = '100vh';
+    document.querySelector('main').style.paddingTop = '140px';
+    document.querySelector('main').style.paddingBottom = '80px';
+    document.querySelector('.site-footer').style.display = 'none';
+  } else {
+    document.body.style.paddingTop = '';
+    document.querySelector('main').style.maxWidth = '';
+    document.querySelector('main').style.display = '';
+    document.querySelector('main').style.alignItems = '';
+    document.querySelector('main').style.minHeight = '';
+    document.querySelector('main').style.paddingTop = '';
+    document.querySelector('main').style.paddingBottom = '';
+    document.querySelector('.site-footer').style.display = '';
+  }
+}
+
+// Click handlers
+document.querySelectorAll('[data-page]').forEach(function(el) {
+  el.addEventListener('click', function(e) {
+    e.preventDefault();
+    showPage(this.dataset.page);
+  });
+});
+
+// Hash routing
+if (location.hash) {
+  var h = location.hash.slice(1);
+  if (pages[h]) showPage(h);
+}
+
+// Init about page styling
+showPage('about');
+</script>
+</body>
+</html>
