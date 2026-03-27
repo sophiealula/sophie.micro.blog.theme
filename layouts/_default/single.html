@@ -530,12 +530,13 @@
       {{ with $imgTag }}
         {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
       {{ end }}
-      {{ $extLink := "" }}
-      {{ $linkTag := index (findRE `<a[^>]+href="(https?://[^"]+)"` $content) 0 }}
-      {{ with $linkTag }}
-        {{ $extLink = replaceRE `.*href="([^"]+)".*` "$1" . }}
+      {{ $linkTarget := .Permalink }}
+      {{ $isExternal := false }}
+      {{ if eq .Title "Letterboxd Streaming Checker" }}
+        {{ $linkTarget = "https://letterboxd-streaming.netlify.app" }}
+        {{ $isExternal = true }}
       {{ end }}
-      <a href="{{ with $extLink }}{{ . }}{{ else }}{{ $.Permalink }}{{ end }}" class="building-card"{{ with $extLink }} target="_blank" rel="noopener"{{ end }}>
+      <a href="{{ $linkTarget }}" class="building-card"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>
         <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
         </div>
         <div class="building-info">
