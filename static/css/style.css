@@ -288,7 +288,7 @@ main {
 }
 
 .post-content ul li::before {
-  content: "–";
+  content: "\2013";
   position: absolute;
   left: 0;
   color: var(--text-muted);
@@ -1290,7 +1290,7 @@ body:has(.about-page) main {
 .now-section li::before,
 .now-post li::before,
 .now-page li::before {
-  content: "–";
+  content: "\2013";
   position: absolute;
   left: 0;
   color: var(--text-muted);
