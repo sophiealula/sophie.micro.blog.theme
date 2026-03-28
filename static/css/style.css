@@ -1639,6 +1639,8 @@ body:has(.about-page) main {
   font-size: 16px;
   line-height: 1.6;
   color: var(--text);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .feed-entry::before {
