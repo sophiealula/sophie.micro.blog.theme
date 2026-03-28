@@ -1720,7 +1720,8 @@ body:has(.about-page) main {
 /* Hide site chrome when sophie.fm is active */
 body:has(.sophie-fm) {
   padding-top: 0 !important;
-  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   margin: 0 !important;
 }
 body:has(.sophie-fm) .site-header,
@@ -2156,34 +2157,63 @@ body:has(.sophie-fm) main {
 @media (max-width: 1100px) {
   .sophie-fm {
     flex-direction: column;
-    height: fit-content;
+    height: auto !important;
+    min-height: 100vh;
     background-size: 45px !important;
   }
   .sfm-left {
-    width: 100%;
-    max-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
+    padding: 1.5rem !important;
   }
-  .sfm-right { padding: 0; }
+  .sfm-right {
+    padding: 0 !important;
+    height: auto !important;
+    flex: none !important;
+  }
   .sfm-player {
     min-height: auto !important;
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
   }
-  .sfm-cover-art { flex: 0 0 120px; max-width: 120px; }
+  .sfm-cover-art { flex: 0 0 120px !important; max-width: 120px !important; }
   .sfm-song-info h2 { font-size: 15px !important; margin-bottom: 0 !important; }
-  .sfm-desc { font-size: 19px; }
-  .sfm-title { font-size: 25px; }
-  .sfm-tracklist td { font-size: 19px !important; }
-  .sfm-track-artist { font-size: 14px !important; }
-  .sfm-track-time { font-size: 12px !important; }
-  .sfm-tracklist tr td:first-child { min-width: 65px; }
-  .sfm-link-label { display: none; }
-  .sfm-link-service { font-size: 11px !important; }
-  .sfm-links a { padding: 4px 6px !important; }
-
-  body:has(.sophie-fm) {
-    overflow: auto;
+  .sfm-artist { font-size: 14px !important; }
+  .sfm-time-ago { font-size: 12px !important; }
+  .sfm-desc { font-size: 19px !important; }
+  .sfm-title { font-size: 25px !important; }
+  .sfm-tracklist-wrap {
+    overflow: visible !important;
+    height: auto !important;
   }
+  .sfm-tracklist td { font-size: 17px !important; }
+  .sfm-track-song { font-size: 18px !important; }
+  .sfm-track-artist { font-size: 14px !important; }
+  .sfm-track-time {
+    font-size: 12px !important;
+    width: 65px !important;
+    padding-top: 12px !important;
+  }
+  .sfm-tracklist tr td:first-child { min-width: 60px; }
+  .sfm-link-label { display: none !important; }
+  .sfm-link-service { font-size: 11px !important; }
+  .sfm-links a { padding: 4px 8px !important; }
+  .sfm-links { gap: 6px !important; margin-top: 8px !important; }
+  .sfm-date-header td {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .sfm-left { padding: 1.25rem !important; }
+  .sfm-cover-art { flex: 0 0 90px !important; max-width: 90px !important; }
+  .sfm-song-info { padding: 12px !important; }
+  .sfm-song-info h2 { font-size: 13px !important; }
+  .sfm-track-song { font-size: 16px !important; }
+  .sfm-track-artist { font-size: 12px !important; }
+  .sfm-track-time { font-size: 11px !important; width: 55px !important; }
 }

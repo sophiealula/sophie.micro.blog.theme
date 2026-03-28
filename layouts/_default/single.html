@@ -383,10 +383,15 @@
 
   loadTracks();
 
-  // Infinite scroll
+  // Infinite scroll — container on desktop, window on mobile
   var wrap = document.getElementById('sfm-tracklist-wrap');
   wrap.addEventListener('scroll', function() {
     if (wrap.scrollTop + wrap.clientHeight >= wrap.scrollHeight - 200) {
+      loadTracks();
+    }
+  });
+  window.addEventListener('scroll', function() {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 400) {
       loadTracks();
     }
   });
