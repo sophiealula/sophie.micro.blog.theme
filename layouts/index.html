@@ -1,19 +1,31 @@
 {{ define "main" }}
-{{ $now := where .Site.RegularPages "Params.categories" "intersect" (slice "Now") }}
-<div class="now-page">
-  <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/">Harper</a>, who was inspired by <a href="https://nownownow.com">nownownow.com</a>, and so on.</p>
-
-  {{ with index $now 0 }}
-  <h1 class="now-date">Now @ {{ .Date.Format "January 2, 2006" }}</h1>
-  {{ end }}
-
-  <div class="now-content">
-    {{ range $now }}
-    <div class="now-post">
-      {{ .Content }}
+{{ $about := .Site.GetPage "/about" }}
+{{ with $about }}
+{{ $content := .Content }}
+{{ $imgMatch := findRE `<img[^>]+src="([^"]+)"[^>]*>` $content 1 }}
+{{ $photoSrc := "" }}
+{{ with $imgMatch }}
+  {{ $photoSrc = replaceRE `.*src="([^"]+)".*` "$1" (index . 0) }}
+{{ end }}
+{{ $contentNoImg := $content }}
+{{ with $imgMatch }}
+  {{ $contentNoImg = replace $contentNoImg (index $imgMatch 0) "" }}
+  {{ $contentNoImg = replaceRE `<p>\s*</p>` "" $contentNoImg }}
+  {{ $contentNoImg = replaceRE `<figure>\s*</figure>` "" $contentNoImg }}
+{{ end }}
+<div class="about-page">
+  <div class="about-layout">
+    <div class="about-image">
+      {{ if $photoSrc }}
+      <img src="{{ $photoSrc }}" alt="{{ $.Site.Title }}" class="about-photo">
+      {{ else }}
+      <img src="{{ "images/profile.jpg" | relURL }}" alt="{{ $.Site.Title }}" class="about-photo">
+      {{ end }}
     </div>
-    {{ end }}
+    <div class="about-content">
+      {{ $contentNoImg | safeHTML }}
+    </div>
   </div>
-
 </div>
+{{ end }}
 {{ end }}
