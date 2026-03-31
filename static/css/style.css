@@ -413,11 +413,11 @@ main {
 }
 
 .pagination .prev::before {
-  content: '← ';
+  content: '\2190 ';
 }
 
 .pagination .next::after {
-  content: ' →';
+  content: ' \2192';
 }
 
 /* ===========================================
@@ -788,7 +788,7 @@ main {
    About Page
    =========================================== */
 
-/* Vertical centering — matches portfolio body.page-home */
+/* Vertical centering - matches portfolio body.page-home */
 body:has(.about-page) {
   padding-top: 0;
   min-height: 100vh;
@@ -865,7 +865,7 @@ body:has(.about-page) main {
   font-weight: 500;
 }
 
-/* Regular inline links — static underline */
+/* Regular inline links - static underline */
 .about-content a {
   color: var(--text);
   text-decoration: underline;
@@ -881,7 +881,7 @@ body:has(.about-page) main {
   color: var(--text-muted);
 }
 
-/* Company links (bold text inside <a>) — animated underline on hover */
+/* Company links (bold text inside <a>) - animated underline on hover */
 .about-content a:has(strong),
 .about-content a:has(b) {
   font-weight: 500;
@@ -1707,7 +1707,7 @@ body:has(.about-page) main {
 }
 
 /* ===========================================
-   sophie.fm — Bop Spotter-style Music Page
+   sophie.fm - Bop Spotter-style Music Page
    =========================================== */
 
 @font-face {
@@ -1892,7 +1892,7 @@ body:has(.sophie-fm) main {
   transition: opacity 0.3s ease;
   z-index: 10;
 }
-/* Play overlay disabled — no icon on hover */
+/* Play overlay disabled - no icon on hover */
 
 .sfm-play-overlay img {
   width: 48px; height: 48px;
