@@ -31,15 +31,20 @@
 
 {{ else if eq .Title "Now" }}
 <!-- ===================== NOW PAGE ===================== -->
+{{ $now := where .Site.RegularPages "Params.categories" "intersect" (slice "Now") }}
 <div class="now-page">
   <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/">Harper</a>, who was inspired by <a href="https://nownownow.com">nownownow.com</a>, and so on.</p>
 
-  <h1 class="now-date">Now @ {{ now.Format "January 2, 2006" }}</h1>
+  {{ with index $now 0 }}
+  <h1 class="now-date">Now @ {{ .Date.Format "January 2, 2006" }}</h1>
+  {{ end }}
 
   <div class="now-content">
+    {{ range $now }}
     <div class="now-post">
       {{ .Content }}
     </div>
+    {{ end }}
   </div>
 </div>
 
