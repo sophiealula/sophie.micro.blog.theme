@@ -64,7 +64,7 @@
         <div class="feed-date-header"><em>{{ $d }}</em></div>
         {{ $lastDate = $d }}
       {{ end }}
-      <div class="feed-entry"><a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a> <span class="feed-source">({{ with urls.Parse .url }}{{ strings.TrimPrefix "www." .Host }}{{ end }})</span></div>
+      <div class="feed-entry"><a href="{{ .url }}" target="_blank" rel="noopener">{{ .title | safeHTML }}</a> <span class="feed-source">({{ with urls.Parse .url }}{{ strings.TrimPrefix "www." .Host }}{{ end }})</span></div>
     {{ end }}
   </div>
   {{ else }}
