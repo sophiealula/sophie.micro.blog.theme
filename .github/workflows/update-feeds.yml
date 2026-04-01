@@ -31,10 +31,15 @@ jobs:
         continue-on-error: true
         run: node scripts/fetch-microblog.js
 
+      - name: Copy bookmarks to Hugo data directory
+        run: |
+          mkdir -p data
+          cp static/data/bookmarks.json data/bookmarks.json 2>/dev/null || true
+
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add static/data/
+          git add static/data/ data/
           git diff --staged --quiet || git commit -m "Update feeds"
           git push

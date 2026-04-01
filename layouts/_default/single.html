@@ -46,94 +46,28 @@
 {{ else if eq .Title "Media" }}
 <!-- ===================== MEDIA PAGE (Links) ===================== -->
 <div class="media-page">
-  <p class="media-intro">Here's what I'm reading, updated <span id="last-updated"></span>. You can also check out <a href="{{ .Site.BaseURL }}music/"><strong>music</strong> I'm listening to</a>.</p>
+  {{ $bookmarks := .Site.Data.bookmarks }}
+  <p class="media-intro">Here's what I'm reading, updated {{ with $bookmarks }}{{ dateFormat "January 2, 2006" (time .updated) }}{{ else }}{{ now.Format "January 2, 2006" }}{{ end }}. You can also check out <a href="{{ .Site.BaseURL }}music/"><strong>music</strong> I'm listening to</a>.</p>
 
-  <div class="media-feed" id="media-feed">
-    <p class="loading">Loading...</p>
+  {{ with $bookmarks }}
+  {{ $sorted := sort .bookmarks "date" "desc" }}
+  <div class="media-feed">
+    {{ $lastDate := "" }}
+    {{ range $sorted }}
+      {{ $d := dateFormat "2006-01-02" (time .date) }}
+      {{ if ne $d $lastDate }}
+        <div class="feed-date-header"><em>{{ $d }}</em></div>
+        {{ $lastDate = $d }}
+      {{ end }}
+      <div class="feed-entry"><a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a> <span class="feed-source">({{ with urls.Parse .url }}{{ strings.TrimPrefix "www." .Host }}{{ end }})</span></div>
+    {{ end }}
   </div>
-
-  <nav class="feed-pagination" id="feed-pagination"></nav>
+  {{ else }}
+  <div class="media-feed">
+    <p class="empty-state">Nothing here yet.</p>
+  </div>
+  {{ end }}
 </div>
-
-<script>
-(function() {
-  var PER_PAGE = 30;
-
-  function fmtDate(d) {
-    var date = new Date(d);
-    var y = date.getFullYear();
-    var m = String(date.getMonth() + 1).padStart(2, '0');
-    var day = String(date.getDate()).padStart(2, '0');
-    return y + '-' + m + '-' + day;
-  }
-
-  function getPage() {
-    var match = location.hash.match(/page=(\d+)/);
-    return match ? parseInt(match[1], 10) : 1;
-  }
-
-  function escHtml(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  function render(items) {
-    var page = getPage();
-    var total = Math.ceil(items.length / PER_PAGE);
-    var start = (page - 1) * PER_PAGE;
-    var slice = items.slice(start, start + PER_PAGE);
-    var feed = document.getElementById('media-feed');
-
-    if (slice.length === 0) {
-      feed.innerHTML = '<p class="empty-state">Nothing here yet.</p>';
-      return;
-    }
-
-    var html = '';
-    var lastDate = '';
-    slice.forEach(function(b) {
-      var d = fmtDate(b.date);
-      if (d !== lastDate) {
-        html += '<div class="feed-date-header"><em>' + d + '</em></div>';
-        lastDate = d;
-      }
-      var source = '';
-      try { source = new URL(b.url).hostname.replace('www.', ''); } catch(e) {}
-      var clean = b.title.replace(/\s*[|–—-]\s*[^|–—-]*$/, '').replace(/&#\d+;/g, '').trim();
-      var label = '<a href="' + escHtml(b.url) + '" target="_blank" rel="noopener">' + escHtml(clean) + '</a>';
-      if (source) label += ' <span class="feed-source">(' + escHtml(source) + ')</span>';
-      html += '<div class="feed-entry">' + label + '</div>';
-    });
-
-    feed.innerHTML = html;
-
-    var nav = document.getElementById('feed-pagination');
-    var navHtml = '';
-    if (total > 1) {
-      if (page > 1) navHtml += '<a href="#page=' + (page - 1) + '" class="feed-prev">\u2190 Previous page</a>';
-      navHtml += '<span class="feed-page-info">Page ' + page + ' of ' + total + '</span>';
-      if (page < total) navHtml += '<a href="#page=' + (page + 1) + '" class="feed-next">Next page \u2192</a>';
-    }
-    nav.innerHTML = navHtml;
-  }
-
-  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-  fetch('https://raw.githubusercontent.com/sophiealula/sophie.micro.blog.theme/main/static/data/bookmarks.json')
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var items = (data.bookmarks || []).sort(function(a, b) {
-      return new Date(b.date) - new Date(a.date);
-    });
-    render(items);
-    window.addEventListener('hashchange', function() { render(items); });
-  })
-  .catch(function() {
-    document.getElementById('media-feed').innerHTML = '<p class="empty-state">Could not load links.</p>';
-  });
-})();
-</script>
 
 {{ else if eq .Title "Music" }}
 <!-- ===================== SOPHIE.FM — MUSIC PAGE ===================== -->
