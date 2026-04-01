@@ -1213,6 +1213,12 @@ body:has(.about-page) main {
   font-weight: 500;
 }
 
+.now-post a,
+.now-page a,
+.now-content a {
+  font-weight: 500;
+}
+
 .now-date {
   font-family: var(--font-sans);
   font-size: 36px;
@@ -1636,15 +1642,15 @@ body:has(.about-page) main {
 .feed-entry {
   padding: 4px 0 4px 1.25rem;
   position: relative;
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.7;
   color: var(--text);
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
 .feed-entry::before {
-  content: "\2022";
+  content: "\2013";
   position: absolute;
   left: 0;
   color: var(--text-muted);
