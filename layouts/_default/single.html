@@ -540,7 +540,7 @@
       {{ if eq .Title "Letterboxd Streaming Checker" }}
         {{ $linkTarget = "https://letterboxd-streaming.netlify.app" }}
         {{ $isExternal = true }}
-      {{ else if eq .Title "Book It" }}
+      {{ else if hasPrefix .Title "Book It" }}
         {{ $linkTarget = "https://github.com/sophiealula/library_goodreads_claude" }}
         {{ $isExternal = true }}
       {{ end }}
