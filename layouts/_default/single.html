@@ -540,6 +540,9 @@
       {{ if eq .Title "Letterboxd Streaming Checker" }}
         {{ $linkTarget = "https://letterboxd-streaming.netlify.app" }}
         {{ $isExternal = true }}
+      {{ else if eq .Title "Book It" }}
+        {{ $linkTarget = "https://github.com/sophiealula/library_goodreads_claude" }}
+        {{ $isExternal = true }}
       {{ end }}
       <a href="{{ $linkTarget }}" class="building-card"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>
         <div class="building-thumb"{{ with $img }} style="background-image: url('{{ . }}')"{{ end }}>
