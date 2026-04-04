@@ -51,28 +51,56 @@
 {{ else if eq .Title "Media" }}
 <!-- ===================== MEDIA PAGE (Links) ===================== -->
 <div class="media-page">
-  {{ $bookmarks := .Site.Data.bookmarks }}
-  <p class="media-intro">Here's what I'm reading, updated {{ with $bookmarks }}{{ dateFormat "January 2, 2006" (time .updated) }}{{ else }}{{ now.Format "January 2, 2006" }}{{ end }}. You can also check out <a href="{{ .Site.BaseURL }}music/"><strong>music</strong> I'm listening to</a>.</p>
+  <p class="media-intro">Here's what I'm reading, updated <span id="last-updated"></span>. You can also check out <a href="{{ .Site.BaseURL }}music/"><strong>music</strong> I'm listening to</a>.</p>
 
-  {{ with $bookmarks }}
-  {{ $sorted := sort .bookmarks "date" "desc" }}
-  <div class="media-feed">
-    {{ $lastDate := "" }}
-    {{ range $sorted }}
-      {{ $d := dateFormat "2006-01-02" (time .date) }}
-      {{ if ne $d $lastDate }}
-        <div class="feed-date-header"><em>{{ $d }}</em></div>
-        {{ $lastDate = $d }}
-      {{ end }}
-      <div class="feed-entry"><a href="{{ .url }}" target="_blank" rel="noopener">{{ .title | safeHTML }}</a> <span class="feed-source">({{ with urls.Parse .url }}{{ strings.TrimPrefix "www." .Host }}{{ end }})</span></div>
-    {{ end }}
+  <div class="media-feed" id="media-feed">
+    <p class="loading">Loading...</p>
   </div>
-  {{ else }}
-  <div class="media-feed">
-    <p class="empty-state">Nothing here yet.</p>
-  </div>
-  {{ end }}
 </div>
+
+<script>
+(function() {
+  function fmtDate(d) {
+    var date = new Date(d);
+    return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+  }
+
+  function decodeHtml(s) {
+    var el = document.createElement('textarea');
+    el.innerHTML = s;
+    return el.value;
+  }
+
+  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  fetch('https://raw.githubusercontent.com/sophiealula/sophie.micro.blog.theme/main/static/data/bookmarks.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var items = (data.bookmarks || []).sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date);
+    });
+    var feed = document.getElementById('media-feed');
+    if (!items.length) { feed.innerHTML = '<p class="empty-state">Nothing here yet.</p>'; return; }
+    var html = '';
+    var lastDate = '';
+    items.forEach(function(b) {
+      var d = fmtDate(b.date);
+      if (d !== lastDate) {
+        html += '<div class="feed-date-header"><em>' + d + '</em></div>';
+        lastDate = d;
+      }
+      var source = '';
+      try { source = new URL(b.url).hostname.replace('www.', ''); } catch(e) {}
+      var title = decodeHtml(b.title);
+      html += '<div class="feed-entry"><a href="' + b.url + '" target="_blank" rel="noopener">' + title + '</a> <span class="feed-source">(' + source + ')</span></div>';
+    });
+    feed.innerHTML = html;
+  })
+  .catch(function() {
+    document.getElementById('media-feed').innerHTML = '<p class="empty-state">Could not load links.</p>';
+  });
+})();
+</script>
 
 {{ else if eq .Title "Music" }}
 <!-- ===================== SOPHIE.FM — MUSIC PAGE ===================== -->
