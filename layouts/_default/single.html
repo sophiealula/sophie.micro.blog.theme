@@ -521,7 +521,7 @@
     return false;
   }
 
-  fetch('https://sophiealula.micro.blog/feed.json')
+  fetch('/feed.json')
   .then(function(r) { return r.json(); })
   .then(function(data) {
     var items = data.items || [];
@@ -600,7 +600,7 @@
     }).join('');
   }
 
-  fetch('https://sophiealula.micro.blog/feed.json')
+  fetch('/feed.json')
   .then(r => r.json())
   .then(data => {
     var items = data.items || [];
@@ -627,7 +627,7 @@
 
 <script>
 (function() {
-  fetch('https://sophiealula.micro.blog/feed.json')
+  fetch('/feed.json')
   .then(r => r.json())
   .then(data => {
     var items = data.items || [];
