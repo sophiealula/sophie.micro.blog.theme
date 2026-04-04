@@ -1,6 +1,12 @@
 {
-  "updated": "2026-04-03T18:38:08.441Z",
+  "updated": "2026-04-04T01:42:09.027Z",
   "bookmarks": [
+    {
+      "url": "https://www.alistaircroll.com/updates/the-feedback-loop-is-the-product/",
+      "title": "The feedback loop is the product",
+      "date": "2026-04-03T21:43:24.109Z",
+      "dateFormatted": "Apr 3"
+    },
     {
       "url": "https://arxiv.org/abs/1811.07643",
       "title": "[1811.07643] What&#39;s in a GitHub Star? Understanding Repository Starring Practices in a Social Coding Platform",
