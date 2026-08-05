@@ -1,6 +1,18 @@
 {
-  "updated": "2026-08-05T13:50:32.122Z",
+  "updated": "2026-08-05T19:19:14.724Z",
   "bookmarks": [
+    {
+      "url": "https://yegge.ai/essays/the-shape-of-things-to-come/",
+      "title": "yegge.ai/essays/the-shape-of-things-to-come",
+      "date": "2026-08-05T18:24:45.776Z",
+      "dateFormatted": "Aug 5"
+    },
+    {
+      "url": "https://yegge.ai/essays/model-welfare/",
+      "title": "yegge.ai/essays/model-welfare",
+      "date": "2026-08-05T18:10:52.364Z",
+      "dateFormatted": "Aug 5"
+    },
     {
       "url": "https://restofworld.org/2026/ai-voice-actors-hollywood-dubbing/",
       "title": "restofworld.org/2026/ai-voice-actors-hollywood-dubbing",
@@ -147,7 +159,7 @@
     },
     {
       "url": "https://harpers.org/archive/2026/03/childs-play-sam-kriss-ai-startup-roy-lee/",
-      "title": "Child’s Play, by Sam Kriss",
+      "title": "One moment, please...",
       "date": "2026-03-06T22:12:02.848Z",
       "dateFormatted": "Mar 6"
     },
