@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-08T01:04:34.504Z",
+  "updated": "2026-08-08T06:38:50.597Z",
   "bookmarks": [
     {
       "url": "https://example.com/test",
@@ -81,7 +81,7 @@
     },
     {
       "url": "https://www.youtube.com/watch?v=wc8FBhQtdsA",
-      "title": "- YouTube",
+      "title": "https://www.youtube.com/watch?v=wc8FBhQtdsA",
       "date": "2026-04-12T21:00:00.315Z",
       "dateFormatted": "Apr 12"
     },
