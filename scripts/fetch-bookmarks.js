@@ -95,7 +95,26 @@ async function resolveTitle(msg, url, slackDisplay) {
   console.log(`Fetching title for: ${url}`);
   const fetched = await fetchPageTitle(url);
   if (fetched) return fetched;
-  return slackDisplay || url;
+  return humanizeUrl(url);
+}
+
+// Last resort when the site blocks us: turn "/2026/04/30/opinion/ai-labor-work-force.html"
+// into "Ai labor work force"; otherwise show host + path without the scheme.
+function humanizeUrl(url) {
+  try {
+    const u = new URL(url);
+    const segs = u.pathname.split('/').filter(Boolean);
+    const last = (segs[segs.length - 1] || '').replace(/\.[a-z0-9]{2,5}$/i, '');
+    const words = last.split(/[-_]+/).filter(Boolean);
+    const looksLikeSlug = words.length >= 3 && words.every(w => w.length <= 20 && !/^[0-9a-f]{8,}$/i.test(w));
+    if (looksLikeSlug) {
+      const text = decodeURIComponent(words.join(' '));
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+    return (u.hostname.replace(/^www\./, '') + u.pathname.replace(/\/$/, '')).slice(0, 80);
+  } catch (e) {
+    return url;
+  }
 }
 
 async function extractBookmarks(messages) {
@@ -179,4 +198,4 @@ async function main() {
 }
 
 if (require.main === module) main().catch(console.error);
-module.exports = { looksLikeUrl, fetchPageTitle, resolveTitle, extractBookmarks };
+module.exports = { looksLikeUrl, humanizeUrl, fetchPageTitle, resolveTitle, extractBookmarks };
