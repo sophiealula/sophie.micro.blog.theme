@@ -304,7 +304,13 @@
       var tracks = data.recenttracks?.track || [];
       var tbody = document.getElementById('sfm-tbody');
       var lastDate = tbody.lastElementChild?.dataset?.date || '';
-      var isFirst = tbody.children.length === 0;
+      var needsPlayer = tbody.children.length === 0;
+      var np = tracks[0];
+      if (needsPlayer && np && np['@attr']?.nowplaying === 'true') {
+        needsPlayer = false;
+        var npImg = np.image?.[3]?.['#text'] || np.image?.[2]?.['#text'] || '';
+        updatePlayer({ title: np.name, artist: np.artist['#text'], image: npImg, ago: 'now playing' });
+      }
 
       tracks.forEach(function(t, i) {
         if (!t.date) return;
@@ -336,7 +342,8 @@
 
         tbody.appendChild(tr);
 
-        if (isFirst && i === 0) {
+        if (needsPlayer) {
+          needsPlayer = false;
           updatePlayer({ title: t.name, artist: t.artist['#text'], image: img300, ago: timeAgo(ts) });
         }
       });
