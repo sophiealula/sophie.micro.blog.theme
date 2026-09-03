@@ -35,21 +35,67 @@ async function fetchSlackMessages() {
   return data.messages || [];
 }
 
+function decodeEntities(str) {
+  return str
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(parseInt(n, 10)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
+}
+
+// True for "example.com", "example.com/path", "https://example.com/..." — text that is
+// just a URL and not a real title. Slack uses this form as the display text for pasted links.
+function looksLikeUrl(text) {
+  if (!text) return true;
+  const t = text.trim();
+  if (/\s/.test(t)) return false;
+  return /^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(?::\d+)?([\/?#]\S*)?$/i.test(t);
+}
+
 async function fetchPageTitle(url) {
   try {
     const response = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; BookmarkBot/1.0)' },
-      timeout: 5000
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+        'Accept': 'text/html,application/xhtml+xml'
+      },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(8000)
     });
-    const html = await response.text();
-    const match = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-    if (match) {
-      return match[1].trim().replace(/\s+/g, ' ');
-    }
+    if (!response.ok) return null;
+    const html = (await response.text()).slice(0, 200000);
+    const meta = (prop) => {
+      const re = new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]*content=["']([^"']+)["']|<meta[^>]+content=["']([^"']+)["'][^>]*(?:property|name)=["']${prop}["']`, 'i');
+      const m = html.match(re);
+      return m ? (m[1] || m[2]) : null;
+    };
+    const raw = meta('og:title') || meta('twitter:title') || (html.match(/<title[^>]*>([^<]+)<\/title>/i) || [])[1];
+    if (!raw) return null;
+    const title = decodeEntities(raw).trim().replace(/\s+/g, ' ');
+    return title && !looksLikeUrl(title) ? title : null;
   } catch (e) {
     console.log(`Could not fetch title for ${url}:`, e.message);
   }
   return null;
+}
+
+// Slack attaches link previews ("unfurls") to the message; their titles survive even
+// when the site blocks our own fetch.
+function unfurlTitle(msg, url) {
+  const atts = msg.attachments || [];
+  const hit = atts.find(a => a.original_url === url || a.from_url === url);
+  const t = hit && (hit.title || hit.fallback);
+  return t && !looksLikeUrl(t) ? decodeEntities(t).trim() : null;
+}
+
+async function resolveTitle(msg, url, slackDisplay) {
+  if (slackDisplay && !looksLikeUrl(slackDisplay)) return decodeEntities(slackDisplay).trim();
+  const fromUnfurl = unfurlTitle(msg, url);
+  if (fromUnfurl) return fromUnfurl;
+  console.log(`Fetching title for: ${url}`);
+  const fetched = await fetchPageTitle(url);
+  if (fetched) return fetched;
+  return slackDisplay || url;
 }
 
 async function extractBookmarks(messages) {
@@ -65,16 +111,12 @@ async function extractBookmarks(messages) {
     let match;
     while ((match = urlRegex.exec(text)) !== null) {
       const url = match[1];
-      let title = match[2]; // Slack sometimes includes title after |
+      const slackDisplay = match[2]; // Slack's display text; for pasted links it is just a shortened URL
 
       // Skip Slack internal links
       if (url.includes('slack.com')) continue;
 
-      // Fetch actual page title if Slack didn't provide one
-      if (!title || title === url) {
-        console.log(`Fetching title for: ${url}`);
-        title = await fetchPageTitle(url) || url;
-      }
+      const title = await resolveTitle(msg, url, slackDisplay);
 
       bookmarks.push({
         url,
@@ -136,4 +178,5 @@ async function main() {
   console.log(`Written to ${outputPath}`);
 }
 
-main().catch(console.error);
+if (require.main === module) main().catch(console.error);
+module.exports = { looksLikeUrl, fetchPageTitle, resolveTitle, extractBookmarks };
