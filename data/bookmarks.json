@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T21:22:48.631Z",
+  "updated": "2026-09-03T21:24:04.189Z",
   "bookmarks": [
     {
       "url": "https://www.fifa.com/en/tournaments/womens/womensworldcup/brazil-2027/articles/match-schedule-results-fixtures-teams-stadiums",
@@ -39,13 +39,13 @@
     },
     {
       "url": "https://example.com/test",
-      "title": "https://example.com/test",
+      "title": "example.com/test",
       "date": "2026-08-06T19:34:31.836Z",
       "dateFormatted": "Aug 6"
     },
     {
       "url": "https://2389-portal.fly.dev/contexts?scope=channel%3AC0AC60TPT4M",
-      "title": "https://2389-portal.fly.dev/contexts?scope=channel%3AC0AC60TPT4M",
+      "title": "2389-portal.fly.dev/contexts",
       "date": "2026-08-06T19:34:18.327Z",
       "dateFormatted": "Aug 6"
     },
@@ -75,7 +75,7 @@
     },
     {
       "url": "https://www.nytimes.com/2026/06/24/style/usha-vance-maga-pregnancy-style.html",
-      "title": "nytimes.com/2026/…/usha-vance-maga-pregnancy-style.html",
+      "title": "Usha vance maga pregnancy style",
       "date": "2026-06-29T15:05:51.439Z",
       "dateFormatted": "Jun 29"
     },
@@ -87,7 +87,7 @@
     },
     {
       "url": "https://www.sciencedirect.com/science/article/abs/pii/S0160289605000772",
-      "title": "https://www.sciencedirect.com/science/article/abs/pii/S0160289605000772",
+      "title": "sciencedirect.com/science/article/abs/pii/S0160289605000772",
       "date": "2026-05-07T19:16:34.734Z",
       "dateFormatted": "May 7"
     },
@@ -99,7 +99,7 @@
     },
     {
       "url": "https://www.nytimes.com/2026/04/30/opinion/ai-labor-work-force-silicon-valley.html",
-      "title": "https://www.nytimes.com/2026/04/30/opinion/ai-labor-work-force-silicon-valley.html",
+      "title": "Ai labor work force silicon valley",
       "date": "2026-05-01T19:44:39.041Z",
       "dateFormatted": "May 1"
     },
@@ -177,7 +177,7 @@
     },
     {
       "url": "https://theshamblog.com/an-ai-agent-wrote-a-hit-piece-on-me-part-4/",
-      "title": "https://theshamblog.com/an-ai-agent-wrote-a-hit-piece-on-me-part-4/",
+      "title": "An ai agent wrote a hit piece on me part 4",
       "date": "2026-03-23T20:13:16.767Z",
       "dateFormatted": "Mar 23"
     },
@@ -189,7 +189,7 @@
     },
     {
       "url": "https://docs.google.com/document/d/1xRiCqpy3LMAgEsHdX-IA23j6nUISdT5nAJmtKbk9wNA/edit?tab=t.0#heading=h.qjbye7k8997j",
-      "title": "https://docs.google.com/document/d/1xRiCqpy3LMAgEsHdX-IA23j6nUISdT5nAJmtKbk9wNA/edit?tab=t.0#heading=h.qjbye7k8997j",
+      "title": "docs.google.com/document/d/1xRiCqpy3LMAgEsHdX-IA23j6nUISdT5nAJmtKbk9wNA/edit",
       "date": "2026-03-23T16:17:57.055Z",
       "dateFormatted": "Mar 23"
     },
