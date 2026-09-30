@@ -889,6 +889,17 @@ body:has(.about-page) main {
   margin-bottom: 0;
 }
 
+.about-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.about-content figure {
+  margin: var(--space-sm) 0;
+}
+
 .about-content h1 {
   font-family: var(--font-sans);
   font-size: 36px;
