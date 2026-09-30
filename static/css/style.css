@@ -840,17 +840,21 @@ body:has(.home-page) main {
   align-items: center;
 }
 
-.home-hero {
+.home-hero-media {
+  width: 100%;
   margin: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 6px;
 }
 
-.home-hero-img {
+.home-hero-media .home-hero-img {
   display: block;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: calc(100vh - 220px);
-  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  object-position: 50% 48%;
 }
 
 .home-name {
@@ -859,12 +863,6 @@ body:has(.home-page) main {
   letter-spacing: 0.02em;
   margin: var(--space-sm) 0 0;
   color: var(--text);
-}
-
-@media (max-width: 768px) {
-  .home-hero-img {
-    max-height: calc(100svh - 180px);
-  }
 }
 
 /* ===========================================

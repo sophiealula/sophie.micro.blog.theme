@@ -1,7 +1,13 @@
 {{ define "main" }}
 <div class="home-page">
-  <figure class="home-hero">
-    <img src="{{ "images/home-hero.jpg" | relURL }}" alt="{{ .Site.Title }}" class="home-hero-img" fetchpriority="high" decoding="async">
+  <figure class="home-hero-media">
+    <img
+      class="home-hero-img"
+      src="/uploads/2026/80e09a27-01c1-4da3-b408-46fd2e010ce8-1-105-c.jpg"
+      alt="Full moon above Chicago rooftops at dusk"
+      fetchpriority="high"
+      decoding="async"
+    >
   </figure>
   <h1 class="home-name">{{ .Site.Title }}</h1>
 </div>
