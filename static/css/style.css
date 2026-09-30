@@ -1325,6 +1325,13 @@ body:has(.about-page) main {
   margin-bottom: 0;
 }
 
+.now-post img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
 .now-post h2,
 .now-section h2 {
   font-family: var(--font-sans);
@@ -1691,6 +1698,13 @@ body:has(.about-page) main {
 
 .detail-content p:last-child {
   margin-bottom: 0;
+}
+
+.detail-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
 }
 
 .detail-content a {
