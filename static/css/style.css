@@ -1541,7 +1541,7 @@ body:has(.about-page) main {
 .building-card {
   display: flex;
   gap: 24px;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px 0;
   border-bottom: 1px solid var(--border);
   text-decoration: none;
@@ -1586,14 +1586,27 @@ body:has(.about-page) main {
   font-size: 1.15rem;
   font-weight: 500;
   color: var(--text);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
   line-height: 1.3;
 }
 
+.building-desc {
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--text);
+  margin: 0 0 0.4rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
 .building-date {
-  font-style: italic;
+  display: block;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 13px;
+  letter-spacing: 0.01em;
 }
 
 /* ===========================================
@@ -1687,6 +1700,11 @@ body:has(.about-page) main {
 
   .building-info h3 {
     font-size: 1rem;
+  }
+
+  .building-desc {
+    font-size: 15px;
+    line-height: 23px;
   }
 
   .detail-header h1 {
