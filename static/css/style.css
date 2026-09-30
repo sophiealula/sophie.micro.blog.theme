@@ -871,53 +871,22 @@ body:has(.home-page) main {
    About Page
    =========================================== */
 
-/* Vertical centering - matches portfolio body.page-home */
-body:has(.about-page) {
-  padding-top: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 body:has(.about-page) main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  max-width: 860px;
-  padding-top: 140px;
-  padding-bottom: 80px;
+  max-width: 752px;
+  padding-bottom: var(--space-lg);
 }
 
 .about-page {
   width: 100%;
-}
-
-.about-layout {
-  display: flex;
-  align-items: flex-start;
-  gap: 60px;
-}
-
-.about-image {
-  flex-shrink: 0;
-}
-
-.about-photo,
-.about-page img {
-  width: 220px !important;
-  height: 300px !important;
-  border-radius: 6px;
-  object-fit: cover;
-  object-position: center 20%;
-  display: block;
-}
-
-.about-content {
-  max-width: 420px;
+  padding-top: var(--space-sm);
 }
 
 .about-content > *:first-child {
   margin-top: 0;
+}
+
+.about-content > *:last-child {
+  margin-bottom: 0;
 }
 
 .about-content h1 {
@@ -927,25 +896,61 @@ body:has(.about-page) main {
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--text);
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .about-content p {
   font-family: var(--font-sans);
   font-weight: 400;
   font-size: 17px;
-  line-height: 27px;
+  line-height: 28px;
   color: var(--text);
-  margin-bottom: 14px;
-}
-
-.about-content p:last-of-type {
-  margin-bottom: 0;
+  margin-bottom: 16px;
 }
 
 .about-content strong,
 .about-content b {
   font-weight: 500;
+}
+
+/* Experience section heading */
+.about-content h2 {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+
+.about-content h2 em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Company name */
+.about-content h3 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text);
+  margin-top: var(--space-md);
+  margin-bottom: 2px;
+}
+
+.about-content h2 + h3 {
+  margin-top: var(--space-sm);
+}
+
+/* Role/title: the first paragraph under a company name */
+.about-content h3 + p {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 
 /* Regular inline links - static underline */
@@ -962,6 +967,10 @@ body:has(.about-page) main {
 
 .about-content a:hover {
   color: var(--text-muted);
+}
+
+.about-content h3 a {
+  text-decoration: none;
 }
 
 /* Company links (bold text inside <a>) - animated underline on hover */
@@ -1001,7 +1010,7 @@ body:has(.about-page) main {
 
 /* Bio social links */
 .about-links {
-  margin-top: 14px;
+  margin-top: 20px;
   display: flex;
   gap: 16px;
   font-size: 16px;
@@ -1039,49 +1048,35 @@ body:has(.about-page) main {
 
 /* About Page Responsive */
 @media (max-width: 768px) {
-  body:has(.about-page) main {
-    padding: 0 28px;
-    padding-top: 120px;
-    padding-bottom: 60px;
-    align-items: flex-start;
-  }
-
-  .about-layout {
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-
-  .about-image {
-    display: none;
-  }
-
-  .about-content {
-    max-width: 100%;
-  }
-
   .about-content h1 {
     font-size: 28px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
 
   .about-content p {
     font-size: 16px;
     line-height: 26px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  .about-content h2 {
+    font-size: 20px;
+    margin-top: var(--space-md);
+  }
+
+  .about-content h3 {
+    font-size: 17px;
+  }
+
+  .about-content h3 + p {
+    font-size: 14px;
+    line-height: 20px;
   }
 }
 
 @media (max-width: 480px) {
   .about-content h1 {
     font-size: 24px;
-  }
-
-  .about-content p {
-    line-height: 28px;
-  }
-
-  .about-links {
-    margin-top: 20px;
   }
 }
 
