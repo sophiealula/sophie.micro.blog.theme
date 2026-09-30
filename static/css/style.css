@@ -785,6 +785,89 @@ main {
 }
 
 /* ===========================================
+   Site Name (nav, hidden on home)
+   =========================================== */
+
+.site-name {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.1rem 0.6rem 1.4rem;
+  margin-right: 2px;
+  border-right: 1px solid var(--border);
+  border-radius: 40px 0 0 40px;
+  white-space: nowrap;
+}
+
+.site-name::after {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .site-name {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem 0.5rem 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-nav:has(.site-name) {
+    padding: 6px 10px;
+  }
+
+  .site-name {
+    font-size: 0.75rem;
+    padding: 8px 8px 8px 6px;
+  }
+}
+
+/* ===========================================
+   Home Page
+   =========================================== */
+
+body:has(.home-page) main {
+  max-width: 1100px;
+  padding-bottom: var(--space-lg);
+}
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-hero {
+  margin: 0;
+}
+
+.home-hero-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 220px);
+  border-radius: 4px;
+}
+
+.home-name {
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: var(--space-sm) 0 0;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .home-hero-img {
+    max-height: calc(100svh - 180px);
+  }
+}
+
+/* ===========================================
    About Page
    =========================================== */
 
