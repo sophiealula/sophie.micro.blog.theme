@@ -785,32 +785,32 @@ main {
 }
 
 /* ===========================================
-   Site Name (nav, hidden on home)
+   Home Link (nav)
    =========================================== */
 
 .site-name {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  padding: 0.6rem 1.1rem 0.6rem 1.4rem;
-  margin-right: 2px;
-  border-right: 1px solid var(--border);
-  border-radius: 40px 0 0 40px;
-  white-space: nowrap;
+  padding: 0.6rem 0.9rem;
+  border-radius: 40px;
+  transition: background 0.2s ease;
 }
 
 .site-name::after {
   display: none;
 }
 
+.site-name:hover {
+  background: var(--bg);
+}
+
 @media (max-width: 768px) {
   .site-name {
-    font-size: 0.85rem;
-    padding: 0.5rem 0.8rem 0.5rem 0.9rem;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.7rem;
   }
 }
 
@@ -820,8 +820,8 @@ main {
   }
 
   .site-name {
-    font-size: 0.75rem;
-    padding: 8px 8px 8px 6px;
+    font-size: 0.9rem;
+    padding: 8px 8px;
   }
 }
 
