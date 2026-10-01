@@ -1,6 +1,8 @@
 <header class="site-header">
   <nav class="site-nav">
+    {{ if not .IsHome }}
     <a href="{{ "/" | relURL }}" class="site-name" aria-label="Home">🍊</a>
+    {{ end }}
     <a href="{{ "about/" | relURL }}" class="nav-link{{ if eq .Title "About" }} active{{ end }}">About</a>
     <a href="{{ .Site.BaseURL }}lab/" class="nav-link{{ if eq .Title "Lab" }} active{{ end }}">Lab</a>
     <a href="{{ .Site.BaseURL }}now/" class="nav-link{{ if eq .Title "Now" }} active{{ end }}">

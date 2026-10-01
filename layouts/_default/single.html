@@ -3,6 +3,7 @@
 {{ if eq .Title "About" }}
 <!-- ===================== ABOUT PAGE ===================== -->
 <div class="about-page">
+  <h1 class="visually-hidden">About</h1>
   <div class="about-content">
     {{ .Content }}
   </div>
@@ -12,7 +13,7 @@
 <!-- ===================== NOW PAGE ===================== -->
 {{ $now := where .Site.RegularPages "Params.categories" "intersect" (slice "Now") }}
 <div class="now-page">
-  <p class="now-intro">This page is a simple view of what I'm up to right now. Inspired by <a href="https://harper.blog/now/">Harper</a>, who was inspired by <a href="https://nownownow.com">nownownow.com</a>, and so on.</p>
+  <p class="now-intro">This page is a simple view of what I'm up to right now.</p>
 
   {{ with index $now 0 }}
   <h1 class="now-date">Now @ {{ .Date.Format "January 2, 2006" }}</h1>
@@ -25,64 +26,13 @@
     </div>
     {{ end }}
   </div>
-
-  <section class="now-section now-links">
-    <h2>Links</h2>
-    <p class="now-links-intro">Things I've saved lately.<span class="links-updated-line" hidden> Last saved <span id="links-updated"></span>.</span></p>
-    <div class="media-feed" id="media-feed">
-      <p class="loading">Loading...</p>
-    </div>
-  </section>
 </div>
 
-<script>
-(function() {
-  function fmtDate(d) {
-    var date = new Date(d);
-    return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
-  }
-
-  function decodeHtml(s) {
-    var el = document.createElement('textarea');
-    el.innerHTML = s;
-    return el.value;
-  }
-
-  fetch('https://raw.githubusercontent.com/sophiealula/sophie.micro.blog.theme/main/static/data/bookmarks.json')
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var items = (data.bookmarks || []).sort(function(a, b) {
-      return new Date(b.date) - new Date(a.date);
-    });
-    var feed = document.getElementById('media-feed');
-    if (!items.length) { feed.innerHTML = '<p class="empty-state">Nothing here yet.</p>'; return; }
-    document.getElementById('links-updated').textContent = new Date(items[0].date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    document.querySelector('.links-updated-line').hidden = false;
-    var html = '';
-    var lastDate = '';
-    items.forEach(function(b) {
-      var d = fmtDate(b.date);
-      if (d !== lastDate) {
-        html += '<div class="feed-date-header"><em>' + d + '</em></div>';
-        lastDate = d;
-      }
-      var source = '';
-      try { source = new URL(b.url).hostname.replace('www.', ''); } catch(e) {}
-      var title = decodeHtml(b.title);
-      html += '<div class="feed-entry"><a href="' + b.url + '" target="_blank" rel="noopener">' + title + '</a> <span class="feed-source">(' + source + ')</span></div>';
-    });
-    feed.innerHTML = html;
-  })
-  .catch(function() {
-    document.getElementById('media-feed').innerHTML = '<p class="empty-state">Could not load links.</p>';
-  });
-})();
-</script>
 
 {{ else if eq .Title "Media" }}
 <!-- ===================== MEDIA PAGE (moved to Now) ===================== -->
 <div class="media-page">
-  <p class="media-intro">Links I'm reading now live on the <a href="{{ "now/" | relURL }}"><strong>Now</strong></a> page.</p>
+  <p class="media-intro">Links I'm reading now live on the <a href="{{ "links/" | relURL }}"><strong>Links</strong></a> page.</p>
 </div>
 
 {{ else if eq .Title "Music" }}
@@ -478,15 +428,19 @@
 {{ else if eq .Title "Lab" }}
 <!-- ===================== LAB PAGE ===================== -->
 <div class="lab-page">
-  <p class="lab-intro">Things I've built to answer questions I had.</p>
+  <h1 class="visually-hidden">Lab</h1>
+  <p class="lab-intro">Things I've made, written, and saved.</p>
 
-  {{ $building := where .Site.RegularPages "Params.categories" "intersect" (slice "Building") }}
-  {{ if $building }}
-  <div class="building-list">
-    {{ range $building }}
+  {{/* Building and Notes posts, oldest first so a later post sharing a destination is dropped */}}
+  {{ $cards := slice }}
+  {{ $seen := slice }}
+  {{ range (where .Site.RegularPages "Type" "post").ByDate }}
+  {{ $cats := default (slice) .Params.categories }}
+  {{ if and (trim .Title " ") (or (in $cats "Building") (in $cats "Notes")) }}
     {{ $content := .Content }}
     {{ $img := "" }}
-    {{ with index (findRE `<img[^>]+src="[^"]+"` $content) 0 }}
+    {{/* Only web images; skips leftovers like Notion's attachment: URLs */}}
+    {{ with index (findRE `<img[^>]+src="(https?://|/)[^"]+"` $content) 0 }}
       {{ $img = replaceRE `.*src="([^"]+)".*` "$1" . }}
     {{ end }}
 
@@ -514,22 +468,117 @@
       {{ end }}
     {{ end }}
 
-    <a href="{{ $linkTarget }}" class="building-card"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>
-      {{ with $img }}
+    {{/* Long descriptions end at a sentence (or word) boundary instead of being clipped by CSS */}}
+    {{ if gt (strings.RuneCount $desc) 180 }}
+      {{ $short := "" }}
+      {{ $full := false }}
+      {{ range findRE `[^.!?]+[.!?]+["”’)]*` $desc }}
+        {{ if not $full }}
+          {{ $next := printf "%s%s" $short . }}
+          {{ if le (strings.RuneCount (trim $next " ")) 180 }}{{ $short = $next }}{{ else }}{{ $full = true }}{{ end }}
+        {{ end }}
+      {{ end }}
+      {{ $short = trim $short " " }}
+      {{ $desc = cond (gt (len $short) 0) $short (truncate 180 $desc) }}
+    {{ end }}
+
+    {{ $label := "Note" }}
+    {{ if in $cats "Building" }}{{ $label = "Build" }}{{ end }}
+
+    {{ if not (in $seen $linkTarget) }}
+      {{ $seen = $seen | append $linkTarget }}
+      {{ $cards = $cards | append (dict "page" . "link" $linkTarget "external" $isExternal "img" $img "desc" $desc "label" $label "ts" .Date.Unix) }}
+    {{ end }}
+  {{ end }}
+  {{ end }}
+
+  <div class="building-list">
+    {{ range sort $cards "ts" "desc" }}
+    <a href="{{ .link }}" class="building-card"{{ if .external }} target="_blank" rel="noopener"{{ end }}>
+      {{ with .img }}
       <div class="building-thumb" style="background-image: url('{{ . }}')"></div>
       {{ end }}
       <div class="building-info">
-        <h3>{{ .Title }}</h3>
-        {{ with $desc }}<p class="building-desc">{{ . }}</p>{{ end }}
-        <span class="building-date">{{ .Date.Format "Jan 2006" }}</span>
+        <span class="lab-label">{{ .label }}</span>
+        <h3>{{ .page.Title }}</h3>
+        {{ with .desc }}<p class="building-desc">{{ . }}</p>{{ end }}
+        <span class="building-date">{{ .page.Date.Format "Jan 2006" }}</span>
       </div>
     </a>
     {{ end }}
+    <a href="{{ "links/" | relURL }}" class="building-card lab-gateway">
+      <div class="building-info">
+        <span class="lab-label">Links</span>
+        <h3 class="lab-gateway-title">Things worth keeping <span class="lab-gateway-arrow" aria-hidden="true">→</span></h3>
+        <p class="building-desc">A running collection of articles, ideas, and corners of the internet I want to return to.</p>
+      </div>
+    </a>
   </div>
-  {{ else }}
-  <p class="empty-state">Nothing here yet.</p>
-  {{ end }}
 </div>
+
+{{ else if eq .Title "Links" }}
+<!-- ===================== LINKS PAGE (full saved-links archive) ===================== -->
+<div class="links-page">
+  <h1 class="links-title">Links</h1>
+  <p class="links-intro">Things I’ve saved from around the internet.</p>
+  <div class="links-list" id="links-list">
+    <p class="loading">Loading...</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  function fmtDate(d) {
+    var date = new Date(d);
+    return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+  }
+
+  function decodeHtml(s) {
+    var el = document.createElement('textarea');
+    el.innerHTML = s;
+    return el.value;
+  }
+
+  // Keep in sync with PRIVATE_HOSTS in scripts/fetch-bookmarks.js
+  var PRIVATE_HOSTS = ['example.com', 'example.org', 'docs.google.com', 'drive.google.com', '2389-portal.fly.dev'];
+  function isPrivate(url) {
+    try { var h = new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return true; }
+    return PRIVATE_HOSTS.some(function(p) { return h === p || h.endsWith('.' + p); });
+  }
+
+  var list = document.getElementById('links-list');
+
+  fetch('https://raw.githubusercontent.com/sophiealula/sophie.micro.blog.theme/main/static/data/bookmarks.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var items = (data.bookmarks || []).filter(function(b) { return !isPrivate(b.url); }).sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date);
+    });
+    list.textContent = '';
+    if (!items.length) { list.innerHTML = '<p class="empty-state">Nothing here yet.</p>'; return; }
+    var lastDate = '';
+    items.forEach(function(b) {
+      var d = fmtDate(b.date);
+      var row = document.createElement('div');
+      row.className = 'links-row';
+      var date = document.createElement('span');
+      date.className = 'links-date';
+      if (d !== lastDate) { date.textContent = d; lastDate = d; }
+      var a = document.createElement('a');
+      a.href = b.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = decodeHtml(b.title);
+      row.appendChild(date);
+      row.appendChild(a);
+      list.appendChild(row);
+    });
+  })
+  .catch(function() {
+    list.innerHTML = '<p class="empty-state">Could not load links.</p>';
+  });
+})();
+</script>
 
 {{ else if eq .Title "Thoughts" }}
 <!-- ===================== THOUGHTS PAGE ===================== -->

@@ -3,8 +3,8 @@
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} | {{ end }}{{ .Site.Title }}{{ end }}</title>
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
 {{ if eq .Title "Media" }}
-<meta http-equiv="refresh" content="0; url={{ "now/" | relURL }}">
-<link rel="canonical" href="{{ "now/" | absURL }}">
+<meta http-equiv="refresh" content="0; url={{ "links/" | relURL }}">
+<link rel="canonical" href="{{ "links/" | absURL }}">
 <meta name="robots" content="noindex">
 {{ end }}
 

@@ -1,14 +1,20 @@
 {{ define "main" }}
 <div class="home-page">
-  <figure class="home-hero-media">
+  <div class="home-intro">
     <img
-      class="home-hero-img"
-      src="/uploads/2026/80e09a27-01c1-4da3-b408-46fd2e010ce8-1-105-c.jpg"
-      alt="Full moon above Chicago rooftops at dusk"
+      class="home-portrait"
+      src="{{ "images/home-hero.jpg" | relURL }}"
+      alt="Sophie Davis"
       fetchpriority="high"
       decoding="async"
     >
-  </figure>
-  <h1 class="home-name">{{ .Site.Title }}</h1>
+    <div class="home-text">
+      <h1>Hi, I’m Sophie.</h1>
+      <p>I think a lot about why people adopt new products.</p>
+      <p>I’m currently at <a href="https://2389.ai/">2389 Research</a>, building tools and exploring what idea validation looks like when anyone can ship a product in less than a day.</p>
+      <p>Before that, I launched 0→1 products at <a href="https://atomic.vc/">Atomic</a> and <a href="https://www.techstars.com/">invested in startups at Techstars</a>.</p>
+      <p class="home-social"><a href="https://github.com/sophiealula" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://www.linkedin.com/in/sophie-davis-a11477172/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+    </div>
+  </div>
 </div>
 {{ end }}
