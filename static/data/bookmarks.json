@@ -38,18 +38,6 @@
       "dateFormatted": "Aug 17"
     },
     {
-      "url": "https://example.com/test",
-      "title": "example.com/test",
-      "date": "2026-08-06T19:34:31.836Z",
-      "dateFormatted": "Aug 6"
-    },
-    {
-      "url": "https://2389-portal.fly.dev/contexts?scope=channel%3AC0AC60TPT4M",
-      "title": "2389-portal.fly.dev/contexts",
-      "date": "2026-08-06T19:34:18.327Z",
-      "dateFormatted": "Aug 6"
-    },
-    {
       "url": "https://yegge.ai/essays/the-shape-of-things-to-come/",
       "title": "The Shape of Things to Come, Part 1: The Continuous Thunderdome — Steve Yegge",
       "date": "2026-08-05T18:24:45.776Z",
@@ -185,12 +173,6 @@
       "url": "https://x.com/danshipper/status/2035842017553465814?s=20",
       "title": "Dan Shipper :e-mail: (@danshipper) on X",
       "date": "2026-03-23T16:22:56.959Z",
-      "dateFormatted": "Mar 23"
-    },
-    {
-      "url": "https://docs.google.com/document/d/1xRiCqpy3LMAgEsHdX-IA23j6nUISdT5nAJmtKbk9wNA/edit?tab=t.0#heading=h.qjbye7k8997j",
-      "title": "docs.google.com/document/d/1xRiCqpy3LMAgEsHdX-IA23j6nUISdT5nAJmtKbk9wNA/edit",
-      "date": "2026-03-23T16:17:57.055Z",
       "dateFormatted": "Mar 23"
     },
     {

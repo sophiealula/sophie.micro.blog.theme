@@ -117,6 +117,17 @@ function humanizeUrl(url) {
   }
 }
 
+const PRIVATE_HOSTS = ['example.com', 'example.org', 'docs.google.com', 'drive.google.com', '2389-portal.fly.dev'];
+
+function isPrivate(url) {
+  try {
+    const h = new URL(url).hostname.replace(/^www\./, '');
+    return PRIVATE_HOSTS.some(p => h === p || h.endsWith('.' + p));
+  } catch (e) {
+    return true;
+  }
+}
+
 async function extractBookmarks(messages) {
   const bookmarks = [];
 
@@ -134,6 +145,9 @@ async function extractBookmarks(messages) {
 
       // Skip Slack internal links
       if (url.includes('slack.com')) continue;
+
+      // Skip test, private, and internal links; keep in sync with PRIVATE_HOSTS in single.html
+      if (isPrivate(url)) continue;
 
       const title = await resolveTitle(msg, url, slackDisplay);
 

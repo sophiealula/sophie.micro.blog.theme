@@ -10,6 +10,7 @@
   --bg-nav: rgba(255, 255, 255, 0.95);
   --text: #403E43;
   --text-muted: #8E9196;
+  --text-soft: #6E7176;  /* muted but readable (4.5:1) for small secondary text */
   --accent: #4a9f7e;
   --accent-light: #e8f5ef;
   --border: #e5e5e5;
@@ -507,7 +508,7 @@ main {
   }
 
   .nav-link {
-    font-size: 0.75rem;
+    font-size: 13px;
     padding: 8px 10px;
   }
 
@@ -785,84 +786,329 @@ main {
 }
 
 /* ===========================================
+   Home Link (nav)
+   =========================================== */
+
+.site-name {
+  font-size: 1.05rem;
+  line-height: 1;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  border-radius: 40px;
+  transition: background 0.2s ease;
+}
+
+.site-name::after {
+  display: none;
+}
+
+.site-name:hover {
+  background: var(--bg);
+}
+
+@media (max-width: 768px) {
+  .site-name {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-nav:has(.site-name) {
+    padding: 6px 10px;
+  }
+
+  .site-name {
+    font-size: 0.9rem;
+    padding: 8px 8px;
+  }
+}
+
+/* ===========================================
+   Home Page
+   =========================================== */
+
+body:has(.home-page) main {
+  max-width: 1100px;
+  min-height: calc(100vh - 260px);
+  display: flex;
+  align-items: center;
+  padding-bottom: var(--space-lg);
+}
+
+.home-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-intro {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  width: 100%;
+  max-width: 760px;
+}
+
+.home-portrait {
+  flex-shrink: 0;
+  width: 240px;
+  height: 320px;
+  object-fit: cover;
+  object-position: center 20%;
+  border-radius: 6px;
+  display: block;
+}
+
+.home-text p {
+  font-size: 17px;
+  line-height: 28px;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.home-text p:last-child {
+  margin-bottom: 0;
+}
+
+.home-text h1 {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.home-text a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-text a::after {
+  display: none;
+}
+
+.home-text a:hover {
+  color: var(--text-muted);
+}
+
+.home-text .home-social {
+  margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+  .home-intro {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .home-portrait {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    aspect-ratio: 3 / 4;
+  }
+
+  .home-text h1,
+  .home-text p {
+    font-size: 16px;
+    line-height: 26px;
+  }
+}
+
+/* ===========================================
+   Links Page (saved-links archive)
+   =========================================== */
+
+.links-title {
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.links-intro {
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--text);
+  margin-bottom: var(--space-md);
+}
+
+.links-row {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  column-gap: 1.25rem;
+  padding: 5px 0;
+  font-size: 17px;
+  line-height: 26px;
+}
+
+.links-date {
+  color: var(--text-soft);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.links-row a {
+  color: var(--text);
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.links-row a::after {
+  display: none;
+}
+
+.links-row a:hover,
+.links-row a:focus-visible {
+  text-decoration-color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+  .links-title {
+    font-size: 28px;
+  }
+
+  .links-intro {
+    font-size: 16px;
+    line-height: 25px;
+  }
+
+  .links-row {
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .links-date {
+    font-size: 14px;
+  }
+}
+
+/* Kept for screen readers and search engines; not shown */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===========================================
    About Page
    =========================================== */
 
-/* Vertical centering - matches portfolio body.page-home */
-body:has(.about-page) {
-  padding-top: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 body:has(.about-page) main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  max-width: 860px;
-  padding-top: 140px;
-  padding-bottom: 80px;
+  max-width: 752px;
+  padding-bottom: var(--space-lg);
 }
 
 .about-page {
   width: 100%;
 }
 
-.about-layout {
-  display: flex;
-  align-items: flex-start;
-  gap: 60px;
-}
-
-.about-image {
-  flex-shrink: 0;
-}
-
-.about-photo,
-.about-page img {
-  width: 220px !important;
-  height: 300px !important;
-  border-radius: 6px;
-  object-fit: cover;
-  object-position: center 20%;
-  display: block;
-}
-
-.about-content {
-  max-width: 420px;
-}
-
 .about-content > *:first-child {
   margin-top: 0;
 }
 
+.about-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.about-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.about-content figure {
+  margin: var(--space-sm) 0;
+}
+
+/* "Hi, I'm Sophie." is the page H1 but reads as a bold first line of the body */
 .about-content h1 {
   font-family: var(--font-sans);
-  font-size: 36px;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 28px;
+  letter-spacing: 0;
   color: var(--text);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .about-content p {
   font-family: var(--font-sans);
   font-weight: 400;
   font-size: 17px;
-  line-height: 27px;
+  line-height: 28px;
   color: var(--text);
-  margin-bottom: 14px;
-}
-
-.about-content p:last-of-type {
-  margin-bottom: 0;
+  margin-bottom: 16px;
 }
 
 .about-content strong,
 .about-content b {
   font-weight: 500;
+}
+
+/* Experience section heading */
+.about-content h2 {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+
+.about-content h2 em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Company name */
+.about-content h3 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text);
+  margin-top: var(--space-md);
+  margin-bottom: 2px;
+}
+
+.about-content h2 + h3 {
+  margin-top: var(--space-sm);
+}
+
+/* Role/title: the first paragraph under a company name */
+.about-content h3 + p {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--text-soft);
+  margin-bottom: 8px;
 }
 
 /* Regular inline links - static underline */
@@ -879,6 +1125,10 @@ body:has(.about-page) main {
 
 .about-content a:hover {
   color: var(--text-muted);
+}
+
+.about-content h3 a {
+  text-decoration: none;
 }
 
 /* Company links (bold text inside <a>) - animated underline on hover */
@@ -918,7 +1168,7 @@ body:has(.about-page) main {
 
 /* Bio social links */
 .about-links {
-  margin-top: 14px;
+  margin-top: 20px;
   display: flex;
   gap: 16px;
   font-size: 16px;
@@ -956,51 +1206,34 @@ body:has(.about-page) main {
 
 /* About Page Responsive */
 @media (max-width: 768px) {
-  body:has(.about-page) main {
-    padding: 0 28px;
-    padding-top: 120px;
-    padding-bottom: 60px;
-    align-items: flex-start;
-  }
-
-  .about-layout {
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-
-  .about-image {
-    display: none;
-  }
-
-  .about-content {
-    max-width: 100%;
-  }
-
   .about-content h1 {
-    font-size: 28px;
-    margin-bottom: 16px;
+    font-size: 16px;
+    line-height: 26px;
+    margin-bottom: 14px;
   }
 
   .about-content p {
     font-size: 16px;
     line-height: 26px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  .about-content h2 {
+    font-size: 20px;
+    margin-top: var(--space-md);
+  }
+
+  .about-content h3 {
+    font-size: 17px;
+  }
+
+  .about-content h3 + p {
+    font-size: 15px;
+    line-height: 22px;
   }
 }
 
-@media (max-width: 480px) {
-  .about-content h1 {
-    font-size: 24px;
-  }
 
-  .about-content p {
-    line-height: 28px;
-  }
-
-  .about-links {
-    margin-top: 20px;
-  }
-}
 
 /* ===========================================
    Contact Page
@@ -1110,7 +1343,7 @@ body:has(.about-page) main {
 
 .terminal-line input::placeholder,
 .terminal-line textarea::placeholder {
-  color: #555;
+  color: #8a8a8a;  /* 4.8:1 on the #1e1e1e terminal */
 }
 
 .terminal-line input:focus,
@@ -1187,8 +1420,13 @@ body:has(.about-page) main {
     gap: 6px;
   }
 
+  .terminal-line input,
+  .terminal-line textarea {
+    font-size: 16px;
+  }
+
   .terminal-submit {
-    font-size: 0.8rem;
+    font-size: 15px;
     padding: 6px 12px;
   }
 }
@@ -1234,6 +1472,13 @@ body:has(.about-page) main {
 
 .now-post {
   margin-bottom: 0;
+}
+
+.now-post img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
 }
 
 .now-post h2,
@@ -1460,31 +1705,51 @@ body:has(.about-page) main {
   flex-direction: column;
 }
 
+/* Every Lab row, including the Links gateway. The row extends 12px past the
+   text so the hover tint has room; the divider is drawn inset to text width. */
 .building-card {
+  --row-bleed: 12px;
   display: flex;
   gap: 24px;
-  align-items: center;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+  margin: 0 calc(-1 * var(--row-bleed));
+  padding: 20px var(--row-bleed) 21px;  /* +1px stands in for the old 1px border */
+  border-radius: 8px;
+  background-color: transparent;
+  background-image: linear-gradient(var(--border), var(--border));
+  background-repeat: no-repeat;
+  background-position: var(--row-bleed) 100%;
+  background-size: calc(100% - 2 * var(--row-bleed)) 1px;
   text-decoration: none;
   color: inherit;
-  transition: opacity 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
 .building-card::after {
   display: none;
 }
 
+/* Tint room above the first row without moving its content */
 .building-card:first-child {
-  padding-top: 0;
+  margin-top: -12px;
+  padding-top: 12px;
 }
 
 .building-card:last-child {
-  border-bottom: none;
+  padding-bottom: 20px;
+  background-image: none;
 }
 
-.building-card:hover {
-  opacity: 0.6;
+@media (hover: hover) {
+  .building-card:hover {
+    background-color: rgba(64, 62, 67, 0.04);
+  }
+}
+
+.building-card:focus-visible {
+  background-color: rgba(64, 62, 67, 0.04);
+  outline: 1.5px solid var(--text-muted);
+  outline-offset: 0;
 }
 
 .building-thumb {
@@ -1508,14 +1773,56 @@ body:has(.about-page) main {
   font-size: 1.15rem;
   font-weight: 500;
   color: var(--text);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
   line-height: 1.3;
 }
 
-.building-date {
-  font-style: italic;
+.building-desc {
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--text);
+  margin: 0 0 0.4rem;
+}
+
+.lab-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Links gateway: last row of the Lab feed; shares .building-card states */
+.lab-gateway-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.lab-gateway-arrow {
+  color: var(--text-muted);
+  font-weight: 400;
+  transition: transform 0.15s ease;
+}
+
+@media (hover: hover) {
+  .lab-gateway:hover .lab-gateway-arrow {
+    transform: translateX(3px);
+  }
+}
+
+.lab-gateway:focus-visible .lab-gateway-arrow {
+  transform: translateX(3px);
+}
+
+.building-date {
+  display: block;
+  color: var(--text-soft);
+  font-size: 13px;
+  letter-spacing: 0.01em;
 }
 
 /* ===========================================
@@ -1591,6 +1898,13 @@ body:has(.about-page) main {
   margin-bottom: 0;
 }
 
+.detail-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
 .detail-content a {
   color: var(--text);
   font-weight: 500;
@@ -1608,7 +1922,20 @@ body:has(.about-page) main {
   }
 
   .building-info h3 {
-    font-size: 1rem;
+    font-size: 17px;
+  }
+
+  .building-desc {
+    font-size: 16px;
+    line-height: 25px;
+  }
+
+  .lab-label {
+    font-size: 12px;
+  }
+
+  .building-date {
+    font-size: 14px;
   }
 
   .detail-header h1 {
@@ -2229,4 +2556,53 @@ body:has(.sophie-fm) main {
   .sfm-track-song { font-size: 16px !important; }
   .sfm-track-artist { font-size: 12px !important; }
   .sfm-track-time { font-size: 11px !important; width: 55px !important; }
+}
+
+/* ===========================================
+   Text links in prose (Home, About, Now, posts, Links archive).
+   Nav, buttons, Lab cards and the footer keep their own styles.
+   =========================================== */
+
+:is(.home-text p:not(.home-social), .about-content p, .about-content li, .now-page p, .now-page li, .post-content p, .post-content li, .detail-content p, .detail-content li, .links-row) a,
+:is(.home-text p:not(.home-social), .about-content p, .about-content li, .now-page p, .now-page li, .post-content p, .post-content li, .detail-content p, .detail-content li, .links-row) a:visited {
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+:is(.home-text p:not(.home-social), .about-content p, .about-content li, .now-page p, .now-page li, .post-content p, .post-content li, .detail-content p, .detail-content li, .links-row) a:is(:hover, :focus-visible) {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+:is(.home-text p:not(.home-social), .about-content p, .about-content li, .now-page p, .now-page li, .post-content p, .post-content li, .detail-content p, .detail-content li, .links-row) a::after {
+  display: none;
+}
+
+/* GitHub · LinkedIn: quieter utility row */
+.home-social a,
+.home-social a:visited {
+  color: var(--text-soft);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.home-social a:is(:hover, :focus-visible) {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.home-social a::after {
+  display: none;
+}
+
+/* An image marked class="lab-thumb" in a post is only the Lab card picture; hide it on the post page */
+.post-content img.lab-thumb,
+.detail-content img.lab-thumb,
+.detail-hero:has(img.lab-thumb) {
+  display: none;
 }

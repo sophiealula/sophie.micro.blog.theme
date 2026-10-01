@@ -1,31 +1,20 @@
 {{ define "main" }}
-{{ $about := .Site.GetPage "/about" }}
-{{ with $about }}
-{{ $content := .Content }}
-{{ $imgMatch := findRE `<img[^>]+src="([^"]+)"[^>]*>` $content 1 }}
-{{ $photoSrc := "" }}
-{{ with $imgMatch }}
-  {{ $photoSrc = replaceRE `.*src="([^"]+)".*` "$1" (index . 0) }}
-{{ end }}
-{{ $contentNoImg := $content }}
-{{ with $imgMatch }}
-  {{ $contentNoImg = replace $contentNoImg (index $imgMatch 0) "" }}
-  {{ $contentNoImg = replaceRE `<p>\s*</p>` "" $contentNoImg }}
-  {{ $contentNoImg = replaceRE `<figure>\s*</figure>` "" $contentNoImg }}
-{{ end }}
-<div class="about-page">
-  <div class="about-layout">
-    <div class="about-image">
-      {{ if $photoSrc }}
-      <img src="{{ $photoSrc }}" alt="{{ $.Site.Title }}" class="about-photo">
-      {{ else }}
-      <img src="{{ "images/profile.jpg" | relURL }}" alt="{{ $.Site.Title }}" class="about-photo">
-      {{ end }}
-    </div>
-    <div class="about-content">
-      {{ $contentNoImg | safeHTML }}
+<div class="home-page">
+  <div class="home-intro">
+    <img
+      class="home-portrait"
+      src="{{ "images/home-hero.jpg" | relURL }}"
+      alt="Sophie Davis"
+      fetchpriority="high"
+      decoding="async"
+    >
+    <div class="home-text">
+      <h1>Hi, I’m Sophie.</h1>
+      <p>I think a lot about why people adopt new products.</p>
+      <p>I’m currently at <a href="https://2389.ai/">2389 Research</a>, building tools and exploring what idea validation looks like when anyone can ship a product in less than a day.</p>
+      <p>Before that, I launched 0→1 products at <a href="https://atomic.vc/">Atomic</a> and <a href="https://www.techstars.com/">invested in startups at Techstars</a>.</p>
+      <p class="home-social"><a href="https://github.com/sophiealula" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://www.linkedin.com/in/sophie-davis-a11477172/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
     </div>
   </div>
 </div>
-{{ end }}
 {{ end }}
